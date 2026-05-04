@@ -88,12 +88,15 @@ class FemaleLoginUI extends StatelessWidget {
                     SizedBox(height: 12.h),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                        'Forgot Password?',
-                        style: GoogleFonts.inter(
-                          fontSize: 13.sp,
-                          color: themeColor,
-                          fontWeight: FontWeight.w600,
+                      child: GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.femaleForgetPasswordEmail),
+                        child: Text(
+                          'Forgot Password?',
+                          style: GoogleFonts.inter(
+                            fontSize: 13.sp,
+                            color: themeColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),

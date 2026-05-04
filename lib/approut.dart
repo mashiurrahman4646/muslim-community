@@ -1,16 +1,25 @@
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/auth/ui/IdentityVerification.dart';
+import 'package:muslim_community/female_role/auth/ui/forgetpasswordemail.dart';
 import 'package:muslim_community/female_role/auth/ui/location_access.dart';
 import 'package:muslim_community/female_role/auth/ui/login.dart';
+import 'package:muslim_community/female_role/auth/ui/otpverificationforforgetpasswod.dart';
 import 'package:muslim_community/female_role/auth/ui/signup.dart';
 import 'package:muslim_community/female_role/auth/ui/signupotp.dart';
 import 'package:muslim_community/female_role/auth/ui/verification_complete.dart';
+import 'package:muslim_community/jummarole/auth/ui/forgetpasswordemail.dart';
+import 'package:muslim_community/jummarole/auth/ui/forgetpasswordotp.dart';
 import 'package:muslim_community/jummarole/auth/ui/login.dart';
 import 'package:muslim_community/jummarole/auth/ui/signup.dart';
 import 'package:muslim_community/jummarole/auth/ui/signupotp.dart';
+import 'package:muslim_community/jummarole/home/ui/jummahomeui.dart';
+import 'package:muslim_community/jummarole/home/ui/jummanowplayingui.dart';
+import 'package:muslim_community/jummarole/navbar/navbarui.dart';
 import 'package:muslim_community/male_role/auth/ui/IdentityVerification.dart';
 import 'package:muslim_community/male_role/auth/ui/location_access.dart';
 import 'package:muslim_community/male_role/auth/ui/login.dart';
+import 'package:muslim_community/male_role/auth/ui/forgetpasswordemail.dart';
+import 'package:muslim_community/male_role/auth/ui/forgetpasswordotp.dart';
 import 'package:muslim_community/male_role/auth/ui/signup.dart';
 import 'package:muslim_community/male_role/auth/ui/signupotp.dart';
 import 'package:muslim_community/male_role/auth/ui/verification_complete.dart';
@@ -28,6 +37,15 @@ class AppRoutes {
   static const String femaleLogin = '/femaleLogin';
   static const String maleLogin = '/maleLogin';
   static const String jummaLogin = '/jummaLogin';
+
+  static const String femaleForgetPasswordEmail = '/femaleForgetPasswordEmail';
+  static const String femaleForgetPasswordOTP = '/femaleForgetPasswordOTP';
+  static const String maleForgetPasswordEmail = '/maleForgetPasswordEmail';
+  static const String maleForgetPasswordOTP = '/maleForgetPasswordOTP';
+  static const String jummaForgetPasswordEmail = '/jummaForgetPasswordEmail';
+  static const String jummaForgetPasswordOTP = '/jummaForgetPasswordOTP';
+  static const String jummaNavbar = '/jummaNavbar';
+  static const String jummaNowPlaying = '/jummaNowPlaying';
 
   static const String femaleLocationAccess = '/femaleLocationAccess';
   static const String maleLocationAccess = '/maleLocationAccess';
@@ -66,5 +84,15 @@ class AppRoutes {
     GetPage(name: jummaSignUp, page: () => const JummaSignUpUI()),
     GetPage(name: jummaLogin, page: () => const JummaLoginUI()),
     GetPage(name: jummaSignUpOTP, page: () => const JummaSignUpOTPUI()),
+
+    // Forget Password
+    GetPage(name: femaleForgetPasswordEmail, page: () => const FemaleForgetPasswordEmailUI()),
+    GetPage(name: femaleForgetPasswordOTP, page: () => const FemaleForgetPasswordOTPUI()),
+    GetPage(name: maleForgetPasswordEmail, page: () => const MaleForgetPasswordEmailUI()),
+    GetPage(name: maleForgetPasswordOTP, page: () => const MaleForgetPasswordOTPUI()),
+    GetPage(name: jummaForgetPasswordEmail, page: () => const JummaForgetPasswordEmailUI()),
+    GetPage(name: jummaForgetPasswordOTP, page: () => const JummaForgetPasswordOTPUI()),
+    GetPage(name: jummaNavbar, page: () => const JummaNavbarUI()),
+    GetPage(name: jummaNowPlaying, page: () => const JummaNowPlayingUI()),
   ];
 }

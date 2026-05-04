@@ -82,7 +82,7 @@ class JummaLoginUI extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed(AppRoutes.jummaForgetPasswordEmail),
                       child: Text(
                         'Forgot Password?',
                         style: GoogleFonts.inter(
@@ -100,7 +100,7 @@ class JummaLoginUI extends StatelessWidget {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed(AppRoutes.jummaNavbar),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeColor,
                         shape: RoundedRectangleBorder(

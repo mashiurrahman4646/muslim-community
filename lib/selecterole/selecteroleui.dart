@@ -40,7 +40,7 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Brother Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.maleSignUp),
+                  onTap: () => Get.toNamed(AppRoutes.maleLogin),
                   child: Container(
                     width: double.infinity,
                     height: 180.h, // Made bigger as requested
@@ -97,7 +97,7 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Sister Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.femaleSignUp),
+                  onTap: () => Get.toNamed(AppRoutes.femaleLogin),
                   child: Container(
                     width: double.infinity,
                     height: 180.h, // Made bigger
@@ -153,7 +153,7 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Jumma Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.jummaSignUp),
+                  onTap: () => Get.toNamed(AppRoutes.jummaLogin),
                   child: Container(
                     width: double.infinity,
                     height: 220.h, // Made bigger to fix overflow

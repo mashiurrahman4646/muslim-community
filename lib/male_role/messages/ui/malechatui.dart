@@ -1,0 +1,256 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:muslim_community/appcolore.dart';
+import 'package:muslim_community/male_role/messages/controller/chat_controller.dart';
+import 'package:muslim_community/female_role/messages/model/chat_message_model.dart'; // Reusing the same model
+
+class MaleChatUI extends StatelessWidget {
+  final String userName;
+  final String? userImage;
+  final bool isOnline;
+
+  const MaleChatUI({
+    super.key,
+    required this.userName,
+    this.userImage,
+    this.isOnline = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final MaleChatController controller = Get.put(MaleChatController());
+
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: _buildAppBar(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // --- DIVIDER ---
+            Divider(
+              color: AppColors.goldColor.withValues(alpha: 0.15),
+              thickness: 1,
+              height: 1,
+            ),
+
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                children: [
+                  _buildTodayPill(),
+                  SizedBox(height: 20.h),
+                  Obx(
+                    () => Column(
+                      children: controller.messages.map((msg) => _buildChatBubble(msg)).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // --- MESSAGE INPUT ---
+            _buildMessageInput(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppColors.backgroundColor,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_new, color: AppColors.titleColor, size: 20.sp),
+        onPressed: () => Get.back(),
+      ),
+      titleSpacing: 0,
+      title: Row(
+        children: [
+          // Avatar
+          SizedBox(
+            width: 40.h,
+            height: 40.h,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: const Color(0xFFF5EFE6),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: userImage != null
+                        ? Image.asset(userImage!, fit: BoxFit.cover, width: 40.h, height: 40.h)
+                        : Center(
+                            child: Text(
+                              userName.isNotEmpty ? userName[0] : '',
+                              style: TextStyle(color: AppColors.maleColor, fontSize: 18.sp),
+                            ),
+                          ),
+                  ),
+                ),
+                if (isOnline)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      width: 10.w,
+                      height: 10.w,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.backgroundColor, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(width: 12.w),
+          // Name and Status
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                userName,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.titleColor,
+                ),
+              ),
+              Text(
+                isOnline ? 'Online' : 'Offline',
+                style: GoogleFonts.inter(
+                  fontSize: 11.sp,
+                  color: AppColors.maleColor, 
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTodayPill() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.goldColor.withValues(alpha: 0.15)),
+        ),
+        child: Text(
+          'TODAY',
+          style: GoogleFonts.inter(
+            fontSize: 10.sp,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFFA6864D), // Gold color
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatBubble(ChatMessageModel message) {
+    bool isMe = message.isMe;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20.h),
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            constraints: BoxConstraints(maxWidth: Get.width * 0.75),
+            decoration: BoxDecoration(
+              color: isMe ? AppColors.maleColor : Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              border: isMe ? null : Border.all(color: AppColors.goldColor.withValues(alpha: 0.15)),
+              boxShadow: [
+                if (!isMe)
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+              ],
+            ),
+            child: Text(
+              message.text,
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                color: isMe ? Colors.white : AppColors.titleColor,
+                height: 1.4,
+              ),
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            child: Text(
+              message.time,
+              style: GoogleFonts.inter(
+                fontSize: 10.sp,
+                color: AppColors.bodyColor.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageInput() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundColor,
+        border: Border(
+          top: BorderSide(color: AppColors.goldColor.withValues(alpha: 0.15)),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.add, color: AppColors.maleColor, size: 24.sp),
+          SizedBox(width: 15.w),
+          Expanded(
+            child: Container(
+              height: 45.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25.r),
+                border: Border.all(color: AppColors.goldColor.withValues(alpha: 0.2)),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Type a message...',
+                  hintStyle: GoogleFonts.inter(
+                    color: Colors.grey.withValues(alpha: 0.5),
+                    fontSize: 14.sp,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 12.h),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 15.w),
+          Container(
+            padding: EdgeInsets.all(10.w),
+            decoration: const BoxDecoration(
+              color: AppColors.maleColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.send, color: Colors.white, size: 18.sp),
+          ),
+        ],
+      ),
+    );
+  }
+}

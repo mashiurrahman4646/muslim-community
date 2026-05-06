@@ -37,8 +37,8 @@ class JummaNavbarUI extends StatelessWidget {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.quiz_outlined),
-              activeIcon: Icon(Icons.quiz),
+              icon: Icon(Icons.chat_outlined),
+              activeIcon: Icon(Icons.chat),
               label: 'Ask Imam',
             ),
             BottomNavigationBarItem(

@@ -107,7 +107,9 @@ class FemaleLoginUI extends StatelessWidget {
                       width: double.infinity,
                       height: 56.h,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.offAllNamed(AppRoutes.femaleNavbar);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
                           shape: RoundedRectangleBorder(

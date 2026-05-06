@@ -108,7 +108,9 @@ class MaleLoginUI extends StatelessWidget {
                       width: double.infinity,
                       height: 56.h,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.offAllNamed(AppRoutes.maleNavbar);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
                           shape: RoundedRectangleBorder(

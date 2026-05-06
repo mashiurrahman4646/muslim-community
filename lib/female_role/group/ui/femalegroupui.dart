@@ -8,7 +8,7 @@ import 'package:muslim_community/female_role/group/ui/widgets/group_card.dart';
 import 'package:muslim_community/female_role/group/ui/learning.dart';
 import 'package:muslim_community/female_role/group/ui/Mosques.dart';
 import 'package:muslim_community/female_role/group/ui/Jumma.dart';
-import 'package:muslim_community/female_role/group/ui/Ask Imam.dart';
+import 'package:muslim_community/female_role/group/ui/ask_sister.dart';
 
 class FemaleGroupUI extends StatelessWidget {
   const FemaleGroupUI({super.key});
@@ -78,8 +78,8 @@ class FemaleGroupUI extends StatelessWidget {
                   return const MosquesUI();
                 } else if (controller.selectedCategory.value == 'Jumma') {
                   return const JummaUI();
-                } else if (controller.selectedCategory.value == 'Ask Imam') {
-                  return const AskImamUI();
+                } else if (controller.selectedCategory.value == 'Ask Sister') {
+                  return const AskSisterUI();
                 } else {
                   return const SizedBox();
                 }

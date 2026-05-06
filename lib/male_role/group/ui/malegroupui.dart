@@ -8,7 +8,7 @@ import 'package:muslim_community/male_role/group/ui/widgets/group_card.dart';
 import 'package:muslim_community/male_role/group/ui/learning.dart';
 import 'package:muslim_community/male_role/group/ui/mosques.dart';
 import 'package:muslim_community/male_role/group/ui/jumma.dart';
-import 'package:muslim_community/male_role/group/ui/ask imam.dart';
+import 'package:muslim_community/male_role/group/ui/ask_brother.dart';
 
 class MaleGroupUI extends StatelessWidget {
   const MaleGroupUI({super.key});
@@ -78,8 +78,8 @@ class MaleGroupUI extends StatelessWidget {
                   return const MosquesUI();
                 } else if (controller.selectedCategory.value == 'Jumma') {
                   return const JummaUI();
-                } else if (controller.selectedCategory.value == 'Ask Imam') {
-                  return const AskImamUI();
+                } else if (controller.selectedCategory.value == 'Ask Brother') {
+                  return const AskBrotherUI();
                 } else {
                   return const SizedBox();
                 }

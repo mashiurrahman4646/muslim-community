@@ -28,6 +28,14 @@ import 'package:muslim_community/splashscreen/splashscreen.dart';
 import 'package:muslim_community/male_role/navbar/navbarui.dart';
 import 'package:muslim_community/female_role/navbar/navbarui.dart';
 import 'package:muslim_community/female_role/notifications/ui/notificationsui.dart';
+import 'package:muslim_community/male_role/group/ui/group_details_ui.dart';
+import 'package:muslim_community/male_role/group/ui/post_details_ui.dart';
+import 'package:muslim_community/female_role/group/ui/group_details_ui.dart';
+import 'package:muslim_community/female_role/group/ui/post_details_ui.dart';
+import 'package:muslim_community/male_role/group/ui/learning_details_ui.dart';
+import 'package:muslim_community/female_role/group/ui/learning_details_ui.dart';
+import 'package:muslim_community/male_role/group/ui/mosque_details_ui.dart';
+import 'package:muslim_community/female_role/group/ui/mosque_details_ui.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -55,6 +63,17 @@ class AppRoutes {
   static const String femaleNotifications = '/femaleNotifications';
   static const String femaleLocationAccess = '/femaleLocationAccess';
   static const String maleLocationAccess = '/maleLocationAccess';
+
+  static const String maleGroupDetails = '/maleGroupDetails';
+  static const String femaleGroupDetails = '/femaleGroupDetails';
+  static const String malePostDetails = '/malePostDetails';
+  static const String femalePostDetails = '/femalePostDetails';
+
+  static const String maleLearningDetails = '/maleLearningDetails';
+  static const String femaleLearningDetails = '/femaleLearningDetails';
+
+  static const String maleMosqueDetails = '/maleMosqueDetails';
+  static const String femaleMosqueDetails = '/femaleMosqueDetails';
 
   static const String femaleSignUpOTP = '/femaleSignUpOTP';
   static const String maleSignUpOTP = '/maleSignUpOTP';
@@ -103,5 +122,15 @@ class AppRoutes {
     GetPage(name: femaleNavbar, page: () => const FemaleNavbarUI()),
     GetPage(name: femaleNotifications, page: () => const FemaleNotificationsUI()),
     GetPage(name: jummaNowPlaying, page: () => const JummaNowPlayingUI()),
+    
+    // Group & Posts
+    GetPage(name: maleGroupDetails, page: () => const MaleGroupDetailsUI()),
+    GetPage(name: femaleGroupDetails, page: () => const FemaleGroupDetailsUI()),
+    GetPage(name: malePostDetails, page: () => const MalePostDetailsUI()),
+    GetPage(name: femalePostDetails, page: () => const FemalePostDetailsUI()),
+    GetPage(name: maleLearningDetails, page: () => const MaleLearningDetailsUI()),
+    GetPage(name: femaleLearningDetails, page: () => const FemaleLearningDetailsUI()),
+    GetPage(name: maleMosqueDetails, page: () => const MaleMosqueDetailsUI()),
+    GetPage(name: femaleMosqueDetails, page: () => const FemaleMosqueDetailsUI()),
   ];
 }

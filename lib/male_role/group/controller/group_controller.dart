@@ -5,7 +5,7 @@ import 'package:muslim_community/male_role/group/model/group_model.dart';
 class MaleGroupController extends GetxController {
   var groups = <GroupModel>[].obs;
   var filteredGroups = <GroupModel>[].obs;
-  var categories = ['Groups', 'Learning', 'Mosques', 'Jumma', 'Ask Imam'].obs;
+  var categories = ['Groups', 'Learning', 'Mosques', 'Jumma', 'Ask Brother'].obs;
   var selectedCategory = 'Groups'.obs;
 
   @override

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/male_role/discover/model/brother_model.dart';
+import 'package:muslim_community/male_role/discover/ui/male_profile_details_ui.dart';
+import 'package:get/get.dart';
 
 /// Reusable card for a single brother — mirrors SisterCard with maleColor (0xFF5B7C99)
 class BrotherCard extends StatelessWidget {
@@ -14,20 +16,22 @@ class BrotherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
+    return GestureDetector(
+      onTap: () => Get.to(() => MaleProfileDetailsUI(brother: brother)),
+      child: Container(
+        padding: EdgeInsets.all(8.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // --- IMAGE ---
@@ -83,6 +87,7 @@ class BrotherCard extends StatelessWidget {
 
           _buildActionButton(),
         ],
+      ),
       ),
     );
   }

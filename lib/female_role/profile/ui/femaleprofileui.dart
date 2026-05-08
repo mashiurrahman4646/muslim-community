@@ -3,6 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
+import 'package:muslim_community/female_role/profile/ui/femalepersonalinfoui.dart';
+import 'package:muslim_community/female_role/profile/ui/privacy_policy_ui.dart';
+import 'package:muslim_community/female_role/profile/ui/terms_conditions_ui.dart';
+import 'package:muslim_community/female_role/profile/ui/change_password_ui.dart';
+import 'package:muslim_community/approut.dart';
 
 class FemaleProfileUI extends StatelessWidget {
   const FemaleProfileUI({super.key});
@@ -29,21 +34,6 @@ class FemaleProfileUI extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: AppColors.titleColor,
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(12.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Icon(Icons.settings_outlined, color: AppColors.titleColor, size: 24.sp),
                   ),
                 ],
               ),
@@ -79,14 +69,28 @@ class FemaleProfileUI extends StatelessWidget {
                     _buildAccountOption(
                       icon: Icons.edit_outlined,
                       title: "Personal Information",
-                      onTap: () {},
+                      onTap: () => Get.to(() => const FemalePersonalInfoUI()),
+                      themeColor: AppColors.femaleColor,
+                    ),
+                    Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1), indent: 20.w, endIndent: 20.w),
+                    _buildAccountOption(
+                      icon: Icons.lock_outline,
+                      title: "Change Password",
+                      onTap: () => Get.to(() => const FemaleChangePasswordUI()),
                       themeColor: AppColors.femaleColor,
                     ),
                     Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1), indent: 20.w, endIndent: 20.w),
                     _buildAccountOption(
                       icon: Icons.shield_outlined,
-                      title: "Privacy & Security",
-                      onTap: () {},
+                      title: "Privacy Policy",
+                      onTap: () => Get.to(() => const FemalePrivacyPolicyUI()),
+                      themeColor: AppColors.femaleColor,
+                    ),
+                    Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1), indent: 20.w, endIndent: 20.w),
+                    _buildAccountOption(
+                      icon: Icons.description_outlined,
+                      title: "Terms and Conditions",
+                      onTap: () => Get.to(() => const FemaleTermsConditionsUI()),
                       themeColor: AppColors.femaleColor,
                     ),
                   ],
@@ -97,7 +101,7 @@ class FemaleProfileUI extends StatelessWidget {
               
               // Log Out Button
               GestureDetector(
-                onTap: () {},
+                onTap: () => _showLogoutDialog(context),
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 18.h),
@@ -128,7 +132,7 @@ class FemaleProfileUI extends StatelessWidget {
               
               // Delete Account Button
               GestureDetector(
-                onTap: () {},
+                onTap: () => _showDeleteAccountDialog(context),
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 18.h),
@@ -198,6 +202,202 @@ class FemaleProfileUI extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(16.w),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF7EFE5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.logout_rounded, color: const Color(0xFF8B6B60), size: 28.sp),
+                ),
+                SizedBox(height: 20.h),
+                Text(
+                  "Log out of SYA?",
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titleColor,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  "You will need to sign in again to access your groups, messages, and profile.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    color: AppColors.bodyColor,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 30.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      Get.offAllNamed(AppRoutes.femaleLogin);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD49B92),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      "Yes, Log out",
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFFF7EFE5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF5C4033),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      padding: EdgeInsets.all(6.w),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF7EFE5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.close, color: const Color(0xFF8B6B60), size: 16.sp),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(16.w),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF7EFE5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.warning_amber_rounded, color: const Color(0xFFD49B92), size: 28.sp),
+                ),
+                SizedBox(height: 20.h),
+                Text(
+                  "Delete Account?",
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titleColor,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  "This action is permanent and cannot be undone. All your posts, messages, and profile data will be permanently deleted from SYA.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    color: AppColors.bodyColor,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 30.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      Get.offAllNamed(AppRoutes.femaleLogin);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD49B92),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      "Permanently Delete",
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFFF7EFE5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
+                    ),
+                    child: Text(
+                      "Keep Account",
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF5C4033),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

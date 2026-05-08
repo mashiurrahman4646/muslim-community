@@ -8,6 +8,9 @@ class SisterModel {
   final bool isOnline;
   final bool isNewRevert;
   final String imageUrl;
+  final String about;
+  final String revertHistory;
+  final List<String> interests;
 
   SisterModel({
     required this.name,
@@ -19,5 +22,8 @@ class SisterModel {
     this.isOnline = false,
     this.isNewRevert = false,
     required this.imageUrl,
+    this.about = 'No information provided yet.',
+    this.revertHistory = 'No revert history provided yet.',
+    this.interests = const [],
   });
 }

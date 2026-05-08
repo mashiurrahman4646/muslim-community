@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/female_role/discover/model/sister_model.dart';
+import 'package:muslim_community/female_role/discover/ui/female_profile_details_ui.dart';
+import 'package:get/get.dart';
 
 /// This widget represents a single sister profile card in the Discover grid.
 class SisterCard extends StatelessWidget {
@@ -11,21 +13,22 @@ class SisterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return Container(
-      padding: EdgeInsets.all(8.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
+    return GestureDetector(
+      onTap: () => Get.to(() => FemaleProfileDetailsUI(sister: sister)),
+      child: Container(
+        padding: EdgeInsets.all(8.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // --- IMAGE SECTION ---
@@ -80,6 +83,7 @@ class SisterCard extends StatelessWidget {
 
           _buildActionButton(),
         ],
+      ),
       ),
     );
   }

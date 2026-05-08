@@ -3,6 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:flutter/gestures.dart';
+import 'package:muslim_community/female_role/profile/ui/privacy_policy_ui.dart';
+import 'package:muslim_community/female_role/profile/ui/terms_conditions_ui.dart';
 
 class FemaleSignUpUI extends StatelessWidget {
   const FemaleSignUpUI({super.key});
@@ -164,11 +167,17 @@ class FemaleSignUpUI extends StatelessWidget {
                       TextSpan(
                         text: 'Terms of Service',
                         style: TextStyle(color: themeColor, fontWeight: FontWeight.bold),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          Get.to(() => const FemaleTermsConditionsUI());
+                        },
                       ),
                       const TextSpan(text: ' and '),
                       TextSpan(
                         text: 'Privacy Policy',
                         style: TextStyle(color: themeColor, fontWeight: FontWeight.bold),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          Get.to(() => const FemalePrivacyPolicyUI());
+                        },
                       ),
                       const TextSpan(text: '.'),
                     ],

@@ -3,14 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
-import 'package:muslim_community/male_role/profile/controller/male_personal_info_controller.dart';
+import 'package:muslim_community/jummarole/profile/controller/jumma_personal_info_controller.dart';
 
-class MalePersonalInfoUI extends StatelessWidget {
-  const MalePersonalInfoUI({super.key});
+class JummaPersonalInfoUI extends StatelessWidget {
+  const JummaPersonalInfoUI({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(MalePersonalInfoController());
+    final controller = Get.put(JummaPersonalInfoController());
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -90,7 +90,7 @@ class MalePersonalInfoUI extends StatelessWidget {
                           child: Container(
                             padding: EdgeInsets.all(4.w),
                             decoration: const BoxDecoration(
-                              color: AppColors.maleColor,
+                              color: AppColors.jummaColor,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(Icons.check, color: Colors.white, size: 10.sp),
@@ -118,7 +118,7 @@ class MalePersonalInfoUI extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        "Brother ${controller.nameCtrl.text.split(' ').first}",
+                        "Imam ${controller.nameCtrl.text.split(' ').first}",
                         style: GoogleFonts.playfairDisplay(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class MalePersonalInfoUI extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.camera_alt_outlined, color: AppColors.maleColor, size: 14.sp),
+                        Icon(Icons.camera_alt_outlined, color: AppColors.jummaColor, size: 14.sp),
                         SizedBox(width: 8.w),
                         Text(
                           "Edit Photo",
@@ -168,7 +168,7 @@ class MalePersonalInfoUI extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15.r),
-                border: Border.all(color: AppColors.maleColor.withOpacity(0.3)),
+                border: Border.all(color: AppColors.jummaColor.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
@@ -187,7 +187,7 @@ class MalePersonalInfoUI extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "Verified Revert",
+                            "Verified Imam",
                             style: GoogleFonts.inter(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.bold,
@@ -218,47 +218,19 @@ class MalePersonalInfoUI extends StatelessWidget {
               isEditingSection: controller.isEditingPersonalDetails.value,
               onEditTap: () => controller.isEditingPersonalDetails.value = true,
               onSaveTap: () => controller.isEditingPersonalDetails.value = false,
-              themeColor: AppColors.maleColor,
+              themeColor: AppColors.jummaColor,
               children: [
-                _buildDetailRow("Full Name", controller.nameCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("Age", controller.ageCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
+                _buildDetailRow("Full Name", controller.nameCtrl, controller.isEditingPersonalDetails.value, AppColors.jummaColor),
+                _buildDetailRow("Age", controller.ageCtrl, controller.isEditingPersonalDetails.value, AppColors.jummaColor),
                 _buildStaticRow("Gender", "Brother", icon: Icons.lock_outline),
-                _buildDetailRow("Location", controller.locationCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("How long Muslim?", controller.durationCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("Email", controller.emailCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
+                _buildDetailRow("Location", controller.locationCtrl, controller.isEditingPersonalDetails.value, AppColors.jummaColor),
+                _buildDetailRow("How long Imam?", controller.durationCtrl, controller.isEditingPersonalDetails.value, AppColors.jummaColor),
+                _buildDetailRow("Email", controller.emailCtrl, controller.isEditingPersonalDetails.value, AppColors.jummaColor),
               ],
             )),
             SizedBox(height: 20.h),
 
-            // About Me Card
-            Obx(() => _buildSectionCard(
-              title: "About Me",
-              isEditingSection: controller.isEditingAboutMe.value,
-              onEditTap: () => controller.isEditingAboutMe.value = true,
-              onSaveTap: () => controller.isEditingAboutMe.value = false,
-              themeColor: AppColors.maleColor,
-              children: [
-                _buildEditableTextArea(controller.aboutCtrl, controller.isEditingAboutMe.value, AppColors.maleColor),
-              ],
-            )),
-            SizedBox(height: 20.h),
 
-            // My Revert Story Card
-            Obx(() => _buildSectionCard(
-              title: "My Revert Story",
-              isEditingSection: controller.isEditingStory.value,
-              onEditTap: () => controller.isEditingStory.value = true,
-              onSaveTap: () => controller.isEditingStory.value = false,
-              themeColor: AppColors.maleColor,
-              children: [
-                _buildEditableTextArea(controller.storyCtrl, controller.isEditingStory.value, AppColors.maleColor),
-              ],
-            )),
-            SizedBox(height: 20.h),
-
-            // Interests Card
-            Obx(() => _buildInterestsSection(controller)),
-            SizedBox(height: 30.h),
           ],
         ),
       ),
@@ -437,187 +409,5 @@ class MalePersonalInfoUI extends StatelessWidget {
         );
   }
 
-  Widget _buildInterestsSection(MalePersonalInfoController controller) {
-    bool isEditing = controller.isEditingInterests.value;
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceColor,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "Interests",
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.titleColor,
-                    ),
-                  ),
-                  if (isEditing) ...[
-                    SizedBox(width: 10.w),
-                    GestureDetector(
-                      onTap: () => controller.isEditingInterests.value = false,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.maleColor,
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: Text(
-                          "Save",
-                          style: GoogleFonts.inter(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(width: 10.w),
-                    GestureDetector(
-                      onTap: () => controller.isEditingInterests.value = true,
-                      child: Icon(Icons.edit_square, color: AppColors.maleColor.withOpacity(0.5), size: 18.sp),
-                    ),
-                  ]
-                ],
-              ),
-              if (isEditing)
-                Text(
-                  "Add up to 10",
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    color: AppColors.bodyColor,
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 15.h),
-          Wrap(
-            spacing: 10.w,
-            runSpacing: 10.h,
-            children: [
-              ...controller.interestsList.map((t) => _buildInterestTag(t, isEditing, controller)),
-              if (isEditing && controller.interestsList.length < 10)
-                GestureDetector(
-                  onTap: () => _showAddInterestDialog(controller),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(
-                        color: AppColors.bodyColor.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add, color: AppColors.bodyColor, size: 14.sp),
-                        SizedBox(width: 5.w),
-                        Text(
-                          "Add Interest",
-                          style: GoogleFonts.inter(
-                            fontSize: 12.sp,
-                            color: AppColors.bodyColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildInterestTag(String text, bool isEditing, MalePersonalInfoController controller) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: AppColors.maleColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.maleColor.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: AppColors.maleColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          if (isEditing) ...[
-            SizedBox(width: 8.w),
-            GestureDetector(
-              onTap: () => controller.removeInterest(text),
-              child: Container(
-                padding: EdgeInsets.all(2.w),
-                decoration: BoxDecoration(
-                  color: AppColors.maleColor.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.close, color: AppColors.maleColor, size: 10.sp),
-              ),
-            ),
-          ]
-        ],
-      ),
-    );
-  }
-
-  void _showAddInterestDialog(MalePersonalInfoController controller) {
-    TextEditingController newInterestCtrl = TextEditingController();
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
-        title: Text("Add Interest", style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        content: TextField(
-          controller: newInterestCtrl,
-          decoration: InputDecoration(
-            hintText: "e.g. Dhikr",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: const BorderSide(color: AppColors.maleColor),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text("Cancel", style: GoogleFonts.inter(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.maleColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-            ),
-            onPressed: () {
-              if (newInterestCtrl.text.trim().isNotEmpty) {
-                controller.addInterest(newInterestCtrl.text.trim());
-              }
-              Get.back();
-            },
-            child: Text("Add", style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
 }

@@ -7,6 +7,9 @@ import 'package:muslim_community/male_role/home/controller/home_controller.dart'
 import 'package:muslim_community/male_role/navbar/navbarcontroller.dart';
 import 'package:muslim_community/male_role/home/ui/prayer_settings_ui.dart';
 import 'package:muslim_community/male_role/notifications/ui/malenotificationsui.dart';
+import 'package:muslim_community/male_role/discover/controller/discover_controller.dart';
+import 'package:muslim_community/male_role/discover/model/brother_model.dart';
+import 'package:muslim_community/male_role/discover/ui/male_profile_details_ui.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
@@ -455,6 +458,8 @@ class MaleHomeUI extends StatelessWidget {
   }
 
   Widget _buildNearbyReverts(MaleNavbarController navbarController) {
+    final MaleDiscoverController discoverController = Get.put(MaleDiscoverController());
+
     return Column(
       children: [
         Row(
@@ -485,76 +490,80 @@ class MaleHomeUI extends StatelessWidget {
         SizedBox(height: 20.h),
         SizedBox(
           height: 160.h,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildRevertItem("Omar", 'assets/image/male.png', true),
-              _buildRevertItem("Zaid", 'assets/image/male.png', false),
-              _buildRevertItem("Ali", 'assets/image/male.png', false),
-              _buildRevertItem("Hassan", 'assets/image/male.png', false),
-            ],
-          ),
+          child: Obx(() {
+            final brothers = discoverController.brothers;
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: brothers.length > 4 ? 4 : brothers.length,
+              itemBuilder: (context, index) {
+                return _buildRevertItem(brothers[index]);
+              },
+            );
+          }),
         ),
       ],
     );
   }
 
-  Widget _buildRevertItem(String name, String assetPath, bool isVerified) {
-    return Container(
-      width: 130.w,
-      margin: EdgeInsets.only(right: 15.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Container(
-                width: 80.w,
-                height: 80.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.r),
-                  image: DecorationImage(
-                    image: AssetImage(assetPath),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              if (isVerified)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(2.w),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.check_circle, color: AppColors.maleColor, size: 16.sp),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            name,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColors.titleColor,
+  Widget _buildRevertItem(BrotherModel brother) {
+    return GestureDetector(
+      onTap: () => Get.to(() => MaleProfileDetailsUI(brother: brother)),
+      child: Container(
+        width: 130.w,
+        margin: EdgeInsets.only(right: 15.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 80.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.r),
+                    image: DecorationImage(
+                      image: AssetImage(brother.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                if (brother.isVerified)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.check_circle, color: AppColors.maleColor, size: 16.sp),
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Text(
+              brother.name.split(' ').first,
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.titleColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

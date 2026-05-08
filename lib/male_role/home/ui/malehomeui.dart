@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/home/controller/home_controller.dart';
 import 'package:muslim_community/male_role/navbar/navbarcontroller.dart';
+import 'package:muslim_community/male_role/home/ui/prayer_settings_ui.dart';
+import 'package:muslim_community/male_role/notifications/ui/malenotificationsui.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
@@ -31,7 +33,11 @@ class MaleHomeUI extends StatelessWidget {
                 SizedBox(height: 30.h),
 
                 // --- PRAYER & QIBLA SECTION ---
-                _buildSectionHeader("Prayer & Qibla", "Settings >"),
+                _buildSectionHeader(
+                  "Prayer & Qibla",
+                  "Settings >",
+                  onActionTap: () => Get.to(() => const MalePrayerSettingsUI()),
+                ),
                 SizedBox(height: 20.h),
 
                 // --- PRAYER TIMES ---
@@ -98,20 +104,23 @@ class MaleHomeUI extends StatelessWidget {
           ],
         ),
         const Spacer(),
-        Container(
-          padding: EdgeInsets.all(10.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.maleColor.withOpacity(0.2)),
+        GestureDetector(
+          onTap: () => Get.to(() => const MaleNotificationsUI()),
+          child: Container(
+            padding: EdgeInsets.all(10.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.maleColor.withOpacity(0.2)),
+            ),
+            child: Icon(Icons.notifications_none, color: AppColors.titleColor, size: 24.sp),
           ),
-          child: Icon(Icons.notifications_none, color: AppColors.titleColor, size: 24.sp),
         ),
       ],
     );
   }
 
-  Widget _buildSectionHeader(String title, String actionText) {
+  Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -124,7 +133,7 @@ class MaleHomeUI extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: onActionTap ?? () {},
           child: Text(
             actionText,
             style: GoogleFonts.inter(
@@ -145,26 +154,29 @@ class MaleHomeUI extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Prayer Times",
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.titleColor,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Prayer Times",
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.titleColor,
+                    ),
                   ),
-                ),
-                Text(
-                  "Today · ${DateFormat('EEEE, d MMM').format(DateTime.now())}",
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    color: AppColors.bodyColor,
+                  Text(
+                    "Today · Thursday, 15 Dhul-Hijjah",
+                    style: GoogleFonts.inter(
+                      fontSize: 12.sp,
+                      color: AppColors.bodyColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            SizedBox(width: 10.w),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
@@ -172,47 +184,44 @@ class MaleHomeUI extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.location_on, color: AppColors.maleColor, size: 14.sp),
                   SizedBox(width: 4.w),
-                  Obx(() => Text(
-                    controller.currentLocation.value,
-                    style: GoogleFonts.inter(
-                      fontSize: 12.sp,
-                      color: AppColors.maleColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )),
+                  Flexible(
+                    child: Obx(() => Text(
+                      controller.currentLocation.value,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 11.sp,
+                        color: AppColors.maleColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )),
+                  ),
                 ],
               ),
             ),
           ],
         ),
         SizedBox(height: 20.h),
-        Obx(() {
-          if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final timings = controller.prayerTimings['timings'];
-          if (timings == null) return const Text("Failed to load prayer times");
-
-          return GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 3,
-            mainAxisSpacing: 15.h,
-            crossAxisSpacing: 15.w,
-            childAspectRatio: 0.8,
-            children: [
-              _buildPrayerCard("Fajr", timings['Fajr'], 'assets/icons/fajr.png', isNext: controller.nextPrayer.value == "Fajr"),
-              _buildPrayerCard("Sunrise", timings['Sunrise'], 'assets/icons/sunrise.png', isNext: controller.nextPrayer.value == "Sunrise"),
-              _buildPrayerCard("Dhuhr", timings['Dhuhr'], 'assets/icons/dhuhr.png', isNext: controller.nextPrayer.value == "Dhuhr"),
-              _buildPrayerCard("Asr", timings['Asr'], 'assets/icons/asr.png', isNext: controller.nextPrayer.value == "Asr"),
-              _buildPrayerCard("Maghrib", timings['Maghrib'], 'assets/icons/maghrib.png', isNext: controller.nextPrayer.value == "Maghrib"),
-              _buildPrayerCard("Isha", timings['Isha'], 'assets/icons/isha.png', isNext: controller.nextPrayer.value == "Isha"),
-            ],
-          );
-        }),
+        // --- Static Prayer Cards with Asset Icons ---
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 3,
+          mainAxisSpacing: 15.h,
+          crossAxisSpacing: 15.w,
+          childAspectRatio: 0.8,
+          children: [
+            _buildPrayerCard("Fajr", "05:12", 'assets/icons/fajr.png'),
+            _buildPrayerCard("Sunrise", "06:45", 'assets/icons/sunrise.png'),
+            _buildPrayerCard("Dhuhr", "12:30", 'assets/icons/dhuhr.png'),
+            _buildPrayerCard("Asr", "15:45", 'assets/icons/asr.png'),
+            _buildPrayerCard("Maghrib", "18:15", 'assets/icons/maghrib.png', isNext: true),
+            _buildPrayerCard("Isha", "19:45", 'assets/icons/isha.png'),
+          ],
+        ),
         SizedBox(height: 20.h),
         Center(
           child: Text(
@@ -301,78 +310,144 @@ class MaleHomeUI extends StatelessWidget {
   Widget _buildQiblaCompass(MaleHomeController controller) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(vertical: 30.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.maleColor.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(30.r),
-        border: Border.all(color: AppColors.maleColor.withOpacity(0.1)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.maleColor.withOpacity(0.08),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.compass_calibration_outlined, color: AppColors.maleColor, size: 22.sp),
-              SizedBox(width: 10.w),
-              Text(
-                "QIBLA DIRECTION",
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.titleColor,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ],
+          Text(
+            "QIBLA DIRECTION",
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold,
+              color: AppColors.titleColor,
+              letterSpacing: 1.5,
+            ),
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 5.h),
+          Text(
+            "Live Compass Direction",
+            style: GoogleFonts.inter(
+              fontSize: 13.sp,
+              color: AppColors.bodyColor.withOpacity(0.6),
+            ),
+          ),
+          SizedBox(height: 35.h),
           Stack(
             alignment: Alignment.center,
             children: [
-              // 1. The Background Dial (compas.png)
+              // 1. Dynamic Outer Compass Face
               Obx(() => Transform.rotate(
                 angle: controller.qiblaController.dialAngle,
                 child: Image.asset(
-                  'assets/icons/compas.png',
-                  width: 240.w,
-                  height: 240.w,
+                  'assets/image/side.png',
+                  width: 230.w,
+                  height: 230.w,
                   fit: BoxFit.contain,
                 ),
               )),
               
-              // 2. The Qibla Needle/Icon (qibla.png)
+              // 2. The Dynamic Qibla Pointer
               Obx(() => Transform.rotate(
                 angle: controller.qiblaController.needleAngle,
-                child: Image.asset(
-                  'assets/icons/qibla.png',
-                  width: 160.w,
-                  height: 160.w,
-                  fit: BoxFit.contain,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 170.w,
+                      height: 170.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.maleColor.withOpacity(0.03),
+                      ),
+                    ),
+                    Image.asset(
+                      'assets/image/qiblacompas.png',
+                      width: 160.w,
+                      height: 160.w,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
               )),
 
               // 3. Center Point
               Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: const BoxDecoration(
+                width: 14.w,
+                height: 14.w,
+                decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.maleColor, width: 3),
                   boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
+                    BoxShadow(color: AppColors.maleColor.withOpacity(0.3), blurRadius: 8),
                   ],
                 ),
               ),
+              
+              // 4. Heading Degree Text
+              Positioned(
+                bottom: 20.h,
+                child: Obx(() => Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.maleColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    "${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
+                    style: GoogleFonts.inter(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.maleColor,
+                    ),
+                  ),
+                )),
+              ),
             ],
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 35.h),
           Text(
-            "Rotate your phone to align the needle",
+            "Align your phone to find the Kaaba",
             style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              color: AppColors.bodyColor.withOpacity(0.8),
+              fontSize: 12.sp,
+              color: AppColors.bodyColor.withOpacity(0.5),
               fontStyle: FontStyle.italic,
             ),
+          ),
+          Obx(() => controller.qiblaController.accuracyStatus.value.isNotEmpty
+            ? Padding(
+                padding: EdgeInsets.only(top: 15.h),
+                child: Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 18.sp),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: Text(
+                          controller.qiblaController.accuracyStatus.value,
+                          style: GoogleFonts.inter(fontSize: 10.sp, color: Colors.redAccent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(),
           ),
         ],
       ),

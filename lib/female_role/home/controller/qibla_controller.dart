@@ -2,16 +2,13 @@ import 'package:get/get.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'dart:math' as math;
 import 'package:geolocator/geolocator.dart';
-
 class QiblaController extends GetxController {
+  
   var compassHeading = 0.0.obs;
   var qiblaDirection = 0.0.obs;
   var isSensorAvailable = true.obs;
   var isLoading = true.obs;
-
-  // Kaaba Coordinates
-  final double kaabaLat = 21.4225;
-  final double kaabaLong = 39.8262;
+  var accuracyStatus = "".obs;
 
   @override
   void onInit() {
@@ -27,6 +24,16 @@ class QiblaController extends GetxController {
         if (heading < 0) heading += 360;
         compassHeading.value = heading;
         isSensorAvailable.value = true;
+        
+        // Handle accuracy status for calibration messages
+        if (event.accuracy != null) {
+           // On some devices accuracy might be low, need calibration (infinity pattern)
+           if (event.accuracy! > 15) {
+             accuracyStatus.value = "Low Accuracy: Please calibrate your compass (move in 8-figure)";
+           } else {
+             accuracyStatus.value = "";
+           }
+        }
       } else {
         isSensorAvailable.value = false;
       }
@@ -37,7 +44,6 @@ class QiblaController extends GetxController {
     try {
       isLoading(true);
       
-      // Request permission if not granted
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -52,66 +58,45 @@ class QiblaController extends GetxController {
         desiredAccuracy: LocationAccuracy.high,
       );
       
-      _updateBearing(position.latitude, position.longitude);
+      qiblaDirection.value = calculateQiblaDirection(
+        position.latitude,
+        position.longitude,
+      );
       
-      // Also listen for location changes to keep qibla accurate while moving
-      Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 10,
-        ),
-      ).listen((Position position) {
-        _updateBearing(position.latitude, position.longitude);
-      });
-
     } catch (e) {
       print("Error calculating Qibla: $e");
-      isSensorAvailable.value = false;
     } finally {
       isLoading(false);
     }
   }
 
-  void _updateBearing(double lat, double lon) {
-    double lat1 = lat * math.pi / 180;
-    double lon1 = lon * math.pi / 180;
-    double lat2 = kaabaLat * math.pi / 180;
-    double lon2 = kaabaLong * math.pi / 180;
-
-    double dLon = lon2 - lon1;
-
-    double y = math.sin(dLon) * math.cos(lat2);
-    double x = math.cos(lat1) * math.sin(lat2) -
-        math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
-
-    double bearing = math.atan2(y, x);
-    bearing = bearing * 180 / math.pi;
-    bearing = (bearing + 360) % 360;
-
-    qiblaDirection.value = bearing;
+  double calculateQiblaDirection(double latitude, double longitude) {
+    // Mecca coordinates
+    double meccaLat = 21.422487 * (math.pi / 180.0);
+    double meccaLng = 39.826206 * (math.pi / 180.0);
+    
+    double userLat = latitude * (math.pi / 180.0);
+    double userLng = longitude * (math.pi / 180.0);
+    
+    double lngDiff = meccaLng - userLng;
+    
+    double y = math.sin(lngDiff);
+    double x = math.cos(userLat) * math.tan(meccaLat) - math.sin(userLat) * math.cos(lngDiff);
+    
+    double qibla = math.atan2(y, x);
+    qibla = qibla * (180.0 / math.pi); // Convert to degrees
+    
+    return (qibla + 360.0) % 360.0;
   }
 
-  void updateQiblaDirection(double direction) {
-    double normDir = direction;
-    while (normDir < 0) normDir += 360;
-    while (normDir >= 360) normDir -= 360;
-    qiblaDirection.value = normDir;
-  }
-
-  // Angle to rotate the COMPASS DIAL so N always points North
-  // Normalizes the angle to be between 0 and 360
   double _normalize(double angle) {
     return (angle % 360 + 360) % 360;
   }
 
-  // Dial rotation: The compass face (compas.png) should rotate 
-  // opposite to the phone's heading so that 'N' stays pointing North.
   double get dialAngle {
     return -_normalize(compassHeading.value) * (math.pi / 180);
   }
 
-  // Needle rotation: The needle (qibla.png) should point to the Qibla bearing
-  // relative to the phone's orientation.
   double get needleAngle {
     double relativeAngle = qiblaDirection.value - compassHeading.value;
     return _normalize(relativeAngle) * (math.pi / 180);

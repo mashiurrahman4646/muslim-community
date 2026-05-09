@@ -349,8 +349,10 @@ class FemaleHomeUI extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               // 1. Dynamic Outer Compass Face
-              Obx(() => Transform.rotate(
-                angle: controller.qiblaController.dialAngle,
+              Obx(() => AnimatedRotation(
+                turns: controller.qiblaController.dialRotation.value,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
                 child: Image.asset(
                   'assets/image/side.png',
                   width: 230.w,
@@ -360,13 +362,13 @@ class FemaleHomeUI extends StatelessWidget {
               )),
               
               // 2. The Dynamic Qibla Pointer
-              // This is the only part that rotates to show the direction
-              Obx(() => Transform.rotate(
-                angle: controller.qiblaController.needleAngle,
+              Obx(() => AnimatedRotation(
+                turns: controller.qiblaController.needleRotation.value,
+                duration: const Duration(milliseconds: 500), // Slightly different duration for independence
+                curve: Curves.easeOutBack, // Added a slight bounce for a more mechanical feel
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Pointer Shadow/Glow
                     Container(
                       width: 170.w,
                       height: 170.w,
@@ -375,7 +377,6 @@ class FemaleHomeUI extends StatelessWidget {
                         color: AppColors.femaleColor.withOpacity(0.03),
                       ),
                     ),
-                    // The Qibla Icon with Pointer
                     Image.asset(
                       'assets/image/qiblacompas.png',
                       width: 160.w,
@@ -409,13 +410,25 @@ class FemaleHomeUI extends StatelessWidget {
                     color: AppColors.femaleColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Text(
-                    "${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
-                    style: GoogleFonts.inter(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.femaleColor,
-                    ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "HEADING: ${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
+                        style: GoogleFonts.inter(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.femaleColor,
+                        ),
+                      ),
+                      Text(
+                        "QIBLA: ${controller.qiblaController.qiblaDirection.value.toStringAsFixed(0)}°",
+                        style: GoogleFonts.inter(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.femaleColor.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                 )),
               ),

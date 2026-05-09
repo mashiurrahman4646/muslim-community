@@ -5,7 +5,14 @@ import 'package:geolocator/geolocator.dart';
 class QiblaController extends GetxController {
   
   var compassHeading = 0.0.obs;
-  var qiblaDirection = 0.0.obs;
+  var qiblaDirection = 267.0.obs; // Default to Dhaka Qibla direction as fallback
+  var dialRotation = 0.0.obs;   // Angle for side.png (in turns)
+  var needleRotation = 0.0.obs; // Angle for qiblacompas.png (in turns)
+  
+  // Offset if the needle image doesn't point UP (North) by default
+  // 0.0 = UP, 0.25 = RIGHT, 0.5 = DOWN, 0.75 = LEFT
+  var needleOffset = 0.0.obs; 
+
   var isSensorAvailable = true.obs;
   var isLoading = true.obs;
   var accuracyStatus = "".obs;
@@ -14,7 +21,7 @@ class QiblaController extends GetxController {
   void onInit() {
     super.onInit();
     initCompass();
-    calculateQiblaFromGPS();
+    startLocationUpdates();
   }
 
   void initCompass() {
@@ -22,9 +29,12 @@ class QiblaController extends GetxController {
       if (event.heading != null) {
         double heading = event.heading!;
         if (heading < 0) heading += 360;
+        
         compassHeading.value = heading;
         isSensorAvailable.value = true;
         
+        _updateRotations();
+
         // Handle accuracy status for calibration messages
         if (event.accuracy != null) {
            // On some devices accuracy might be low, need calibration (infinity pattern)
@@ -40,7 +50,23 @@ class QiblaController extends GetxController {
     });
   }
 
-  Future<void> calculateQiblaFromGPS() async {
+  void _updateRotations() {
+    // 1. Calculate Dial Rotation (side.png)
+    // Dial rotates opposite to heading to keep North pointing real North
+    dialRotation.value = -compassHeading.value / 360.0;
+    
+    // 2. Calculate Needle Rotation (qiblacompas.png)
+    // relativeAngle = qiblaDirection - heading
+    double relativeAngle = qiblaDirection.value - compassHeading.value;
+    
+    // Add offset and normalize
+    double finalAngle = (relativeAngle + (needleOffset.value * 360.0)) % 360.0;
+    if (finalAngle < 0) finalAngle += 360;
+    
+    needleRotation.value = finalAngle / 360.0;
+  }
+
+  Future<void> startLocationUpdates() async {
     try {
       isLoading(true);
       
@@ -50,55 +76,62 @@ class QiblaController extends GetxController {
       }
       
       if (permission == LocationPermission.deniedForever || permission == LocationPermission.denied) {
-        isSensorAvailable.value = false;
+        print("Qibla: Location permission denied");
+        isLoading(false);
         return;
       }
 
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
+      _updateQiblaFromPosition(position);
       
-      qiblaDirection.value = calculateQiblaDirection(
-        position.latitude,
-        position.longitude,
-      );
+      Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 10,
+        ),
+      ).listen((Position position) {
+        _updateQiblaFromPosition(position);
+      });
       
     } catch (e) {
-      print("Error calculating Qibla: $e");
+      print("Error in location updates: $e");
     } finally {
       isLoading(false);
     }
   }
 
+  void _updateQiblaFromPosition(Position position) {
+    double calculatedQibla = calculateQiblaDirection(
+      position.latitude,
+      position.longitude,
+    );
+    
+    qiblaDirection.value = calculatedQibla;
+    print("Qibla: Precise bearing: ${qiblaDirection.value.toStringAsFixed(2)} at ${position.latitude}, ${position.longitude}");
+    _updateRotations();
+  }
+
   double calculateQiblaDirection(double latitude, double longitude) {
-    // Mecca coordinates
-    double meccaLat = 21.422487 * (math.pi / 180.0);
-    double meccaLng = 39.826206 * (math.pi / 180.0);
+    // Mecca coordinates (High Precision)
+    const double meccaLat = 21.422487;
+    const double meccaLng = 39.826206;
     
-    double userLat = latitude * (math.pi / 180.0);
-    double userLng = longitude * (math.pi / 180.0);
+    double phi1 = latitude * (math.pi / 180.0);
+    double lambda1 = longitude * (math.pi / 180.0);
+    double phi2 = meccaLat * (math.pi / 180.0);
+    double lambda2 = meccaLng * (math.pi / 180.0);
     
-    double lngDiff = meccaLng - userLng;
+    double deltaLambda = lambda2 - lambda1;
     
-    double y = math.sin(lngDiff);
-    double x = math.cos(userLat) * math.tan(meccaLat) - math.sin(userLat) * math.cos(lngDiff);
+    double y = math.sin(deltaLambda) * math.cos(phi2);
+    double x = math.cos(phi1) * math.sin(phi2) - 
+               math.sin(phi1) * math.cos(phi2) * math.cos(deltaLambda);
     
     double qibla = math.atan2(y, x);
-    qibla = qibla * (180.0 / math.pi); // Convert to degrees
+    double qiblaDegrees = qibla * (180.0 / math.pi);
     
-    return (qibla + 360.0) % 360.0;
-  }
-
-  double _normalize(double angle) {
-    return (angle % 360 + 360) % 360;
-  }
-
-  double get dialAngle {
-    return -_normalize(compassHeading.value) * (math.pi / 180);
-  }
-
-  double get needleAngle {
-    double relativeAngle = qiblaDirection.value - compassHeading.value;
-    return _normalize(relativeAngle) * (math.pi / 180);
+    return (qiblaDegrees + 360.0) % 360.0;
   }
 }

@@ -349,8 +349,10 @@ class MaleHomeUI extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               // 1. Dynamic Outer Compass Face
-              Obx(() => Transform.rotate(
-                angle: controller.qiblaController.dialAngle,
+              Obx(() => AnimatedRotation(
+                turns: controller.qiblaController.dialRotation.value,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
                 child: Image.asset(
                   'assets/image/side.png',
                   width: 230.w,
@@ -360,8 +362,10 @@ class MaleHomeUI extends StatelessWidget {
               )),
               
               // 2. The Dynamic Qibla Pointer
-              Obx(() => Transform.rotate(
-                angle: controller.qiblaController.needleAngle,
+              Obx(() => AnimatedRotation(
+                turns: controller.qiblaController.needleRotation.value,
+                duration: const Duration(milliseconds: 500), // Slightly different duration for independence
+                curve: Curves.easeOutBack, // Added a slight bounce for a more mechanical feel
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -406,13 +410,25 @@ class MaleHomeUI extends StatelessWidget {
                     color: AppColors.maleColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Text(
-                    "${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
-                    style: GoogleFonts.inter(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.maleColor,
-                    ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "HEADING: ${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
+                        style: GoogleFonts.inter(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.maleColor,
+                        ),
+                      ),
+                      Text(
+                        "QIBLA: ${controller.qiblaController.qiblaDirection.value.toStringAsFixed(0)}°",
+                        style: GoogleFonts.inter(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.maleColor.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                 )),
               ),

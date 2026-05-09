@@ -86,7 +86,7 @@ class SplashScreen extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: '"The first family of Islam — \n',
+                      text: '"Honouring those who stay alone— \n',
                       style: GoogleFonts.playfairDisplay(
                         fontStyle: FontStyle.italic,
                         fontSize: 16.sp,

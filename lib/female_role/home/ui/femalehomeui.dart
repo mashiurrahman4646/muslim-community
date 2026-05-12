@@ -12,6 +12,8 @@ import 'package:muslim_community/female_role/discover/model/sister_model.dart';
 import 'package:muslim_community/female_role/discover/ui/female_profile_details_ui.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
+import 'package:muslim_community/shared/ui/prayer_recitation_dialog.dart';
+
 
 class FemaleHomeUI extends StatelessWidget {
   const FemaleHomeUI({super.key});
@@ -240,72 +242,77 @@ class FemaleHomeUI extends StatelessWidget {
   }
 
   Widget _buildPrayerCard(String name, String time, String iconPath, {bool isNext = false}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isNext ? AppColors.femaleColor.withOpacity(0.1) : Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        border: isNext ? Border.all(color: AppColors.femaleColor.withOpacity(0.3)) : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          if (isNext)
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                decoration: BoxDecoration(
-                  color: AppColors.goldColor,
-                  borderRadius: BorderRadius.circular(5.r),
-                ),
-                child: Text(
-                  "NEXT",
-                  style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () {
+        Get.dialog(PrayerRecitationDialog(prayerName: name));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isNext ? AppColors.femaleColor.withOpacity(0.1) : Colors.white,
+          borderRadius: BorderRadius.circular(15.r),
+          border: isNext ? Border.all(color: AppColors.femaleColor.withOpacity(0.3)) : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            if (isNext)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.goldColor,
+                    borderRadius: BorderRadius.circular(5.r),
+                  ),
+                  child: Text(
+                    "NEXT",
+                    style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
+            Padding(
+              padding: EdgeInsets.all(12.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(iconPath, width: 24.w, height: 24.w),
+                  SizedBox(height: 8.h),
+                  Text(
+                    name,
+                    style: GoogleFonts.inter(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.titleColor,
+                    ),
+                  ),
+                  Text(
+                    time,
+                    style: GoogleFonts.inter(
+                      fontSize: 12.sp,
+                      color: AppColors.bodyColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: const BoxDecoration(
+                      color: AppColors.goldColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.play_arrow, color: Colors.white, size: 12.sp),
+                  ),
+                ],
+              ),
             ),
-          Padding(
-            padding: EdgeInsets.all(12.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(iconPath, width: 24.w, height: 24.w),
-                SizedBox(height: 8.h),
-                Text(
-                  name,
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.titleColor,
-                  ),
-                ),
-                Text(
-                  time,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    color: AppColors.bodyColor,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: EdgeInsets.all(4.w),
-                  decoration: const BoxDecoration(
-                    color: AppColors.goldColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.play_arrow, color: Colors.white, size: 12.sp),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

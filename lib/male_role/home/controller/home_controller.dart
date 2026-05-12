@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class MaleHomeController extends GetxController {
   final MaleQiblaController qiblaController = Get.put(MaleQiblaController());
-  
+
   var isLoading = true.obs;
   var prayerTimings = <String, dynamic>{
     'timings': {
@@ -15,7 +15,7 @@ class MaleHomeController extends GetxController {
       'Asr': '15:45',
       'Maghrib': '18:15',
       'Isha': '19:45',
-    }
+    },
   }.obs;
   var currentLocation = "Dhaka, Bangladesh".obs;
   var nextPrayer = "Maghrib".obs;
@@ -29,14 +29,20 @@ class MaleHomeController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading(true);
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        currentLocation.value = "${place.locality ?? ''}, ${place.country ?? ''}";
+        currentLocation.value =
+            "${place.locality ?? ''}, ${place.country ?? ''}";
       }
-      
+
       isLoading(false);
     } catch (e) {
       print("Error fetching location: $e");

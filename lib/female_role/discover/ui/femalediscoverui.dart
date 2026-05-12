@@ -5,6 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/female_role/discover/controller/discover_controller.dart';
 import 'package:muslim_community/female_role/discover/ui/widgets/sister_card.dart';
+import 'package:muslim_community/female_role/discover/ui/learning.dart';
+import 'package:muslim_community/female_role/discover/ui/mosques.dart';
+import 'package:muslim_community/female_role/discover/ui/jumma.dart';
+import 'package:muslim_community/female_role/discover/ui/ask_sister.dart';
 
 /// Female Discover page — uses femaleColor (0xFFD18E8E)
 class FemaleDiscoverUI extends StatelessWidget {
@@ -16,7 +20,9 @@ class FemaleDiscoverUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FemaleDiscoverController controller = Get.put(FemaleDiscoverController());
+    final FemaleDiscoverController controller = Get.put(
+      FemaleDiscoverController(),
+    );
 
     return Scaffold(
       backgroundColor: _bgColor,
@@ -36,16 +42,82 @@ class FemaleDiscoverUI extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.h),
-              // Search bar (no filter button as per design)
-              _buildSearchBar(),
+              _buildMainCategories(controller),
               SizedBox(height: 20.h),
-              _buildFilterTabs(controller),
-              SizedBox(height: 20.h),
-              _buildProfilesGrid(controller),
+
+              Expanded(
+                child: Obx(() {
+                  if (controller.selectedCategory.value == 'Sisters') {
+                    return Column(
+                      children: [
+                        _buildSearchBar(),
+                        SizedBox(height: 20.h),
+                        _buildFilterTabs(controller),
+                        SizedBox(height: 20.h),
+                        _buildProfilesGrid(controller),
+                      ],
+                    );
+                  } else if (controller.selectedCategory.value == 'Learning') {
+                    return const LearningUI();
+                  } else if (controller.selectedCategory.value == 'Mosques') {
+                    return const MosquesUI();
+                  } else if (controller.selectedCategory.value == 'Jumma') {
+                    return const JummaUI();
+                  } else if (controller.selectedCategory.value == 'Ask Sister') {
+                    return const AskSisterUI();
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMainCategories(FemaleDiscoverController controller) {
+    return Container(
+      padding: EdgeInsets.all(4.w),
+      height: 40.h,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5EFE6),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Obx(() {
+        final currentSelection = controller.selectedCategory.value;
+        
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.mainCategories.length,
+          itemBuilder: (context, index) {
+            final category = controller.mainCategories[index];
+            final isSelected = currentSelection == category;
+            
+            return GestureDetector(
+              onTap: () => controller.selectedCategory.value = category,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: isSelected ? Border.all(color: AppColors.femaleColor, width: 1) : null,
+                ),
+                child: Text(
+                  category,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.sp,
+                    color: isSelected ? AppColors.titleColor : const Color(0xFF5B7C99),
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 
@@ -81,14 +153,17 @@ class FemaleDiscoverUI extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _tab('Near Me', controller.selectedTab.value == DiscoverTab.nearMe,
-                () => controller.changeTab(DiscoverTab.nearMe)),
+            _tab(
+              'Near Me',
+              controller.selectedTab.value == DiscoverTab.nearMe,
+              () => controller.changeTab(DiscoverTab.nearMe),
+            ),
             SizedBox(width: 10.w),
-            _tab('New Reverts', controller.selectedTab.value == DiscoverTab.newReverts,
-                () => controller.changeTab(DiscoverTab.newReverts)),
-            SizedBox(width: 10.w),
-            _tab('Verified Only', controller.selectedTab.value == DiscoverTab.verifiedOnly,
-                () => controller.changeTab(DiscoverTab.verifiedOnly)),
+            _tab(
+              'New Reverts',
+              controller.selectedTab.value == DiscoverTab.newReverts,
+              () => controller.changeTab(DiscoverTab.newReverts),
+            ),
           ],
         ),
       ),
@@ -140,3 +215,4 @@ class FemaleDiscoverUI extends StatelessWidget {
     );
   }
 }
+

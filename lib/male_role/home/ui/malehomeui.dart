@@ -14,14 +14,14 @@ import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:muslim_community/shared/ui/prayer_recitation_dialog.dart';
 
-
 class MaleHomeUI extends StatelessWidget {
   const MaleHomeUI({super.key});
 
   @override
   Widget build(BuildContext context) {
     final MaleHomeController controller = Get.put(MaleHomeController());
-    final MaleNavbarController navbarController = Get.find<MaleNavbarController>();
+    final MaleNavbarController navbarController =
+        Get.find<MaleNavbarController>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -53,8 +53,8 @@ class MaleHomeUI extends StatelessWidget {
                 _buildQiblaCompass(controller),
                 SizedBox(height: 30.h),
 
-                // --- NEARBY REVERTS ---
-                _buildNearbyReverts(navbarController),
+                // --- COMMUNITY RESOURCES ---
+                _buildCommunityResources(navbarController),
                 SizedBox(height: 30.h),
               ],
             ),
@@ -82,7 +82,11 @@ class MaleHomeUI extends StatelessWidget {
                   color: Colors.white,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.check_circle, color: Colors.green, size: 12.sp),
+                child: Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 12.sp,
+                ),
               ),
             ),
           ],
@@ -118,14 +122,22 @@ class MaleHomeUI extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.maleColor.withOpacity(0.2)),
             ),
-            child: Icon(Icons.notifications_none, color: AppColors.titleColor, size: 24.sp),
+            child: Icon(
+              Icons.notifications_none,
+              color: AppColors.titleColor,
+              size: 24.sp,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
+  Widget _buildSectionHeader(
+    String title,
+    String actionText, {
+    VoidCallback? onActionTap,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -191,18 +203,24 @@ class MaleHomeUI extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.location_on, color: AppColors.maleColor, size: 14.sp),
+                  Icon(
+                    Icons.location_on,
+                    color: AppColors.maleColor,
+                    size: 14.sp,
+                  ),
                   SizedBox(width: 4.w),
                   Flexible(
-                    child: Obx(() => Text(
-                      controller.currentLocation.value,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 11.sp,
-                        color: AppColors.maleColor,
-                        fontWeight: FontWeight.w500,
+                    child: Obx(
+                      () => Text(
+                        controller.currentLocation.value,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: 11.sp,
+                          color: AppColors.maleColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    )),
+                    ),
                   ),
                 ],
               ),
@@ -223,7 +241,12 @@ class MaleHomeUI extends StatelessWidget {
             _buildPrayerCard("Sunrise", "06:45", 'assets/icons/sunrise.png'),
             _buildPrayerCard("Dhuhr", "12:30", 'assets/icons/dhuhr.png'),
             _buildPrayerCard("Asr", "15:45", 'assets/icons/asr.png'),
-            _buildPrayerCard("Maghrib", "18:15", 'assets/icons/maghrib.png', isNext: true),
+            _buildPrayerCard(
+              "Maghrib",
+              "18:15",
+              'assets/icons/maghrib.png',
+              isNext: true,
+            ),
             _buildPrayerCard("Isha", "19:45", 'assets/icons/isha.png'),
           ],
         ),
@@ -241,7 +264,12 @@ class MaleHomeUI extends StatelessWidget {
     );
   }
 
-  Widget _buildPrayerCard(String name, String time, String iconPath, {bool isNext = false}) {
+  Widget _buildPrayerCard(
+    String name,
+    String time,
+    String iconPath, {
+    bool isNext = false,
+  }) {
     return GestureDetector(
       onTap: () {
         Get.dialog(PrayerRecitationDialog(prayerName: name));
@@ -250,7 +278,9 @@ class MaleHomeUI extends StatelessWidget {
         decoration: BoxDecoration(
           color: isNext ? AppColors.maleColor.withOpacity(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(15.r),
-          border: isNext ? Border.all(color: AppColors.maleColor.withOpacity(0.3)) : null,
+          border: isNext
+              ? Border.all(color: AppColors.maleColor.withOpacity(0.3))
+              : null,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -273,7 +303,11 @@ class MaleHomeUI extends StatelessWidget {
                   ),
                   child: Text(
                     "NEXT",
-                    style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 8.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -306,7 +340,11 @@ class MaleHomeUI extends StatelessWidget {
                       color: AppColors.goldColor,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.play_arrow, color: Colors.white, size: 12.sp),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 12.sp,
+                    ),
                   ),
                 ],
               ),
@@ -356,89 +394,54 @@ class MaleHomeUI extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               // 1. Dynamic Outer Compass Face
-              Obx(() => AnimatedRotation(
-                turns: controller.qiblaController.dialRotation.value,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                child: Image.asset(
-                  'assets/image/side.png',
-                  width: 230.w,
-                  height: 230.w,
-                  fit: BoxFit.contain,
-                ),
-              )),
-              
-              // 2. The Dynamic Qibla Pointer
-              Obx(() => AnimatedRotation(
-                turns: controller.qiblaController.needleRotation.value,
-                duration: const Duration(milliseconds: 500), // Slightly different duration for independence
-                curve: Curves.easeOutBack, // Added a slight bounce for a more mechanical feel
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 170.w,
-                      height: 170.w,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.maleColor.withOpacity(0.03),
-                      ),
-                    ),
-                    Image.asset(
-                      'assets/image/qiblacompas.png',
-                      width: 160.w,
-                      height: 160.w,
-                      fit: BoxFit.contain,
-                    ),
-                  ],
-                ),
-              )),
-
-              // 3. Center Point
-              Container(
-                width: 14.w,
-                height: 14.w,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.maleColor, width: 3),
-                  boxShadow: [
-                    BoxShadow(color: AppColors.maleColor.withOpacity(0.3), blurRadius: 8),
-                  ],
+              Obx(
+                () => AnimatedRotation(
+                  turns: controller.qiblaController.dialRotation.value,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  child: Image.asset(
+                    'assets/image/side.png',
+                    width: 230.w,
+                    height: 230.w,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-              
-              // 4. Heading Degree Text
-              Positioned(
-                bottom: 20.h,
-                child: Obx(() => Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.maleColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Column(
+
+              // 2. The Dynamic Qibla Pointer
+              Obx(
+                () => AnimatedRotation(
+                  turns: controller.qiblaController.needleRotation.value,
+                  duration: const Duration(
+                    milliseconds: 500,
+                  ), // Slightly different duration for independence
+                  curve: Curves
+                      .easeOutBack, // Added a slight bounce for a more mechanical feel
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      Text(
-                        "HEADING: ${controller.qiblaController.compassHeading.value.toStringAsFixed(0)}°",
-                        style: GoogleFonts.inter(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.maleColor,
+                      Container(
+                        width: 170.w,
+                        height: 170.w,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.maleColor.withOpacity(0.03),
                         ),
                       ),
-                      Text(
-                        "QIBLA: ${controller.qiblaController.qiblaDirection.value.toStringAsFixed(0)}°",
-                        style: GoogleFonts.inter(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.maleColor.withOpacity(0.7),
-                        ),
+                      Image.asset(
+                        'assets/image/qiblacompas.png',
+                        width: 160.w,
+                        height: 160.w,
+                        fit: BoxFit.contain,
                       ),
                     ],
                   ),
-                )),
+                ),
               ),
+
+
+
+
             ],
           ),
           SizedBox(height: 35.h),
@@ -450,144 +453,150 @@ class MaleHomeUI extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ),
           ),
-          Obx(() => controller.qiblaController.accuracyStatus.value.isNotEmpty
-            ? Padding(
-                padding: EdgeInsets.only(top: 15.h),
-                child: Container(
-                  padding: EdgeInsets.all(12.w),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(15.r),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 18.sp),
-                      SizedBox(width: 10.w),
-                      Expanded(
-                        child: Text(
-                          controller.qiblaController.accuracyStatus.value,
-                          style: GoogleFonts.inter(fontSize: 10.sp, color: Colors.redAccent),
-                        ),
+          Obx(
+            () => controller.qiblaController.accuracyStatus.value.isNotEmpty
+                ? Padding(
+                    padding: EdgeInsets.only(top: 15.h),
+                    child: Container(
+                      padding: EdgeInsets.all(12.w),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
-                    ],
-                  ),
-                ),
-              )
-            : const SizedBox.shrink(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.redAccent,
+                            size: 18.sp,
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Text(
+                              controller.qiblaController.accuracyStatus.value,
+                              style: GoogleFonts.inter(
+                                fontSize: 10.sp,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNearbyReverts(MaleNavbarController navbarController) {
-    final MaleDiscoverController discoverController = Get.put(MaleDiscoverController());
+  Widget _buildCommunityResources(MaleNavbarController navbarController) {
+    final MaleDiscoverController discoverController = Get.put(
+      MaleDiscoverController(),
+    );
+
+    final List<Map<String, dynamic>> resources = [
+      {
+        'title': 'Learning',
+        'subtitle': 'Islamic online courses and educational content.',
+        'icon': Icons.menu_book_rounded,
+        'color': const Color(0xFFE57373),
+        'category': 'Learning',
+      },
+      {
+        'title': 'Mosques',
+        'subtitle': 'Find nearby mosques and prayer facilities.',
+        'icon': Icons.mosque_rounded,
+        'color': const Color(0xFF81C784),
+        'category': 'Mosques',
+      },
+      {
+        'title': 'Jumma',
+        'subtitle': 'Check Jumu\'ah times and special Friday events.',
+        'icon': Icons.event_available_rounded,
+        'color': const Color(0xFF64B5F6),
+        'category': 'Jumma',
+      },
+      {
+        'title': 'Ask Brother',
+        'subtitle': 'Connect with a brother for guidance and support.',
+        'icon': Icons.question_answer_rounded,
+        'color': const Color(0xFFFFB74D),
+        'category': 'Ask Brother',
+      },
+    ];
 
     return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Nearby Reverts",
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.titleColor,
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                navbarController.changeIndex(1); // Go to Discover
-              },
-              child: Text(
-                "See all >",
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  color: AppColors.maleColor,
+      children: resources.map((resource) {
+        return GestureDetector(
+          onTap: () {
+            discoverController.selectedCategory.value = resource['category'];
+            navbarController.changeIndex(1); // Go to Discover
+          },
+          child: Container(
+            width: double.infinity,
+            margin: EdgeInsets.only(bottom: 15.h),
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 20.h),
-        SizedBox(
-          height: 160.h,
-          child: Obx(() {
-            final brothers = discoverController.brothers;
-            return ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: brothers.length > 4 ? 4 : brothers.length,
-              itemBuilder: (context, index) {
-                return _buildRevertItem(brothers[index]);
-              },
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRevertItem(BrotherModel brother) {
-    return GestureDetector(
-      onTap: () => Get.to(() => MaleProfileDetailsUI(brother: brother)),
-      child: Container(
-        width: 130.w,
-        margin: EdgeInsets.only(right: 15.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: 80.w,
-                  height: 80.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.r),
-                    image: DecorationImage(
-                      image: AssetImage(brother.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                if (brother.isVerified)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(2.w),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.check_circle, color: AppColors.maleColor, size: 16.sp),
-                    ),
-                  ),
               ],
             ),
-            SizedBox(height: 12.h),
-            Text(
-              brother.name.split(' ').first,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: AppColors.titleColor,
-              ),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: resource['color'].withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    resource['icon'],
+                    color: resource['color'],
+                    size: 24.sp,
+                  ),
+                ),
+                SizedBox(width: 20.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        resource['title'],
+                        style: GoogleFonts.inter(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.titleColor,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        resource['subtitle'],
+                        style: GoogleFonts.inter(
+                          fontSize: 13.sp,
+                          color: AppColors.bodyColor.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.bodyColor.withOpacity(0.3),
+                  size: 16.sp,
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

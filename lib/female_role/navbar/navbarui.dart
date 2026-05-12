@@ -52,14 +52,42 @@ class FemaleNavbarUI extends StatelessWidget {
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            selectedLabelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
+            selectedLabelStyle: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+            ),
             unselectedLabelStyle: TextStyle(fontSize: 12.sp),
             items: [
-              _buildNavbarItem('assets/icons/homenav.png', 'Home', 0, AppColors.femaleColor),
-              _buildNavbarItem('assets/icons/Discovernav.png', 'Discover', 1, AppColors.femaleColor),
-              _buildNavbarItem('assets/icons/Messagesnav.png', 'Message', 2, AppColors.femaleColor),
-              _buildNavbarItem('assets/icons/groupnav.png', 'Group', 3, AppColors.femaleColor),
-              _buildNavbarItem('assets/icons/profilenav.png', 'Profile', 4, AppColors.femaleColor),
+              _buildNavbarItem(
+                'assets/icons/homenav.png',
+                'Home',
+                0,
+                AppColors.femaleColor,
+              ),
+              _buildNavbarItem(
+                'assets/icons/Discovernav.png',
+                'Discover',
+                1,
+                AppColors.femaleColor,
+              ),
+              _buildNavbarItem(
+                'assets/icons/Messagesnav.png',
+                'Message',
+                2,
+                AppColors.femaleColor,
+              ),
+              _buildNavbarItem(
+                'assets/icons/groupnav.png',
+                'Group',
+                3,
+                AppColors.femaleColor,
+              ),
+              _buildNavbarItem(
+                'assets/icons/profilenav.png',
+                'Profile',
+                4,
+                AppColors.femaleColor,
+              ),
             ],
           ),
         ),
@@ -67,11 +95,21 @@ class FemaleNavbarUI extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildNavbarItem(String assetPath, String label, int index, Color activeColor) {
+  BottomNavigationBarItem _buildNavbarItem(
+    String assetPath,
+    String label,
+    int index,
+    Color activeColor,
+  ) {
     return BottomNavigationBarItem(
       icon: Padding(
         padding: EdgeInsets.only(top: 8.h),
-        child: Image.asset(assetPath, width: 24.w, height: 24.w, color: const Color(0xFFA6864D).withOpacity(0.7)),
+        child: Image.asset(
+          assetPath,
+          width: 24.w,
+          height: 24.w,
+          color: const Color(0xFFA6864D).withOpacity(0.7),
+        ),
       ),
       activeIcon: Column(
         mainAxisSize: MainAxisSize.min,

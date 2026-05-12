@@ -5,8 +5,6 @@ import 'package:muslim_community/female_role/group/model/group_model.dart';
 class FemaleGroupController extends GetxController {
   var groups = <GroupModel>[].obs;
   var filteredGroups = <GroupModel>[].obs;
-  var categories = ['Groups', 'Learning', 'Mosques', 'Jumma', 'Ask Sister'].obs;
-  var selectedCategory = 'Groups'.obs;
 
   @override
   void onInit() {
@@ -53,21 +51,11 @@ class FemaleGroupController extends GetxController {
         icon: Icons.people_outline,
       ),
     ];
-    filterGroups(selectedCategory.value);
+    filterGroups();
   }
 
-  void filterGroups(String category) {
-    selectedCategory.value = category;
-    if (category == 'Groups') {
-      filteredGroups.assignAll(groups);
-    } else {
-      filteredGroups.assignAll(
-        groups.where((g) => g.category.toLowerCase().contains(category.toLowerCase()) || g.name.toLowerCase().contains(category.toLowerCase())).toList(),
-      );
-      if (filteredGroups.isEmpty) {
-        filteredGroups.assignAll(groups);
-      }
-    }
+  void filterGroups() {
+    filteredGroups.assignAll(groups);
   }
 
   void toggleJoin(String groupId) {
@@ -83,7 +71,7 @@ class FemaleGroupController extends GetxController {
         isJoined: !oldGroup.isJoined,
         icon: oldGroup.icon,
       );
-      filterGroups(selectedCategory.value); // refresh list
+      filterGroups(); // refresh list
     }
   }
 }

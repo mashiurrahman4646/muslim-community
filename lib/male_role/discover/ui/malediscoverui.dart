@@ -4,6 +4,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/male_role/discover/controller/discover_controller.dart';
 import 'package:muslim_community/male_role/discover/ui/widgets/brother_card.dart';
+import 'package:muslim_community/male_role/discover/ui/learning.dart';
+import 'package:muslim_community/male_role/discover/ui/mosques.dart';
+import 'package:muslim_community/male_role/discover/ui/jumma.dart';
+import 'package:muslim_community/male_role/discover/ui/ask_brother.dart';
 
 import 'package:muslim_community/appcolore.dart';
 
@@ -37,16 +41,82 @@ class MaleDiscoverUI extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.h),
-              // Search bar (no filter button — same as female)
-              _buildSearchBar(),
+              _buildMainCategories(controller),
               SizedBox(height: 20.h),
-              _buildFilterTabs(controller),
-              SizedBox(height: 20.h),
-              _buildProfilesGrid(controller),
+              
+              Expanded(
+                child: Obx(() {
+                  if (controller.selectedCategory.value == 'Brothers') {
+                    return Column(
+                      children: [
+                        _buildSearchBar(),
+                        SizedBox(height: 20.h),
+                        _buildFilterTabs(controller),
+                        SizedBox(height: 20.h),
+                        _buildProfilesGrid(controller),
+                      ],
+                    );
+                  } else if (controller.selectedCategory.value == 'Learning') {
+                    return const LearningUI();
+                  } else if (controller.selectedCategory.value == 'Mosques') {
+                    return const MosquesUI();
+                  } else if (controller.selectedCategory.value == 'Jumma') {
+                    return const JummaUI();
+                  } else if (controller.selectedCategory.value == 'Ask Brother') {
+                    return const AskBrotherUI();
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMainCategories(MaleDiscoverController controller) {
+    return Container(
+      padding: EdgeInsets.all(4.w),
+      height: 40.h,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5EFE6),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Obx(() {
+        final currentSelection = controller.selectedCategory.value;
+        
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.mainCategories.length,
+          itemBuilder: (context, index) {
+            final category = controller.mainCategories[index];
+            final isSelected = currentSelection == category;
+            
+            return GestureDetector(
+              onTap: () => controller.selectedCategory.value = category,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: isSelected ? Border.all(color: AppColors.maleColor, width: 1) : null,
+                ),
+                child: Text(
+                  category,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.sp,
+                    color: isSelected ? AppColors.titleColor : const Color(0xFF5B7C99),
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 
@@ -82,14 +152,17 @@ class MaleDiscoverUI extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _tab('Near Me', controller.selectedTab.value == MaleDiscoverTab.nearMe,
-                () => controller.changeTab(MaleDiscoverTab.nearMe)),
+            _tab(
+              'Near Me',
+              controller.selectedTab.value == MaleDiscoverTab.nearMe,
+              () => controller.changeTab(MaleDiscoverTab.nearMe),
+            ),
             SizedBox(width: 10.w),
-            _tab('New Reverts', controller.selectedTab.value == MaleDiscoverTab.newReverts,
-                () => controller.changeTab(MaleDiscoverTab.newReverts)),
-            SizedBox(width: 10.w),
-            _tab('Verified Only', controller.selectedTab.value == MaleDiscoverTab.verifiedOnly,
-                () => controller.changeTab(MaleDiscoverTab.verifiedOnly)),
+            _tab(
+              'New Reverts',
+              controller.selectedTab.value == MaleDiscoverTab.newReverts,
+              () => controller.changeTab(MaleDiscoverTab.newReverts),
+            ),
           ],
         ),
       ),
@@ -142,3 +215,4 @@ class MaleDiscoverUI extends StatelessWidget {
     );
   }
 }
+

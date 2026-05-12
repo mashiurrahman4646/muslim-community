@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/discover/model/sister_model.dart';
 
-enum DiscoverTab { nearMe, newReverts, verifiedOnly }
+enum DiscoverTab { nearMe, newReverts }
 
 class FemaleDiscoverController extends GetxController {
+  var mainCategories = ['Sisters', 'Learning', 'Mosques', 'Jumma', 'Ask Sister'].obs;
+  var selectedCategory = 'Sisters'.obs;
   var selectedTab = DiscoverTab.nearMe.obs;
   var sisters = <SisterModel>[].obs;
 
@@ -25,8 +27,10 @@ class FemaleDiscoverController extends GetxController {
         isVerified: true,
         isOnline: true,
         imageUrl: 'assets/image/female.png',
-        about: 'Assalamu alaikum! I am a passionate software engineer currently working remotely. I love exploring nature, reading Islamic history, and trying out new halal recipes in my free time.',
-        revertHistory: 'Alhamdulillah, I was born into a Muslim family. My journey has been about finding my own spiritual connection and strengthening my imaan over the years.',
+        about:
+            'Assalamu alaikum! I am a passionate software engineer currently working remotely. I love exploring nature, reading Islamic history, and trying out new halal recipes in my free time.',
+        revertHistory:
+            'Alhamdulillah, I was born into a Muslim family. My journey has been about finding my own spiritual connection and strengthening my imaan over the years.',
         interests: ['Nature', 'Islamic History', 'Cooking', 'Coding'],
       ),
       SisterModel(
@@ -38,8 +42,10 @@ class FemaleDiscoverController extends GetxController {
         isVerified: false,
         isOnline: true,
         imageUrl: 'assets/image/female.png',
-        about: 'Hello! I am a teacher by profession and a lifelong learner. I enjoy organizing community events and helping out at the local masjid.',
-        revertHistory: 'I embraced Islam 5 years ago after a long period of studying different faiths. Finding Islam was like finding peace I never knew existed.',
+        about:
+            'Hello! I am a teacher by profession and a lifelong learner. I enjoy organizing community events and helping out at the local masjid.',
+        revertHistory:
+            'I embraced Islam 5 years ago after a long period of studying different faiths. Finding Islam was like finding peace I never knew existed.',
         interests: ['Teaching', 'Community Service', 'Reading'],
       ),
       SisterModel(
@@ -51,8 +57,10 @@ class FemaleDiscoverController extends GetxController {
         isVerified: true,
         isOnline: true,
         imageUrl: 'assets/image/female.png',
-        about: 'Hi everyone! I am currently studying graphic design. I love creating digital art inspired by Islamic geometric patterns.',
-        revertHistory: 'Born Muslim, trying to learn more about my deen every day.',
+        about:
+            'Hi everyone! I am currently studying graphic design. I love creating digital art inspired by Islamic geometric patterns.',
+        revertHistory:
+            'Born Muslim, trying to learn more about my deen every day.',
         interests: ['Art', 'Design', 'Calligraphy', 'Travel'],
       ),
       SisterModel(
@@ -65,8 +73,10 @@ class FemaleDiscoverController extends GetxController {
         isOnline: true,
         isNewRevert: true,
         imageUrl: 'assets/image/female.png',
-        about: 'New revert here! Seeking supportive sisters to help me learn the basics of prayer and Arabic. I enjoy gardening and baking.',
-        revertHistory: 'I took my Shahada just a month ago! I am so excited to be part of this beautiful community and eager to learn.',
+        about:
+            'New revert here! Seeking supportive sisters to help me learn the basics of prayer and Arabic. I enjoy gardening and baking.',
+        revertHistory:
+            'I took my Shahada just a month ago! I am so excited to be part of this beautiful community and eager to learn.',
         interests: ['Gardening', 'Baking', 'Learning Arabic'],
       ),
       SisterModel(
@@ -78,7 +88,8 @@ class FemaleDiscoverController extends GetxController {
         isVerified: false,
         isOnline: true,
         imageUrl: 'assets/image/female.png',
-        about: 'Assalamu alaikum. I am a nurse working in pediatrics. I value deep conversations and spending time with my family.',
+        about:
+            'Assalamu alaikum. I am a nurse working in pediatrics. I value deep conversations and spending time with my family.',
         revertHistory: 'Alhamdulillah, raised Muslim.',
         interests: ['Healthcare', 'Family Time', 'Reading'],
       ),
@@ -91,8 +102,10 @@ class FemaleDiscoverController extends GetxController {
         isVerified: true,
         isOnline: true,
         imageUrl: 'assets/image/female.png',
-        about: 'Recent college grad navigating the professional world. Looking for like-minded sisters to build a supportive network.',
-        revertHistory: 'I found Islam during my sophomore year of college through a friend. It changed my life completely.',
+        about:
+            'Recent college grad navigating the professional world. Looking for like-minded sisters to build a supportive network.',
+        revertHistory:
+            'I found Islam during my sophomore year of college through a friend. It changed my life completely.',
         interests: ['Networking', 'Coffee', 'Podcasts'],
       ),
     ];
@@ -104,8 +117,6 @@ class FemaleDiscoverController extends GetxController {
         return sisters.toList();
       case DiscoverTab.newReverts:
         return sisters.where((s) => s.isNewRevert).toList();
-      case DiscoverTab.verifiedOnly:
-        return sisters.where((s) => s.isVerified).toList();
     }
   }
 

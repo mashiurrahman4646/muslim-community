@@ -32,10 +32,10 @@ import 'package:muslim_community/male_role/group/ui/group_details_ui.dart';
 import 'package:muslim_community/male_role/group/ui/post_details_ui.dart';
 import 'package:muslim_community/female_role/group/ui/group_details_ui.dart';
 import 'package:muslim_community/female_role/group/ui/post_details_ui.dart';
-import 'package:muslim_community/male_role/group/ui/learning_details_ui.dart';
-import 'package:muslim_community/female_role/group/ui/learning_details_ui.dart';
-import 'package:muslim_community/male_role/group/ui/mosque_details_ui.dart';
-import 'package:muslim_community/female_role/group/ui/mosque_details_ui.dart';
+import 'package:muslim_community/male_role/discover/ui/learning_details_ui.dart';
+import 'package:muslim_community/female_role/discover/ui/learning_details_ui.dart';
+import 'package:muslim_community/male_role/discover/ui/mosque_details_ui.dart';
+import 'package:muslim_community/female_role/discover/ui/mosque_details_ui.dart';
 
 class AppRoutes {
   static const String splash = '/splash';

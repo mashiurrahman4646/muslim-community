@@ -31,20 +31,22 @@ import 'package:muslim_community/female_role/notifications/ui/notificationsui.da
 import 'package:muslim_community/male_role/group/ui/group_details_ui.dart';
 import 'package:muslim_community/male_role/group/ui/post_details_ui.dart';
 import 'package:muslim_community/female_role/group/ui/group_details_ui.dart';
-import 'package:muslim_community/female_role/group/ui/post_details_ui.dart';
+
 import 'package:muslim_community/male_role/discover/ui/learning_details_ui.dart';
 import 'package:muslim_community/female_role/discover/ui/learning_details_ui.dart';
 import 'package:muslim_community/male_role/discover/ui/mosque_details_ui.dart';
 import 'package:muslim_community/female_role/discover/ui/mosque_details_ui.dart';
 
+import 'female_role/group/ui/female_post_details_ui.dart';
+
 class AppRoutes {
   static const String splash = '/splash';
   static const String selectRole = '/selectRole';
-  
+
   static const String femaleSignUp = '/femaleSignUp';
   static const String maleSignUp = '/maleSignUp';
   static const String jummaSignUp = '/jummaSignUp';
-  
+
   static const String femaleLogin = '/femaleLogin';
   static const String maleLogin = '/maleLogin';
   static const String jummaLogin = '/jummaLogin';
@@ -79,31 +81,48 @@ class AppRoutes {
   static const String maleSignUpOTP = '/maleSignUpOTP';
   static const String jummaSignUpOTP = '/jummaSignUpOTP';
 
-  static const String femaleIdentityVerification = '/femaleIdentityVerification';
+  static const String femaleIdentityVerification =
+      '/femaleIdentityVerification';
   static const String maleIdentityVerification = '/maleIdentityVerification';
 
-  static const String femaleVerificationComplete = '/femaleVerificationComplete';
+  static const String femaleVerificationComplete =
+      '/femaleVerificationComplete';
   static const String maleVerificationComplete = '/maleVerificationComplete';
 
   static List<GetPage> routes = [
     GetPage(name: splash, page: () => const SplashScreen()),
     GetPage(name: selectRole, page: () => const SelecteRoleUI()),
-    
+
     // Female Auth
     GetPage(name: femaleSignUp, page: () => const FemaleSignUpUI()),
     GetPage(name: femaleLogin, page: () => const FemaleLoginUI()),
-    GetPage(name: femaleLocationAccess, page: () => const FemaleLocationAccessUI()),
+    GetPage(
+      name: femaleLocationAccess,
+      page: () => const FemaleLocationAccessUI(),
+    ),
     GetPage(name: femaleSignUpOTP, page: () => const FemaleSignUpOTPUI()),
-    GetPage(name: femaleIdentityVerification, page: () => const FemaleIdentityVerificationUI()),
-    GetPage(name: femaleVerificationComplete, page: () => const FemaleVerificationCompleteUI()),
+    GetPage(
+      name: femaleIdentityVerification,
+      page: () => const FemaleIdentityVerificationUI(),
+    ),
+    GetPage(
+      name: femaleVerificationComplete,
+      page: () => const FemaleVerificationCompleteUI(),
+    ),
 
     // Male Auth
     GetPage(name: maleSignUp, page: () => const MaleSignUpUI()),
     GetPage(name: maleLogin, page: () => const MaleLoginUI()),
     GetPage(name: maleLocationAccess, page: () => const MaleLocationAccessUI()),
     GetPage(name: maleSignUpOTP, page: () => const MaleSignUpOTPUI()),
-    GetPage(name: maleIdentityVerification, page: () => const MaleIdentityVerificationUI()),
-    GetPage(name: maleVerificationComplete, page: () => const MaleVerificationCompleteUI()),
+    GetPage(
+      name: maleIdentityVerification,
+      page: () => const MaleIdentityVerificationUI(),
+    ),
+    GetPage(
+      name: maleVerificationComplete,
+      page: () => const MaleVerificationCompleteUI(),
+    ),
 
     // Jumma Auth
     GetPage(name: jummaSignUp, page: () => const JummaSignUpUI()),
@@ -111,26 +130,56 @@ class AppRoutes {
     GetPage(name: jummaSignUpOTP, page: () => const JummaSignUpOTPUI()),
 
     // Forget Password
-    GetPage(name: femaleForgetPasswordEmail, page: () => const FemaleForgetPasswordEmailUI()),
-    GetPage(name: femaleForgetPasswordOTP, page: () => const FemaleForgetPasswordOTPUI()),
-    GetPage(name: maleForgetPasswordEmail, page: () => const MaleForgetPasswordEmailUI()),
-    GetPage(name: maleForgetPasswordOTP, page: () => const MaleForgetPasswordOTPUI()),
-    GetPage(name: jummaForgetPasswordEmail, page: () => const JummaForgetPasswordEmailUI()),
-    GetPage(name: jummaForgetPasswordOTP, page: () => const JummaForgetPasswordOTPUI()),
+    GetPage(
+      name: femaleForgetPasswordEmail,
+      page: () => const FemaleForgetPasswordEmailUI(),
+    ),
+    GetPage(
+      name: femaleForgetPasswordOTP,
+      page: () => const FemaleForgetPasswordOTPUI(),
+    ),
+    GetPage(
+      name: maleForgetPasswordEmail,
+      page: () => const MaleForgetPasswordEmailUI(),
+    ),
+    GetPage(
+      name: maleForgetPasswordOTP,
+      page: () => const MaleForgetPasswordOTPUI(),
+    ),
+    GetPage(
+      name: jummaForgetPasswordEmail,
+      page: () => const JummaForgetPasswordEmailUI(),
+    ),
+    GetPage(
+      name: jummaForgetPasswordOTP,
+      page: () => const JummaForgetPasswordOTPUI(),
+    ),
     GetPage(name: jummaNavbar, page: () => const JummaNavbarUI()),
     GetPage(name: maleNavbar, page: () => const MaleNavbarUI()),
     GetPage(name: femaleNavbar, page: () => const FemaleNavbarUI()),
-    GetPage(name: femaleNotifications, page: () => const FemaleNotificationsUI()),
+    GetPage(
+      name: femaleNotifications,
+      page: () => const FemaleNotificationsUI(),
+    ),
     GetPage(name: jummaNowPlaying, page: () => const JummaNowPlayingUI()),
-    
+
     // Group & Posts
     GetPage(name: maleGroupDetails, page: () => const MaleGroupDetailsUI()),
     GetPage(name: femaleGroupDetails, page: () => const FemaleGroupDetailsUI()),
     GetPage(name: malePostDetails, page: () => const MalePostDetailsUI()),
     GetPage(name: femalePostDetails, page: () => const FemalePostDetailsUI()),
-    GetPage(name: maleLearningDetails, page: () => const MaleLearningDetailsUI()),
-    GetPage(name: femaleLearningDetails, page: () => const FemaleLearningDetailsUI()),
+    GetPage(
+      name: maleLearningDetails,
+      page: () => const MaleLearningDetailsUI(),
+    ),
+    GetPage(
+      name: femaleLearningDetails,
+      page: () => const FemaleLearningDetailsUI(),
+    ),
     GetPage(name: maleMosqueDetails, page: () => const MaleMosqueDetailsUI()),
-    GetPage(name: femaleMosqueDetails, page: () => const FemaleMosqueDetailsUI()),
+    GetPage(
+      name: femaleMosqueDetails,
+      page: () => const FemaleMosqueDetailsUI(),
+    ),
   ];
 }

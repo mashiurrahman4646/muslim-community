@@ -294,7 +294,7 @@ class MaleHomeUI extends StatelessWidget {
             if (isNext)
               Positioned(
                 top: 8,
-                left: 8,
+                right: 8,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(

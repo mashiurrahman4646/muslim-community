@@ -10,11 +10,7 @@ class GroupCard extends StatelessWidget {
   final GroupModel group;
   final VoidCallback onJoinToggle;
 
-  const GroupCard({
-    super.key,
-    required this.group,
-    required this.onJoinToggle,
-  });
+  const GroupCard({super.key, required this.group, required this.onJoinToggle});
 
   static const Color _roleColor = AppColors.femaleColor;
 
@@ -79,9 +75,9 @@ class GroupCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             SizedBox(height: 15.h),
-            
+
             // --- DESCRIPTION ---
             Text(
               group.description,
@@ -93,18 +89,23 @@ class GroupCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            
+
             SizedBox(height: 20.h),
-            
+
             // --- BUTTONS ---
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Get.toNamed(AppRoutes.femaleGroupDetails, arguments: group),
+                    onPressed: () => Get.toNamed(
+                      AppRoutes.femaleGroupDetails,
+                      arguments: group,
+                    ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _roleColor,
-                      side: BorderSide(color: _roleColor.withValues(alpha: 0.2)),
+                      side: BorderSide(
+                        color: _roleColor.withValues(alpha: 0.2),
+                      ),
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.r),
@@ -121,7 +122,9 @@ class GroupCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onJoinToggle,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined ? const Color(0xFFE57373) : _roleColor,
+                      backgroundColor: group.isJoined
+                          ? const Color(0xFFE57373)
+                          : _roleColor,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       padding: EdgeInsets.symmetric(vertical: 12.h),

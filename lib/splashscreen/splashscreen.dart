@@ -22,27 +22,30 @@ class SplashScreen extends StatelessWidget {
             
             // Triple Pulsing Logo
             Center(
-              child: ScaleTransition(
-                scale: controller.scaleAnimation,
-                child: Container(
-                  width: 150.w,
-                  height: 150.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFA6864D).withOpacity(0.1),
-                        blurRadius: 20.r,
-                        spreadRadius: 5.r,
-                      ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/image/splashscreenlogo.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error, color: Colors.brown, size: 40.sp);
-                    },
+              child: FadeTransition(
+                opacity: controller.fadeAnimation,
+                child: ScaleTransition(
+                  scale: controller.scaleAnimation,
+                  child: Container(
+                    width: 150.w,
+                    height: 150.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFA6864D).withOpacity(0.1),
+                          blurRadius: 20.r,
+                          spreadRadius: 5.r,
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/image/splashscreenlogo.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.error, color: Colors.brown, size: 40.sp);
+                      },
+                    ),
                   ),
                 ),
               ),

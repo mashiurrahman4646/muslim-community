@@ -5,38 +5,56 @@ class SplashScreenController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<double> scaleAnimation;
+  late Animation<double> fadeAnimation;
 
   @override
   void onInit() {
     super.onInit();
 
-    // Increased duration for a slower, more deliberate "tik... tik..." effect
+    // Slowed down for a calmer, more deliberate breathing rhythm
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3500), // Increased duration for a slower, more calm effect
+      duration: const Duration(milliseconds: 4500), // 4.5 seconds per cycle for a very slow, calm effect
     )..repeat();
 
-    // Smooth heartbeat effect: Grows relatively quickly, then shrinks slowly
+    // Symmetrical heartbeat for a smoother, more premium feel
     scaleAnimation = TweenSequence<double>([
-      // Growing phase (faster)
+      // Growing phase (Natural inhalation)
       TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 1.25)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 40,
-      ),
-      // Shrinking phase (slower and smoother)
-      TweenSequenceItem(
-        tween: Tween(begin: 1.25, end: 1.0)
+        tween: Tween(begin: 1.0, end: 1.22)
             .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 60,
+        weight: 50,
+      ),
+      // Shrinking phase (Natural exhalation)
+      TweenSequenceItem(
+        tween: Tween(begin: 1.22, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 50,
       ),
     ]).animate(animationController);
-    // Navigate after 5 seconds
+
+    // Smooth fade synchronized with breathing
+    fadeAnimation = TweenSequence<double>([
+      // Fading in smoothly
+      TweenSequenceItem(
+        tween: Tween(begin: 0.5, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 50,
+      ),
+      // Fading out smoothly
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 0.5)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 50,
+      ),
+    ]).animate(animationController);
+
+    // Navigate after 8 seconds
     navigateToNext();
   }
 
   void navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 8));
     Get.offAllNamed('/selectRole');
   }
 

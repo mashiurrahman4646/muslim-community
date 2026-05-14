@@ -10,6 +10,7 @@ class FemalePrayerSettingsController extends GetxController {
   var maghribNotification = "Adhan".obs;
   var ishaNotification = "Adhan".obs;
 
+
   void toggleAutoDetectLocation() {
     isAutoDetectLocation.value = !isAutoDetectLocation.value;
   }

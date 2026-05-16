@@ -149,18 +149,17 @@ class QiblaController extends GetxController {
   // ROTATION UPDATE
   // =====================
   void _updateRotations() {
-    // 🌍 Compass dial (background)
-    dialRotation.value = (360 - compassHeading.value) / 360;
-
-    // 🕋 Qibla needle
-    double relativeAngle =
-        qiblaDirection.value - compassHeading.value;
-
-    double finalAngle =
-        (relativeAngle + (needleOffset.value * 360)) % 360;
-
-    if (finalAngle < 0) finalAngle += 360;
-
-    needleRotation.value = finalAngle / 360;
+    // dialRotation keeps N pointing to true North
+    dialRotation.value = -compassHeading.value / 360.0;
+    
+    // needleRotation points to Qibla relative to device heading
+    // If heading == qiblaDirection, needle should be at 0 (UP)
+    double relativeAngle = qiblaDirection.value - compassHeading.value;
+    
+    // Normalize to [0, 360]
+    while (relativeAngle < 0) relativeAngle += 360;
+    while (relativeAngle >= 360) relativeAngle -= 360;
+    
+    needleRotation.value = relativeAngle / 360.0;
   }
 }

@@ -49,19 +49,18 @@ class MaleQiblaController extends GetxController {
   }
 
   void _updateRotations() {
-    // 1. Calculate Dial Rotation (side.png)
-    // Dial rotates opposite to heading to keep North pointing real North
+    // dialRotation keeps N pointing to true North
     dialRotation.value = -compassHeading.value / 360.0;
     
-    // 2. Calculate Needle Rotation (qiblacompas.png)
-    // relativeAngle = qiblaDirection - heading
+    // needleRotation points to Qibla relative to device heading
+    // If heading == qiblaDirection, needle should be at 0 (UP)
     double relativeAngle = qiblaDirection.value - compassHeading.value;
     
-    // Add offset and normalize
-    double finalAngle = (relativeAngle + (needleOffset.value * 360.0)) % 360.0;
-    if (finalAngle < 0) finalAngle += 360;
+    // Normalize to [0, 360]
+    while (relativeAngle < 0) relativeAngle += 360;
+    while (relativeAngle >= 360) relativeAngle -= 360;
     
-    needleRotation.value = finalAngle / 360.0;
+    needleRotation.value = relativeAngle / 360.0;
   }
 
   Future<void> startLocationUpdates() async {

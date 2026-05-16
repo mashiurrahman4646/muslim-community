@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYA | Community Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-decor"></div>
+    
+    <main class="app-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="steps-indicator">
+                <div class="step-dot active" data-step="1"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-dot" data-step="3"></div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <!-- Step 1: Role Selection -->
+            <section id="step1" class="form-step active">
+                <header>
+                    <h1 class="title">Join Our Community</h1>
+                    <p class="subtitle">Please select your role to get started.</p>
+                </header>
+                
+                <div class="input-group">
+                    <label for="roleSelect">I am a...</label>
+                    <div class="custom-select">
+                        <select id="roleSelect">
+                            <option value="" disabled selected>Select your role</option>
+                            <option value="BROTHER">BROTHER</option>
+                            <option value="SISTER">SISTER</option>
+                            <option value="MOTHER">MOTHER</option>
+                            <option value="FATHER">FATHER</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" onclick="goToStep(2)">
+                        Next: Account Info
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 2: Account Info -->
+            <section id="step2" class="form-step">
+                <header>
+                    <button class="back-btn" onclick="goToStep(1)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h1 class="title">Account Details</h1>
+                    <p class="subtitle">Enter your personal information below.</p>
+                </header>
+
+                <div class="grid-form">
+                    <div class="input-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Jane Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="jane@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="StrongPassword123!" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="roleDisplay">Selected Role</label>
+                        <input type="text" id="roleDisplay" readonly disabled class="readonly-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="revertDate">Revert Date</label>
+                        <input type="date" id="revertDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" required>
+                        <small class="hint">Must be 16 years or older</small>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" onclick="validateStep2()">
+                        Next: Upload Files
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 3: File Upload -->
+            <section id="step3" class="form-step">
+                <header>
+                    <button class="back-btn" onclick="goToStep(2)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h1 class="title">Verification</h1>
+                    <p class="subtitle">Upload necessary documents for identity verification.</p>
+                </header>
+
+                <div class="upload-container">
+                    <div class="upload-box" id="imageUploadBox">
+                        <input type="file" id="verificationImage" accept="image/*" hidden>
+                        <div class="upload-content">
+                            <div class="icon">📸</div>
+                            <h3>Identity Photo</h3>
+                            <p>Upload a clear image (max 100MB)</p>
+                            <span class="file-name" id="imgName">No file selected</span>
+                        </div>
+                    </div>
+
+                    <div class="upload-box" id="videoUploadBox">
+                        <input type="file" id="verificationVideo" accept="video/*" hidden>
+                        <div class="upload-content">
+                            <div class="icon">🎥</div>
+                            <h3>Identity Video</h3>
+                            <p>Upload a short video (max 100MB)</p>
+                            <span class="file-name" id="vidName">No file selected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary btn-submit" id="submitBtn" onclick="submitRegistration()">
+                        <span class="btn-text">Continue</span>
+                        <div class="loader" id="submitLoader"></div>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <div class="success-icon">✓</div>
+                <h2>Success!</h2>
+                <p id="successMsg"></p>
+                <button class="btn btn-primary" onclick="redirectToOTP()">Proceed to OTP Verification</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

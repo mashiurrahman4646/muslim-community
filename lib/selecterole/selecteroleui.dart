@@ -3,12 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/selecterole/selectedcontroller.dart';
+import 'package:muslim_community/male_role/auth/controller/male_create_account_controller.dart';
+import 'package:muslim_community/female_role/auth/controller/female_create_account_controller.dart';
 
 class SelecteRoleUI extends StatelessWidget {
   const SelecteRoleUI({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final roleController = Get.put(SelectedRoleController());
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
       body: SafeArea(
@@ -40,7 +45,11 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Brother Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.maleLogin),
+                  onTap: () {
+                    roleController.setRole("BROTHER");
+                    Get.put(MaleCreateAccountController()).setRole("BROTHER");
+                    Get.toNamed(AppRoutes.maleLogin);
+                  },
                   child: Container(
                     width: double.infinity,
                     height: 180.h, // Made bigger as requested
@@ -120,7 +129,11 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Sister Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.femaleLogin),
+                  onTap: () {
+                    roleController.setRole("SISTER");
+                    Get.put(FemaleCreateAccountController()).setRole("SISTER");
+                    Get.toNamed(AppRoutes.femaleLogin);
+                  },
                   child: Container(
                     width: double.infinity,
                     height: 180.h, // Made bigger

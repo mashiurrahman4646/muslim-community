@@ -3,56 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/male_role/auth/controller/male_create_account_controller.dart';
+import 'package:muslim_community/male_role/auth/controller/male_verify_controller.dart';
 
-class MaleIdentityVerificationUI extends StatefulWidget {
+class MaleIdentityVerificationUI extends StatelessWidget {
   const MaleIdentityVerificationUI({super.key});
-
-  @override
-  State<MaleIdentityVerificationUI> createState() => _MaleIdentityVerificationUIState();
-}
-
-class _MaleIdentityVerificationUIState extends State<MaleIdentityVerificationUI> {
-  File? _imageFile;
-  File? _videoFile;
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _takePhoto() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      setState(() {
-        _imageFile = File(photo.path);
-      });
-      Get.snackbar(
-        'Success',
-        'Verification photo captured successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-      );
-    }
-  }
-
-  Future<void> _recordVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.camera);
-    if (video != null) {
-      setState(() {
-        _videoFile = File(video.path);
-      });
-      Get.snackbar(
-        'Success',
-        'Verification video recorded successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF5B7C99);
+    final accountController = Get.put(MaleCreateAccountController());
+    final verifyController = accountController.verifyController;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -100,55 +61,45 @@ class _MaleIdentityVerificationUIState extends State<MaleIdentityVerificationUI>
               SizedBox(height: 30.h),
 
               // Photo Verification Card
-              _buildVerificationCard(
+              Obx(() => _buildVerificationCard(
                 icon: Icons.shield_outlined,
                 title: 'Photo Verification',
                 description: 'Please take a clear photo holding a piece of paper with today\'s date. This is for manual review only and will never be shared.',
                 buttonText: 'Take Verification Photo',
                 buttonIcon: Icons.camera_alt_outlined,
-                onTap: _takePhoto,
-                isCompleted: _imageFile != null,
+                onTap: verifyController.takePhoto,
+                isCompleted: verifyController.verificationImage.value != null,
                 themeColor: themeColor,
-              ),
+              )),
               SizedBox(height: 24.h),
 
               // Video Verification Card
-              _buildVerificationCard(
+              Obx(() => _buildVerificationCard(
                 icon: Icons.shield_outlined,
                 title: 'Record Video Verification',
                 description: '5-second video reading a random phrase',
                 buttonText: 'Start recording',
                 buttonIcon: Icons.videocam_outlined,
-                onTap: _recordVideo,
-                isCompleted: _videoFile != null,
+                onTap: verifyController.recordVideo,
+                isCompleted: verifyController.verificationVideo.value != null,
                 themeColor: themeColor,
-              ),
+              )),
               SizedBox(height: 40.h),
 
               // Continue Button
-              SizedBox(
+              Obx(() => SizedBox(
                 width: double.infinity,
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_imageFile == null || _videoFile == null) {
-                      Get.snackbar(
-                        'Required',
-                        'Please complete both photo and video verification.',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.orange.withOpacity(0.8),
-                        colorText: Colors.white,
-                      );
-                    } else {
-                      Get.toNamed(AppRoutes.maleVerificationComplete);
-                    }
-                  },
+                  onPressed: accountController.isLoading.value ? null : () => accountController.createAccount(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
                     elevation: 0,
                   ),
-                  child: Text(
+                  child: accountController.isLoading.value 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
                     'Continue',
                     style: GoogleFonts.inter(
                       fontSize: 16.sp,
@@ -157,7 +108,7 @@ class _MaleIdentityVerificationUIState extends State<MaleIdentityVerificationUI>
                     ),
                   ),
                 ),
-              ),
+              )),
               SizedBox(height: 20.h),
             ],
           ),

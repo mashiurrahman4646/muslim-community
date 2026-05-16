@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
 import 'package:flutter/gestures.dart';
+import 'package:muslim_community/female_role/auth/controller/female_create_account_controller.dart';
 import 'package:muslim_community/female_role/profile/ui/privacy_policy_ui.dart';
 import 'package:muslim_community/female_role/profile/ui/terms_conditions_ui.dart';
 
@@ -13,6 +14,7 @@ class FemaleSignUpUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFFD18E8E); // Sister color
+    final controller = Get.put(FemaleCreateAccountController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -81,6 +83,8 @@ class FemaleSignUpUI extends StatelessWidget {
                       hint: 'Enter your full name',
                       icon: Icons.person_outline,
                       themeColor: themeColor,
+                      controller: controller.nameController,
+                      keyboardType: TextInputType.name,
                     ),
                     SizedBox(height: 16.h),
                     _buildInputField(
@@ -88,28 +92,45 @@ class FemaleSignUpUI extends StatelessWidget {
                       hint: 'Enter your email',
                       icon: Icons.email_outlined,
                       themeColor: themeColor,
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 16.h),
-                    _buildInputField(
+                    Obx(() => _buildInputField(
                       label: 'PASSWORD',
                       hint: 'Create a password',
                       icon: Icons.lock_outline,
                       themeColor: themeColor,
-                      isPassword: true,
-                    ),
+                      isPassword: !controller.isPasswordVisible.value,
+                      controller: controller.passwordController,
+                      keyboardType: TextInputType.visiblePassword,
+                      suffixIcon: controller.isPasswordVisible.value 
+                          ? Icons.visibility_outlined 
+                          : Icons.visibility_off_outlined,
+                      onSuffixIconTap: () => controller.togglePasswordVisibility(),
+                    )),
                     SizedBox(height: 16.h),
-                    _buildDropdownField(
+                    Obx(() => _buildInputField(
                       label: 'HOW LONG HAVE YOU BEEN A REVERT?',
-                      hint: 'Select duration',
-                      assetIcon: 'assets/icons/selecteduration.png',
+                      hint: controller.revertDate.value.isEmpty 
+                          ? 'Select date' 
+                          : controller.revertDate.value.split('T').first,
                       themeColor: themeColor,
-                    ),
+                      icon: Icons.calendar_today_outlined,
+                      readOnly: true,
+                      onTap: () => controller.pickRevertDate(context),
+                    )),
                     SizedBox(height: 16.h),
-                    _buildInputField(
-                      label: 'AGE',
-                      hint: 'Minimum 16 years',
+                    Obx(() => _buildInputField(
+                      label: 'BIRTHDAY',
+                      hint: controller.dateOfBirth.value.isEmpty 
+                          ? 'Select your birthday' 
+                          : controller.dateOfBirth.value.split('T').first,
                       themeColor: themeColor,
-                    ),
+                      icon: Icons.calendar_today_outlined,
+                      readOnly: true,
+                      onTap: () => controller.pickDateOfBirth(context),
+                    )),
                     SizedBox(height: 24.h),
 
                     // Create Account Button
@@ -117,7 +138,7 @@ class FemaleSignUpUI extends StatelessWidget {
                       width: double.infinity,
                       height: 56.h,
                       child: ElevatedButton(
-                        onPressed: () => Get.toNamed(AppRoutes.femaleSignUpOTP),
+                        onPressed: () => controller.validateAndNext(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
                           shape: RoundedRectangleBorder(
@@ -239,6 +260,12 @@ class FemaleSignUpUI extends StatelessWidget {
     IconData? icon,
     required Color themeColor,
     bool isPassword = false,
+    TextEditingController? controller,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    TextInputType? keyboardType,
+    IconData? suffixIcon,
+    VoidCallback? onSuffixIconTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,13 +291,22 @@ class FemaleSignUpUI extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         TextField(
+          controller: controller,
           obscureText: isPassword,
+          readOnly: readOnly,
+          onTap: onTap,
+          keyboardType: keyboardType,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
             prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20.sp) : null,
-            suffixIcon: isPassword ? Icon(Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 20.sp) : null,
+            suffixIcon: suffixIcon != null 
+                ? IconButton(
+                    icon: Icon(suffixIcon, color: Colors.grey.shade400, size: 20.sp),
+                    onPressed: onSuffixIconTap,
+                  ) 
+                : null,
             filled: true,
             fillColor: const Color(0xFFEDF4F1).withOpacity(0.5),
             border: OutlineInputBorder(

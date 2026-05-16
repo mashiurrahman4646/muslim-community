@@ -2,33 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/male_role/auth/controller/male_otp_controller.dart';
 
-class MaleSignUpOTPUI extends StatefulWidget {
+class MaleSignUpOTPUI extends StatelessWidget {
   const MaleSignUpOTPUI({super.key});
-
-  @override
-  State<MaleSignUpOTPUI> createState() => _MaleSignUpOTPUIState();
-}
-
-class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
-  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
-  final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
-
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF5B7C99);
+    final controller = Get.put(MaleOtpController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -46,11 +28,10 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
           child: Column(
             children: [
               SizedBox(height: 20.h),
-              // Updated Icon from Assets
               Center(
                 child: Container(
-                  width: 140.w,
-                  height: 140.w,
+                  width: 120.w,
+                  height: 120.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -67,30 +48,30 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
                   ),
                 ),
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 20.h),
 
               Text(
                 'Verify Your Email',
                 style: GoogleFonts.playfairDisplay(
-                  fontSize: 28.sp,
+                  fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF2D3436),
                 ),
               ),
-              SizedBox(height: 15.h),
+              SizedBox(height: 10.h),
               Text(
-                'We have sent a 4-digit code to your email.\nPlease enter it below to continue.',
+                'We have sent a 6-digit code to your email.\nPlease enter it below to continue.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
-                  fontSize: 14.sp,
+                  fontSize: 13.sp,
                   color: const Color(0xFF636E72),
-                  height: 1.5,
+                  height: 1.4,
                 ),
               ),
-              SizedBox(height: 30.h),
+              SizedBox(height: 20.h),
 
               // Email Badge
-              Container(
+              Obx(() => Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -100,27 +81,25 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.email_outlined, size: 16.sp, color: themeColor.withOpacity(0.6)),
+                    Icon(Icons.email_outlined, size: 14.sp, color: themeColor.withOpacity(0.6)),
                     SizedBox(width: 8.w),
                     Text(
-                      'a*****@gmail.com',
-                      style: GoogleFonts.inter(fontSize: 13.sp, color: const Color(0xFF2D3436)),
+                      controller.email.value.isNotEmpty ? controller.email.value : '... @gmail.com',
+                      style: GoogleFonts.inter(fontSize: 12.sp, color: const Color(0xFF2D3436)),
                     ),
-                    SizedBox(width: 4.w),
-                    Icon(Icons.circle, size: 4.sp, color: const Color(0xFFF1C40F)),
                   ],
                 ),
-              ),
-              SizedBox(height: 40.h),
+              )),
+              SizedBox(height: 25.h),
 
-              // Workable OTP Fields
+              // Workable OTP Fields (6 boxes)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (index) => _buildOTPBox(index, themeColor)),
+                children: List.generate(6, (index) => _buildOTPBox(index, themeColor, controller)),
               ),
               SizedBox(height: 15.h),
               Text(
-                'ENTER 4-DIGIT CODE',
+                'ENTER 6-DIGIT CODE',
                 style: GoogleFonts.inter(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
@@ -128,50 +107,56 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
                   letterSpacing: 1.5,
                 ),
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 25.h),
 
               // Timer
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.access_time, size: 18.sp, color: Colors.grey.shade400),
+                  Icon(Icons.access_time, size: 16.sp, color: Colors.grey.shade400),
                   SizedBox(width: 8.w),
                   Text(
                     'Code expires in ',
-                    style: GoogleFonts.inter(fontSize: 14.sp, color: Colors.grey.shade600),
+                    style: GoogleFonts.inter(fontSize: 13.sp, color: Colors.grey.shade600),
                   ),
-                  Text(
-                    '02:47',
+                  Obx(() => Text(
+                    controller.timerText.value,
                     style: GoogleFonts.inter(
-                      fontSize: 14.sp, 
+                      fontSize: 13.sp, 
                       color: themeColor,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  )),
                 ],
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 25.h),
 
               // Button
-              SizedBox(
+              Obx(() => SizedBox(
                 width: double.infinity,
-                height: 56.h,
+                height: 52.h,
                 child: ElevatedButton(
-                  onPressed: () => Get.toNamed(AppRoutes.maleLocationAccess),
+                  onPressed: controller.isLoading.value ? null : () => controller.verifyOtp(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
                     elevation: 0,
                   ),
-                  child: Row(
+                  child: controller.isLoading.value 
+                    ? const SizedBox(
+                        height: 20, 
+                        width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                      )
+                    : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.help_outline, size: 18.sp, color: Colors.white),
+                      Icon(Icons.check_circle_outline, size: 18.sp, color: Colors.white),
                       SizedBox(width: 8.w),
                       Text(
                         'Verify & Continue',
                         style: GoogleFonts.inter(
-                          fontSize: 16.sp,
+                          fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
@@ -179,7 +164,7 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
                     ],
                   ),
                 ),
-              ),
+              )),
               SizedBox(height: 30.h),
 
               // Resend
@@ -208,13 +193,13 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
     );
   }
 
-  Widget _buildOTPBox(int index, Color themeColor) {
+  Widget _buildOTPBox(int index, Color themeColor, MaleOtpController controller) {
     return Container(
-      width: 65.w,
-      height: 75.h,
+      width: 50.w,
+      height: 65.h,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: themeColor.withOpacity(0.3),
           width: 1.5,
@@ -222,13 +207,13 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
       ),
       child: Center(
         child: TextField(
-          controller: _controllers[index],
-          focusNode: _focusNodes[index],
+          controller: controller.otpControllers[index],
+          focusNode: controller.focusNodes[index],
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
           maxLength: 1,
           style: GoogleFonts.playfairDisplay(
-            fontSize: 24.sp,
+            fontSize: 20.sp,
             fontWeight: FontWeight.bold,
             color: themeColor,
           ),
@@ -237,10 +222,10 @@ class _MaleSignUpOTPUIState extends State<MaleSignUpOTPUI> {
             border: InputBorder.none,
           ),
           onChanged: (value) {
-            if (value.isNotEmpty && index < 3) {
-              _focusNodes[index + 1].requestFocus();
+            if (value.isNotEmpty && index < 5) {
+              controller.focusNodes[index + 1].requestFocus();
             } else if (value.isEmpty && index > 0) {
-              _focusNodes[index - 1].requestFocus();
+              controller.focusNodes[index - 1].requestFocus();
             }
           },
         ),

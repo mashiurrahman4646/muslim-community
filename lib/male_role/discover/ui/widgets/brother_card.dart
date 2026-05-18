@@ -4,15 +4,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/male_role/discover/model/brother_model.dart';
 import 'package:muslim_community/male_role/discover/ui/male_profile_details_ui.dart';
 import 'package:get/get.dart';
+import 'package:muslim_community/male_role/discover/controller/brothergetcontroller.dart';
+import 'package:muslim_community/male_role/discover/controller/requestsendcontroller.dart';
 
 /// Reusable card for a single brother — mirrors SisterCard with maleColor (0xFF5B7C99)
 class BrotherCard extends StatelessWidget {
   final BrotherModel brother;
+  final int index;
+  final VoidCallback onConnectPressed;
+  final VoidCallback onCancelPressed;
+  final VoidCallback onConfirmPressed;
 
   // maleColor — used exactly where SisterCard uses femaleColor (0xFFD18E8E)
   static const Color _roleColor = Color(0xFF5B7C99);
 
-  const BrotherCard({super.key, required this.brother});
+  const BrotherCard({
+    super.key,
+    required this.brother,
+    required this.index,
+    required this.onConnectPressed,
+    required this.onCancelPressed,
+    required this.onConfirmPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +52,24 @@ class BrotherCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.r),
-                child: Image.asset(
-                  'assets/image/male.png', // male.png instead of female.png
-                  height: 100.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                ),
+                child: brother.imageUrl.isNotEmpty && brother.imageUrl.startsWith('http')
+                    ? Image.network(
+                        brother.imageUrl,
+                        height: 100.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 100.h,
+                          width: double.infinity,
+                          color: Colors.black,
+                        ),
+                      )
+                    : Container(
+                        height: 100.h,
+                        width: double.infinity,
+                        color: Colors.black,
+                      ),
               ),
               if (brother.isOnline) _buildOnlineIndicator(),
               if (brother.isVerified) _buildVerifiedBadge(),
@@ -149,42 +173,75 @@ class BrotherCard extends StatelessWidget {
 
   // Connect / Connected / Requested button — maleColor replacing femaleColor
   Widget _buildActionButton() {
-    final bool isConnected = brother.status == 'Connected';
-    final bool isRequested = brother.status == 'Requested';
-    final bool isConnect = brother.status == 'Connect';
+    final ctrl = Get.find<BrotherGetController>();
+    return Obx(() {
+      // Read live status from the observable list
+      final liveBrother = ctrl.brothers.length > index ? ctrl.brothers[index] : brother;
+      final bool isConnected = liveBrother.status == 'Connected';
+      final bool isRequested = liveBrother.status == 'Requested';
+      final bool isReceived  = liveBrother.status == 'Received';
+      final bool isConnect   = liveBrother.status == 'Connect';
 
-    return SizedBox(
-      width: double.infinity,
-      height: 32.h,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          // Outlined style for Connected/Requested, filled for Connect
-          backgroundColor: isConnected || isRequested ? Colors.white : _roleColor,
-          foregroundColor: isConnected || isRequested ? _roleColor : Colors.white,
-          elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 4.w),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r), // Pill shape
-            side: isConnected || isRequested
-                ? const BorderSide(color: _roleColor, width: 1.5)
-                : BorderSide.none,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isConnect) ...[
-              Icon(Icons.person_add_alt_1, size: 14.sp),
-              SizedBox(width: 6.w),
-            ],
-            Text(
-              brother.status,
+      // Show Confirm Request for received requests
+      if (isReceived) {
+        return SizedBox(
+          width: double.infinity,
+          height: 32.h,
+          child: ElevatedButton(
+            onPressed: onConfirmPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _roleColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+            ),
+            child: Text(
+              'Confirm Request',
               style: GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.w600),
             ),
-          ],
+          ),
+        );
+      }
+
+      return SizedBox(
+        width: double.infinity,
+        height: 32.h,
+        child: ElevatedButton(
+          onPressed: () {
+            if (isConnect) {
+              onConnectPressed();
+            } else if (isRequested) {
+              onCancelPressed();
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isConnected || isRequested ? Colors.white : _roleColor,
+            foregroundColor: isConnected || isRequested ? _roleColor : Colors.white,
+            elevation: 0,
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
+              side: isConnected || isRequested
+                  ? const BorderSide(color: _roleColor, width: 1.5)
+                  : BorderSide.none,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isConnect) ...[
+                Icon(Icons.person_add_alt_1, size: 14.sp),
+                SizedBox(width: 6.w),
+              ],
+              Text(
+                liveBrother.status,
+                style: GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

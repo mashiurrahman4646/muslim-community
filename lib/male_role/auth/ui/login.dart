@@ -3,9 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/male_role/auth/controller/logincontroller.dart';
 
 class MaleLoginUI extends StatelessWidget {
-  const MaleLoginUI({super.key});
+  MaleLoginUI({super.key});
+
+  final MaleLoginController controller = Get.put(MaleLoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +80,7 @@ class MaleLoginUI extends StatelessWidget {
                       hint: 'Enter your email',
                       icon: Icons.email_outlined,
                       themeColor: themeColor,
+                      controller: controller.emailController,
                     ),
                     SizedBox(height: 20.h),
                     _buildInputField(
@@ -85,6 +89,7 @@ class MaleLoginUI extends StatelessWidget {
                       icon: Icons.lock_outline,
                       themeColor: themeColor,
                       isPassword: true,
+                      controller: controller.passwordController,
                     ),
                     SizedBox(height: 12.h),
                     Align(
@@ -107,10 +112,10 @@ class MaleLoginUI extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       height: 56.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.offAllNamed(AppRoutes.maleNavbar);
-                        },
+                      child: Obx(() => ElevatedButton(
+                        onPressed: controller.isLoading.value 
+                            ? null 
+                            : () => controller.login(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
                           shape: RoundedRectangleBorder(
@@ -118,15 +123,17 @@ class MaleLoginUI extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        child: Text(
-                          'Login',
-                          style: GoogleFonts.inter(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                        child: controller.isLoading.value
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                'Login',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      )),
                     ),
                   ],
                 ),
@@ -171,6 +178,7 @@ class MaleLoginUI extends StatelessWidget {
     required IconData icon,
     required Color themeColor,
     bool isPassword = false,
+    TextEditingController? controller,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,6 +194,7 @@ class MaleLoginUI extends StatelessWidget {
         ),
         SizedBox(height: 10.h),
         TextField(
+          controller: controller,
           obscureText: isPassword,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(

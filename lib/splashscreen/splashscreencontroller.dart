@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/services/tokenservice.dart';
 
 class SplashScreenController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -55,7 +57,24 @@ class SplashScreenController extends GetxController
 
   void navigateToNext() async {
     await Future.delayed(const Duration(seconds: 8));
-    Get.offAllNamed('/selectRole');
+    
+    final TokenService tokenService = TokenService();
+    final String? token = await tokenService.getToken();
+    final String? role = await tokenService.getRole();
+
+    if (token != null && token.isNotEmpty) {
+      if (role == 'male') {
+        Get.offAllNamed(AppRoutes.maleNavbar);
+      } else if (role == 'female') {
+        Get.offAllNamed(AppRoutes.femaleNavbar);
+      } else if (role == 'jumma') {
+        Get.offAllNamed(AppRoutes.jummaNavbar);
+      } else {
+        Get.offAllNamed(AppRoutes.selectRole);
+      }
+    } else {
+      Get.offAllNamed(AppRoutes.selectRole);
+    }
   }
 
   @override

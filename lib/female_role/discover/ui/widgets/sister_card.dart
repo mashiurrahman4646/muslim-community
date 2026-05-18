@@ -4,12 +4,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/female_role/discover/model/sister_model.dart';
 import 'package:muslim_community/female_role/discover/ui/female_profile_details_ui.dart';
 import 'package:get/get.dart';
+import 'package:muslim_community/female_role/discover/controller/sistergetcontroller.dart';
+import 'package:muslim_community/female_role/discover/controller/requestsendcontroller.dart';
 
 /// This widget represents a single sister profile card in the Discover grid.
 class SisterCard extends StatelessWidget {
   final SisterModel sister;
+  final int index;
+  final VoidCallback onConnectPressed;
+  final VoidCallback onCancelPressed;
+  final VoidCallback onConfirmPressed;
   
-  const SisterCard({super.key, required this.sister});
+  const SisterCard({
+    super.key,
+    required this.sister,
+    required this.index,
+    required this.onConnectPressed,
+    required this.onCancelPressed,
+    required this.onConfirmPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +49,24 @@ class SisterCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.r),
-                child: Image.asset(
-                  'assets/image/female.png', 
-                  height: 100.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter, 
-                ),
+                child: sister.imageUrl.isNotEmpty && sister.imageUrl.startsWith('http')
+                    ? Image.network(
+                        sister.imageUrl,
+                        height: 100.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 100.h,
+                          width: double.infinity,
+                          color: Colors.black,
+                        ),
+                      )
+                    : Container(
+                        height: 100.h,
+                        width: double.infinity,
+                        color: Colors.black,
+                      ),
               ),
               if (sister.isOnline) _buildOnlineIndicator(),
               if (sister.isVerified) _buildVerifiedBadge(),
@@ -141,43 +165,74 @@ class SisterCard extends StatelessWidget {
   }
 
   Widget _buildActionButton() {
-    // Determine styles based on status
-    final bool isConnected = sister.status == 'Connected';
-    final bool isRequested = sister.status == 'Requested';
-    final bool isConnect = sister.status == 'Connect';
+    final ctrl = Get.find<SisterGetController>();
+    return Obx(() {
+      final liveSister = ctrl.sisters.length > index ? ctrl.sisters[index] : sister;
+      final bool isConnected = liveSister.status == 'Connected';
+      final bool isRequested = liveSister.status == 'Requested';
+      final bool isReceived  = liveSister.status == 'Received';
+      final bool isConnect   = liveSister.status == 'Connect';
 
-    return SizedBox(
-      width: double.infinity,
-      height: 32.h,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isConnected || isRequested ? Colors.white : const Color(0xFFD18E8E),
-          foregroundColor: isConnected || isRequested ? const Color(0xFFD18E8E) : Colors.white,
-          elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 4.w),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r), // Pill shape matching screenshot
-            // Both Connected and Requested get a visible pink border
-            side: isConnected || isRequested
-                ? const BorderSide(color: Color(0xFFD18E8E), width: 1.5)
-                : BorderSide.none,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isConnect) ...[
-              Icon(Icons.person_add_alt_1, size: 14.sp),
-              SizedBox(width: 6.w),
-            ],
-            Text(
-              sister.status,
+      // Show Confirm Request for received requests
+      if (isReceived) {
+        return SizedBox(
+          width: double.infinity,
+          height: 32.h,
+          child: ElevatedButton(
+            onPressed: onConfirmPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD18E8E),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+            ),
+            child: Text(
+              'Confirm Request',
               style: GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.w600),
             ),
-          ],
+          ),
+        );
+      }
+
+      return SizedBox(
+        width: double.infinity,
+        height: 32.h,
+        child: ElevatedButton(
+          onPressed: () {
+            if (isConnect) {
+              onConnectPressed();
+            } else if (isRequested) {
+              onCancelPressed();
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isConnected || isRequested ? Colors.white : const Color(0xFFD18E8E),
+            foregroundColor: isConnected || isRequested ? const Color(0xFFD18E8E) : Colors.white,
+            elevation: 0,
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
+              side: isConnected || isRequested
+                  ? const BorderSide(color: Color(0xFFD18E8E), width: 1.5)
+                  : BorderSide.none,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isConnect) ...[
+                Icon(Icons.person_add_alt_1, size: 14.sp),
+                SizedBox(width: 6.w),
+              ],
+              Text(
+                liveSister.status,
+                style: GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

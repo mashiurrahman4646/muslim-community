@@ -8,6 +8,7 @@ import 'package:muslim_community/male_role/profile/ui/privacy_policy_ui.dart';
 import 'package:muslim_community/male_role/profile/ui/terms_conditions_ui.dart';
 import 'package:muslim_community/male_role/profile/ui/change_password_ui.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/services/tokenservice.dart';
 
 class MaleProfileUI extends StatelessWidget {
   const MaleProfileUI({super.key});
@@ -249,9 +250,10 @@ class MaleProfileUI extends StatelessWidget {
                   width: double.infinity,
                   height: 50.h,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Get.back();
-                      Get.offAllNamed(AppRoutes.maleLogin);
+                      await TokenService().removeToken();
+                      Get.offAllNamed(AppRoutes.selectRole);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD49B92),
@@ -354,9 +356,10 @@ class MaleProfileUI extends StatelessWidget {
                   width: double.infinity,
                   height: 50.h,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Get.back();
-                      Get.offAllNamed(AppRoutes.maleLogin);
+                      await TokenService().removeToken();
+                      Get.offAllNamed(AppRoutes.selectRole);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD49B92),

@@ -95,7 +95,7 @@ class AppRoutes {
 
     // Female Auth
     GetPage(name: femaleSignUp, page: () => const FemaleSignUpUI()),
-    GetPage(name: femaleLogin, page: () => const FemaleLoginUI()),
+    GetPage(name: femaleLogin, page: () => FemaleLoginUI()),
     GetPage(
       name: femaleLocationAccess,
       page: () => const FemaleLocationAccessUI(),
@@ -112,7 +112,7 @@ class AppRoutes {
 
     // Male Auth
     GetPage(name: maleSignUp, page: () => const MaleSignUpUI()),
-    GetPage(name: maleLogin, page: () => const MaleLoginUI()),
+    GetPage(name: maleLogin, page: () => MaleLoginUI()),
     GetPage(name: maleLocationAccess, page: () => const MaleLocationAccessUI()),
     GetPage(name: maleSignUpOTP, page: () => const MaleSignUpOTPUI()),
     GetPage(

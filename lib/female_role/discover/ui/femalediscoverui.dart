@@ -9,6 +9,9 @@ import 'package:muslim_community/female_role/discover/ui/learning.dart';
 import 'package:muslim_community/female_role/discover/ui/mosques.dart';
 import 'package:muslim_community/female_role/discover/ui/jumma.dart';
 import 'package:muslim_community/female_role/discover/ui/ask_sister.dart';
+import 'package:muslim_community/female_role/discover/controller/requestsendcontroller.dart';
+import 'package:muslim_community/female_role/discover/controller/requestcancelcontroller.dart';
+import 'package:muslim_community/female_role/discover/controller/requestacceptcontroller.dart';
 
 /// Female Discover page — uses femaleColor (0xFFD18E8E)
 class FemaleDiscoverUI extends StatelessWidget {
@@ -23,6 +26,9 @@ class FemaleDiscoverUI extends StatelessWidget {
     final FemaleDiscoverController controller = Get.put(
       FemaleDiscoverController(),
     );
+    Get.put(FemaleRequestSendController());
+    Get.put(FemaleRequestCancelController());
+    Get.put(FemaleRequestAcceptController());
 
     return Scaffold(
       backgroundColor: _bgColor,
@@ -50,7 +56,7 @@ class FemaleDiscoverUI extends StatelessWidget {
                   if (controller.selectedCategory.value == 'Sisters') {
                     return Column(
                       children: [
-                        _buildSearchBar(),
+                        _buildSearchBar(controller),
                         SizedBox(height: 20.h),
                         _buildFilterTabs(controller),
                         SizedBox(height: 20.h),
@@ -121,7 +127,7 @@ class FemaleDiscoverUI extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(FemaleDiscoverController controller) {
     return Container(
       height: 45.h,
       decoration: BoxDecoration(
@@ -129,6 +135,7 @@ class FemaleDiscoverUI extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: TextField(
+        onChanged: (value) => controller.search(value),
         decoration: InputDecoration(
           hintText: 'Search Sisters...',
           hintStyle: GoogleFonts.inter(
@@ -198,18 +205,46 @@ class FemaleDiscoverUI extends StatelessWidget {
 
   Widget _buildProfilesGrid(FemaleDiscoverController controller) {
     return Expanded(
-      child: Obx(
-        () => GridView.builder(
-          padding: EdgeInsets.only(bottom: 20.h),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.65,
-            crossAxisSpacing: 12.w,
-            mainAxisSpacing: 12.h,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            controller.loadMore();
+          }
+          return false;
+        },
+        child: Obx(
+          () => GridView.builder(
+            padding: EdgeInsets.only(bottom: 20.h),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.65,
+              crossAxisSpacing: 12.w,
+              mainAxisSpacing: 12.h,
+            ),
+            itemCount: controller.filteredSisters.length,
+            itemBuilder: (context, index) {
+              final sister = controller.filteredSisters[index];
+              return SisterCard(
+                sister: sister,
+                index: index,
+                onConnectPressed: () => Get.find<FemaleRequestSendController>().sendRequest(sister.id),
+                onCancelPressed: () {
+                  if (sister.connectionId != null) {
+                    Get.find<FemaleRequestCancelController>().cancelRequest(sister.id, sister.connectionId!);
+                  } else {
+                    Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
+                  }
+                },
+                onConfirmPressed: () {
+                  if (sister.connectionId != null) {
+                    Get.find<FemaleRequestAcceptController>().acceptRequest(sister.id, sister.connectionId!);
+                  } else {
+                    Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
+                  }
+                },
+              );
+            },
           ),
-          itemCount: controller.filteredSisters.length,
-          itemBuilder: (context, index) =>
-              SisterCard(sister: controller.filteredSisters[index]),
         ),
       ),
     );

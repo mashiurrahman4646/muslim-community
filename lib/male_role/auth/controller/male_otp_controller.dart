@@ -6,16 +6,19 @@ import 'package:muslim_community/approut.dart';
 
 class MaleOtpController extends GetxController {
   final MaleOtpService _service = MaleOtpService();
-  
-  final List<TextEditingController> otpControllers = List.generate(6, (index) => TextEditingController());
+
+  final List<TextEditingController> otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
   final List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
-  
+
   var isLoading = false.obs;
   var email = "".obs;
 
   // Timer logic
-  var secondsRemaining = 300.obs; // 5 minutes
-  var timerText = "05:00".obs;
+  var secondsRemaining = 180.obs; // 3 minutes
+  var timerText = "03:00".obs;
   dynamic timerSubscription;
 
   @override
@@ -29,18 +32,20 @@ class MaleOtpController extends GetxController {
   }
 
   void startTimer() {
-    secondsRemaining.value = 300;
+    secondsRemaining.value = 180;
     timerSubscription?.cancel();
-    timerSubscription = Stream.periodic(const Duration(seconds: 1), (i) => i).listen((_) {
-      if (secondsRemaining.value > 0) {
-        secondsRemaining.value--;
-        int minutes = secondsRemaining.value ~/ 60;
-        int seconds = secondsRemaining.value % 60;
-        timerText.value = "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
-      } else {
-        timerSubscription.cancel();
-      }
-    });
+    timerSubscription = Stream.periodic(const Duration(seconds: 1), (i) => i)
+        .listen((_) {
+          if (secondsRemaining.value > 0) {
+            secondsRemaining.value--;
+            int minutes = secondsRemaining.value ~/ 60;
+            int seconds = secondsRemaining.value % 60;
+            timerText.value =
+                "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+          } else {
+            timerSubscription.cancel();
+          }
+        });
   }
 
   String get otp => otpControllers.map((c) => c.text).join();
@@ -53,10 +58,7 @@ class MaleOtpController extends GetxController {
 
     isLoading.value = true;
     try {
-      final response = await _service.verifyOtp(
-        email: email.value,
-        otp: otp,
-      );
+      final response = await _service.verifyOtp(email: email.value, otp: otp);
 
       final decodedData = jsonDecode(response.body);
 
@@ -73,12 +75,11 @@ class MaleOtpController extends GetxController {
     }
   }
 
+
+
   @override
   void onClose() {
     timerSubscription?.cancel();
-    for (var controller in otpControllers) {
-      controller.dispose();
-    }
     for (var node in focusNodes) {
       node.dispose();
     }

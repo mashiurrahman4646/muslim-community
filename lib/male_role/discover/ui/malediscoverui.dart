@@ -8,6 +8,9 @@ import 'package:muslim_community/male_role/discover/ui/learning.dart';
 import 'package:muslim_community/male_role/discover/ui/mosques.dart';
 import 'package:muslim_community/male_role/discover/ui/jumma.dart';
 import 'package:muslim_community/male_role/discover/ui/ask_brother.dart';
+import 'package:muslim_community/male_role/discover/controller/requestsendcontroller.dart';
+import 'package:muslim_community/male_role/discover/controller/requestcancelcontroller.dart';
+import 'package:muslim_community/male_role/discover/controller/requestacceptcontroller.dart';
 
 import 'package:muslim_community/appcolore.dart';
 
@@ -22,6 +25,9 @@ class MaleDiscoverUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MaleDiscoverController controller = Get.put(MaleDiscoverController());
+    Get.put(MaleRequestSendController());
+    Get.put(MaleRequestCancelController());
+    Get.put(MaleRequestAcceptController());
 
     return Scaffold(
       backgroundColor: _bgColor,
@@ -49,7 +55,7 @@ class MaleDiscoverUI extends StatelessWidget {
                   if (controller.selectedCategory.value == 'Brothers') {
                     return Column(
                       children: [
-                        _buildSearchBar(),
+                        _buildSearchBar(controller),
                         SizedBox(height: 20.h),
                         _buildFilterTabs(controller),
                         SizedBox(height: 20.h),
@@ -120,7 +126,7 @@ class MaleDiscoverUI extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(MaleDiscoverController controller) {
     return Container(
       height: 45.h,
       decoration: BoxDecoration(
@@ -128,6 +134,7 @@ class MaleDiscoverUI extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: TextField(
+        onChanged: (value) => controller.search(value),
         decoration: InputDecoration(
           hintText: 'Search Brothers...',
           hintStyle: GoogleFonts.inter(
@@ -198,18 +205,50 @@ class MaleDiscoverUI extends StatelessWidget {
 
   Widget _buildProfilesGrid(MaleDiscoverController controller) {
     return Expanded(
-      child: Obx(
-        () => GridView.builder(
-          padding: EdgeInsets.only(bottom: 20.h),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.65,
-            crossAxisSpacing: 12.w,
-            mainAxisSpacing: 12.h,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            controller.loadMore();
+          }
+          return false;
+        },
+        child: Obx(
+          () => GridView.builder(
+            padding: EdgeInsets.only(bottom: 20.h),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.65,
+              crossAxisSpacing: 12.w,
+              mainAxisSpacing: 12.h,
+            ),
+            itemCount: controller.filteredBrothers.length,
+            itemBuilder: (context, index) {
+              final brother = controller.filteredBrothers[index];
+              return BrotherCard(
+                brother: brother,
+                index: index,
+                onConnectPressed: () => Get.find<MaleRequestSendController>().sendRequest(brother.id),
+                onCancelPressed: () {
+                  print("=== CANCEL BUTTON TAPPED ===");
+                  print("  brother.id         : ${brother.id}");
+                  print("  brother.connectionId: ${brother.connectionId}");
+                  if (brother.connectionId != null) {
+                    Get.find<MaleRequestCancelController>().cancelRequest(brother.id, brother.connectionId!);
+                  } else {
+                    print("  ⚠️ connectionId is NULL! Request cannot be cancelled.");
+                    Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
+                  }
+                },
+                onConfirmPressed: () {
+                  if (brother.connectionId != null) {
+                    Get.find<MaleRequestAcceptController>().acceptRequest(brother.id, brother.connectionId!);
+                  } else {
+                    Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
+                  }
+                },
+              );
+            },
           ),
-          itemCount: controller.filteredBrothers.length,
-          itemBuilder: (context, index) =>
-              BrotherCard(brother: controller.filteredBrothers[index]),
         ),
       ),
     );

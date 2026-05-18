@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/female_role/auth/controller/female_otp_controller.dart';
+import 'package:muslim_community/female_role/auth/controller/resendotpcontroller.dart';
 
 class FemaleSignUpOTPUI extends StatelessWidget {
   const FemaleSignUpOTPUI({super.key});
@@ -11,6 +12,7 @@ class FemaleSignUpOTPUI extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFFD18E8E);
     final controller = Get.put(FemaleOtpController());
+    final resendController = Get.put(FemaleResendOtpController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -175,14 +177,24 @@ class FemaleSignUpOTPUI extends StatelessWidget {
                     "Didn't receive the code? ",
                     style: GoogleFonts.inter(fontSize: 14.sp, color: Colors.grey.shade600),
                   ),
-                  Text(
-                    'Resend',
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      color: themeColor,
-                      fontWeight: FontWeight.bold,
+                  Obx(() => GestureDetector(
+                    onTap: (resendController.isLoading.value || controller.secondsRemaining.value > 0)
+                        ? null
+                        : () => resendController.resendOtp(
+                              controller.email.value,
+                              () => controller.startTimer(),
+                            ),
+                    child: Text(
+                      'Resend',
+                      style: GoogleFonts.inter(
+                        fontSize: 14.sp,
+                        color: (resendController.isLoading.value || controller.secondsRemaining.value > 0)
+                            ? Colors.grey
+                            : themeColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  )),
                 ],
               ),
               SizedBox(height: 20.h),

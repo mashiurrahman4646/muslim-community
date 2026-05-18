@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/female_role/notifications/controller/notification_controller.dart';
 import 'package:muslim_community/female_role/notifications/model/notification_model.dart';
+import 'package:muslim_community/female_role/notifications/ui/pending_request_ui.dart';
+import 'package:muslim_community/female_role/notifications/ui/sent_request_ui.dart';
+import 'package:muslim_community/appcolore.dart';
 
 class FemaleNotificationsUI extends StatelessWidget {
   const FemaleNotificationsUI({super.key});
@@ -12,46 +15,70 @@ class FemaleNotificationsUI extends StatelessWidget {
   Widget build(BuildContext context) {
     final FemaleNotificationController controller = Get.put(FemaleNotificationController());
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFFDF8F1),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Notifications',
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF2D3436),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFDF8F1),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+            onPressed: () => Get.back(),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => controller.markAllAsRead(),
-            child: Text(
-              'Mark all read',
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFFA6864D),
-              ),
+          title: Text(
+            'Notifications',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF2D3436),
             ),
           ),
-          SizedBox(width: 10.w),
-        ],
-      ),
-      body: Obx(
-        () => ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          itemCount: controller.notifications.length,
-          itemBuilder: (context, index) {
-            return _buildNotificationCard(controller.notifications[index]);
-          },
+          actions: [
+            TextButton(
+              onPressed: () => controller.markAllAsRead(),
+              child: Text(
+                'Mark all read',
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFFA6864D),
+                ),
+              ),
+            ),
+            SizedBox(width: 10.w),
+          ],
+          bottom: TabBar(
+            indicatorColor: AppColors.femaleColor,
+            labelColor: AppColors.femaleColor,
+            unselectedLabelColor: Colors.grey,
+            labelStyle: GoogleFonts.inter(fontSize: 13.sp, fontWeight: FontWeight.bold),
+            tabs: const [
+              Tab(text: "Notifications"),
+              Tab(text: "Pending"),
+              Tab(text: "Sent"),
+            ],
+          ),
         ),
+        body: TabBarView(
+          children: [
+            _buildNotificationList(controller),
+            const FemalePendingRequestUI(),
+            const FemaleSentRequestUI(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationList(FemaleNotificationController controller) {
+    return Obx(
+      () => ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+        itemCount: controller.notifications.length,
+        itemBuilder: (context, index) {
+          return _buildNotificationCard(controller.notifications[index]);
+        },
       ),
     );
   }

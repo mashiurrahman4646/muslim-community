@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/notifications/controller/notification_controller.dart';
 import 'package:muslim_community/male_role/notifications/model/notification_model.dart';
+import 'package:muslim_community/male_role/notifications/ui/pending_request_ui.dart';
+import 'package:muslim_community/male_role/notifications/ui/sent_request_ui.dart';
 
 class MaleNotificationsUI extends StatelessWidget {
   const MaleNotificationsUI({super.key});
@@ -13,46 +15,70 @@ class MaleNotificationsUI extends StatelessWidget {
   Widget build(BuildContext context) {
     final MaleNotificationController controller = Get.put(MaleNotificationController());
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Notifications',
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF2D3436),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+            onPressed: () => Get.back(),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => controller.markAllAsRead(),
-            child: Text(
-              'Mark all read',
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.maleColor,
-              ),
+          title: Text(
+            'Notifications',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF2D3436),
             ),
           ),
-          SizedBox(width: 10.w),
-        ],
-      ),
-      body: Obx(
-        () => ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          itemCount: controller.notifications.length,
-          itemBuilder: (context, index) {
-            return _buildNotificationCard(controller.notifications[index]);
-          },
+          actions: [
+            TextButton(
+              onPressed: () => controller.markAllAsRead(),
+              child: Text(
+                'Mark all read',
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.maleColor,
+                ),
+              ),
+            ),
+            SizedBox(width: 10.w),
+          ],
+          bottom: TabBar(
+            indicatorColor: AppColors.maleColor,
+            labelColor: AppColors.maleColor,
+            unselectedLabelColor: Colors.grey,
+            labelStyle: GoogleFonts.inter(fontSize: 13.sp, fontWeight: FontWeight.bold),
+            tabs: const [
+              Tab(text: "Notifications"),
+              Tab(text: "Pending"),
+              Tab(text: "Sent"),
+            ],
+          ),
         ),
+        body: TabBarView(
+          children: [
+            _buildNotificationList(controller),
+            const MalePendingRequestUI(),
+            const MaleSentRequestUI(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationList(MaleNotificationController controller) {
+    return Obx(
+      () => ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+        itemCount: controller.notifications.length,
+        itemBuilder: (context, index) {
+          return _buildNotificationCard(controller.notifications[index]);
+        },
       ),
     );
   }

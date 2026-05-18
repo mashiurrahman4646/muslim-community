@@ -8,6 +8,7 @@ import 'package:muslim_community/jummarole/profile/ui/privacy_policy_ui.dart';
 import 'package:muslim_community/jummarole/profile/ui/terms_conditions_ui.dart';
 import 'package:muslim_community/jummarole/profile/ui/change_password_ui.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/services/tokenservice.dart';
 
 class JummaProfileUI extends StatelessWidget {
   const JummaProfileUI({super.key});
@@ -249,9 +250,10 @@ class JummaProfileUI extends StatelessWidget {
                   width: double.infinity,
                   height: 50.h,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Get.back();
-                      Get.offAllNamed(AppRoutes.jummaLogin);
+                      await TokenService().removeToken();
+                      Get.offAllNamed(AppRoutes.selectRole);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD49B92),
@@ -354,9 +356,10 @@ class JummaProfileUI extends StatelessWidget {
                   width: double.infinity,
                   height: 50.h,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Get.back();
-                      Get.offAllNamed(AppRoutes.jummaLogin);
+                      await TokenService().removeToken();
+                      Get.offAllNamed(AppRoutes.selectRole);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD49B92),

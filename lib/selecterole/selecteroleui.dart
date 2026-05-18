@@ -215,7 +215,7 @@ class SelecteRoleUI extends StatelessWidget {
                   onTap: () => Get.toNamed(AppRoutes.jummaLogin),
                   child: Container(
                     width: double.infinity,
-                    height: 220.h, // Made bigger to fix overflow
+                    height: 235.h, // Increased to prevent overflow
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30.r),
@@ -234,8 +234,8 @@ class SelecteRoleUI extends StatelessWidget {
                               Center(
                                 child: Image.asset(
                                   'assets/icons/jummalogo.png',
-                                  width: 110.w,
-                                  height: 110.w,
+                                  width: 100.w, // Slightly reduced to fit gracefully
+                                  height: 100.w,
                                   fit: BoxFit.contain,
                                 ),
                               ),

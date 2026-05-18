@@ -14,17 +14,17 @@ class MaleCreateAccountController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  
+
   var isPasswordVisible = false.obs;
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
-  
+
   var role = "BROTHER".obs;
   var dateOfBirth = "".obs;
   var revertDate = "".obs;
-  
+
   var isLoading = false.obs;
 
   void setRole(String selectedRole) {
@@ -63,7 +63,8 @@ class MaleCreateAccountController extends GetxController {
     if (dateOfBirth.value.isEmpty) missingFields += "Date of Birth, ";
 
     if (missingFields.isNotEmpty) {
-      String errorMsg = "Please fill: ${missingFields.substring(0, missingFields.length - 2)}";
+      String errorMsg =
+          "Please fill: ${missingFields.substring(0, missingFields.length - 2)}";
       Get.snackbar(
         'Required Fields',
         errorMsg,
@@ -79,9 +80,25 @@ class MaleCreateAccountController extends GetxController {
       return;
     }
 
-    // Password validation (min 8 chars)
-    if (passwordController.text.length < 8) {
-      Get.snackbar('Weak Password', 'Password must be at least 8 characters long.');
+    // Password validation (Strong password)
+    String password = passwordController.text;
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+    bool hasDigits = password.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    
+    if (password.length < 8 || !hasUppercase || !hasLowercase || !hasDigits || !hasSpecialCharacters) {
+      Get.snackbar(
+        'Weak Password', 
+        'Password must be at least 8 characters long and include: \n'
+        '- Capital letter (A-Z)\n'
+        '- Small letter (a-z)\n'
+        '- Number (0-9)\n'
+        '- Special character (@#\$!%...)',
+        backgroundColor: Colors.redAccent.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+      );
       return;
     }
 
@@ -107,11 +124,14 @@ class MaleCreateAccountController extends GetxController {
     if (emailController.text.isEmpty) missingFields += "Email, ";
     if (passwordController.text.isEmpty) missingFields += "Password, ";
     if (dateOfBirth.value.isEmpty) missingFields += "Date of Birth, ";
-    if (verifyController.verificationImage.value == null) missingFields += "Photo, ";
-    if (verifyController.verificationVideo.value == null) missingFields += "Video, ";
+    if (verifyController.verificationImage.value == null)
+      missingFields += "Photo, ";
+    if (verifyController.verificationVideo.value == null)
+      missingFields += "Video, ";
 
     if (missingFields.isNotEmpty) {
-      String errorMsg = "Missing: ${missingFields.substring(0, missingFields.length - 2)}";
+      String errorMsg =
+          "Missing: ${missingFields.substring(0, missingFields.length - 2)}";
       print("Validation Error: $errorMsg");
       Get.snackbar(
         'Validation Error',
@@ -141,8 +161,14 @@ class MaleCreateAccountController extends GetxController {
       final decodedData = jsonDecode(response.body);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Get.snackbar('Success', 'Account created successfully! Please verify your email.');
-        Get.toNamed(AppRoutes.maleSignUpOTP, arguments: {'email': emailController.text});
+        Get.snackbar(
+          'Success',
+          'Account created successfully! Please verify your email.',
+        );
+        Get.toNamed(
+          AppRoutes.maleSignUpOTP,
+          arguments: {'email': emailController.text},
+        );
       } else {
         Get.snackbar('Error', decodedData['message'] ?? "Registration failed");
       }
@@ -155,9 +181,6 @@ class MaleCreateAccountController extends GetxController {
 
   @override
   void onClose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
     super.onClose();
   }
 }

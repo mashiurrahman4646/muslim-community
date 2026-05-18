@@ -3,9 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/female_role/auth/controller/logincontroller.dart';
 
 class FemaleLoginUI extends StatelessWidget {
-  const FemaleLoginUI({super.key});
+  FemaleLoginUI({super.key});
+
+  final FemaleLoginController controller = Get.put(FemaleLoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +79,7 @@ class FemaleLoginUI extends StatelessWidget {
                       hint: 'Enter your email',
                       icon: Icons.email_outlined,
                       themeColor: themeColor,
+                      controller: controller.emailController,
                     ),
                     SizedBox(height: 20.h),
                     _buildInputField(
@@ -84,6 +88,7 @@ class FemaleLoginUI extends StatelessWidget {
                       icon: Icons.lock_outline,
                       themeColor: themeColor,
                       isPassword: true,
+                      controller: controller.passwordController,
                     ),
                     SizedBox(height: 12.h),
                     Align(
@@ -106,10 +111,10 @@ class FemaleLoginUI extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       height: 56.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.offAllNamed(AppRoutes.femaleNavbar);
-                        },
+                      child: Obx(() => ElevatedButton(
+                        onPressed: controller.isLoading.value 
+                            ? null 
+                            : () => controller.login(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
                           shape: RoundedRectangleBorder(
@@ -117,15 +122,17 @@ class FemaleLoginUI extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        child: Text(
-                          'Login',
-                          style: GoogleFonts.inter(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                        child: controller.isLoading.value
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                'Login',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      )),
                     ),
                   ],
                 ),
@@ -170,6 +177,7 @@ class FemaleLoginUI extends StatelessWidget {
     required IconData icon,
     required Color themeColor,
     bool isPassword = false,
+    TextEditingController? controller,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,6 +193,7 @@ class FemaleLoginUI extends StatelessWidget {
         ),
         SizedBox(height: 10.h),
         TextField(
+          controller: controller,
           obscureText: isPassword,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(

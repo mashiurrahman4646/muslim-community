@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/female_role/home/controller/home_controller.dart';
+import 'package:muslim_community/female_role/home/controller/userdatacontroller.dart';
 import 'package:muslim_community/female_role/navbar/navbarcontroller.dart';
 import 'package:muslim_community/female_role/home/ui/prayer_settings_ui.dart';
 import 'package:muslim_community/female_role/notifications/ui/notificationsui.dart';
@@ -20,6 +21,7 @@ class FemaleHomeUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
+    final FemaleUserDataController userDataController = Get.put(FemaleUserDataController());
     final FemaleNavbarController navbarController =
         Get.find<FemaleNavbarController>();
 
@@ -34,7 +36,7 @@ class FemaleHomeUI extends StatelessWidget {
               children: [
                 SizedBox(height: 20.h),
                 // --- HEADER ---
-                _buildHeader(),
+                _buildHeader(userDataController),
                 SizedBox(height: 30.h),
 
                 // --- PRAYER & QIBLA SECTION ---
@@ -65,73 +67,79 @@ class FemaleHomeUI extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 25.r,
-              backgroundImage: const AssetImage('assets/image/female.png'),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.all(2.w),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 12.sp,
+  Widget _buildHeader(FemaleUserDataController controller) {
+    return Obx(() {
+      final img = controller.userProfileImage.value;
+
+      return Row(
+        children: [
+          Stack(
+            children: [
+              CircleAvatar(
+                radius: 25.r,
+                backgroundColor: Colors.black,
+                backgroundImage: img.isNotEmpty ? NetworkImage(img) : null,
+                onBackgroundImageError: img.isNotEmpty ? (e, s) {} : null,
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.all(2.w),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 12.sp,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(width: 12.w),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "As-salamu alaykum",
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: AppColors.bodyColor,
+            ],
+          ),
+          SizedBox(width: 12.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "As-salamu alaykum",
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  color: AppColors.bodyColor,
+                ),
               ),
-            ),
-            Text(
-              "Welcome, Aisha",
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
+              Text(
+                "Welcome, ${controller.userName.value}",
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.titleColor,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          GestureDetector(
+            onTap: () => Get.to(() => const FemaleNotificationsUI()),
+            child: Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.femaleColor.withOpacity(0.2)),
+              ),
+              child: Icon(
+                Icons.notifications_none,
                 color: AppColors.titleColor,
+                size: 24.sp,
               ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        GestureDetector(
-          onTap: () => Get.to(() => const FemaleNotificationsUI()),
-          child: Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.femaleColor.withOpacity(0.2)),
-            ),
-            child: Icon(
-              Icons.notifications_none,
-              color: AppColors.titleColor,
-              size: 24.sp,
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildSectionHeader(

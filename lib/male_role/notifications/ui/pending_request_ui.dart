@@ -12,6 +12,13 @@ class MalePendingRequestUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MalePendingRequestController controller = Get.put(MalePendingRequestController());
+    
+    // Refresh data when the UI is built to ensure it's up to date
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controller.pendingRequests.isEmpty && !controller.isLoading.value) {
+        controller.fetchPendingRequests();
+      }
+    });
 
     return Obx(() {
       if (controller.isLoading.value && controller.pendingRequests.isEmpty) {

@@ -13,19 +13,20 @@ class FemaleSentRequestController extends GetxController {
 
   Future<void> fetchSentRequests() async {
     isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1));
+    // Using mock data for now as requested
+    await Future.delayed(const Duration(milliseconds: 500));
     sentRequests.value = [
       SisterModel(
-        id: '3',
-        connectionId: 'c3',
-        name: 'Sara Jamil',
-        age: 26,
-        joinedAgo: '1 week ago',
-        distance: 5.2,
+        id: 'mock_1',
+        connectionId: 'conn_1',
+        name: 'Sara Khan',
+        age: 24,
+        joinedAgo: '1 day ago',
+        distance: 2.5,
         status: 'Requested',
         imageUrl: '',
-        about: 'Interested in community activities.',
-        interests: ['Community'],
+        about: 'Mock sent request for design preview.',
+        interests: ['Quran', 'Arabic'],
       ),
     ];
     isLoading.value = false;

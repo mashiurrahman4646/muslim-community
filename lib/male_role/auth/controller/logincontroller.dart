@@ -35,6 +35,15 @@ class MaleLoginController extends GetxController {
         final refreshToken = data['data']?['refreshToken'] ?? data['refreshToken'];
 
         if (accessToken != null) {
+          final role = _tokenService.getRoleFromToken(accessToken);
+          
+          if (role != 'male' && role != 'brother') {
+            isLoading.value = false;
+            Get.snackbar('Login Failed', 'This account is not registered as a Brother',
+                backgroundColor: Colors.red, colorText: Colors.white);
+            return;
+          }
+
           await _tokenService.saveTokens(
             accessToken: accessToken,
             refreshToken: refreshToken ?? '',

@@ -12,7 +12,6 @@ import 'package:muslim_community/jummarole/auth/ui/forgetpasswordotp.dart';
 import 'package:muslim_community/jummarole/auth/ui/login.dart';
 import 'package:muslim_community/jummarole/auth/ui/signup.dart';
 import 'package:muslim_community/jummarole/auth/ui/signupotp.dart';
-import 'package:muslim_community/jummarole/home/ui/jummahomeui.dart';
 import 'package:muslim_community/jummarole/home/ui/jummanowplayingui.dart';
 import 'package:muslim_community/jummarole/navbar/navbarui.dart';
 import 'package:muslim_community/male_role/auth/ui/IdentityVerification.dart';
@@ -36,6 +35,8 @@ import 'package:muslim_community/male_role/discover/ui/learning_details_ui.dart'
 import 'package:muslim_community/female_role/discover/ui/learning_details_ui.dart';
 import 'package:muslim_community/male_role/discover/ui/mosque_details_ui.dart';
 import 'package:muslim_community/female_role/discover/ui/mosque_details_ui.dart';
+import 'package:muslim_community/female_role/discover/ui/jumma_now_playing_ui.dart';
+import 'package:muslim_community/male_role/discover/ui/jumma_now_playing_ui.dart';
 
 import 'female_role/group/ui/female_post_details_ui.dart';
 
@@ -61,6 +62,8 @@ class AppRoutes {
   static const String maleNavbar = '/maleNavbar';
   static const String femaleNavbar = '/femaleNavbar';
   static const String jummaNowPlaying = '/jummaNowPlaying';
+  static const String femaleJummaNowPlaying = '/femaleJummaNowPlaying';
+  static const String maleJummaNowPlaying = '/maleJummaNowPlaying';
 
   static const String femaleNotifications = '/femaleNotifications';
   static const String femaleLocationAccess = '/femaleLocationAccess';
@@ -162,6 +165,14 @@ class AppRoutes {
       page: () => const FemaleNotificationsUI(),
     ),
     GetPage(name: jummaNowPlaying, page: () => const JummaNowPlayingUI()),
+    GetPage(
+      name: femaleJummaNowPlaying,
+      page: () => const FemaleJummaNowPlayingUI(),
+    ),
+    GetPage(
+      name: maleJummaNowPlaying,
+      page: () => const MaleJummaNowPlayingUI(),
+    ),
 
     // Group & Posts
     GetPage(name: maleGroupDetails, page: () => const MaleGroupDetailsUI()),

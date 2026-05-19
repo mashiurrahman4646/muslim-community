@@ -8,8 +8,12 @@ class FemaleConnectionService {
 
   Future<http.Response> getPendingRequests() async {
     final token = await _tokenService.getToken();
-    final uri = Uri.parse("${AppConfig.pendingConnectionsEndpoint}?type=received");
+    // Try base endpoint as per user's Postman test, backend might handle default type
+    final uri = Uri.parse(AppConfig.pendingConnectionsEndpoint).replace(
+      queryParameters: {'type': 'received'}
+    );
 
+    print("Fetching pending requests from: $uri");
     return await http.get(
       uri,
       headers: {

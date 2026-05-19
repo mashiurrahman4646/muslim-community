@@ -12,11 +12,24 @@ class FemaleMosqueDetailsUI extends StatelessWidget {
     final Map<String, dynamic> args = Get.arguments ?? {
       'name': 'London Central Mosque',
       'address': '146 Park Rd, London NW8 7RG',
-      'imagePath': 'assets/image/mosque01.png'
+      'imagePath': 'assets/image/mosque01.png',
+      'fajr': '04:15',
+      'dhuhr': '13:05',
+      'asr': '15:30',
+      'maghrib': '20:15',
+      'isha': '21:45',
+      'jummah': '13:15',
     };
-    final String name = args['name'];
-    final String address = args['address'];
-    final String imagePath = args['imagePath'];
+    final String name = args['name'] ?? 'London Central Mosque';
+    final String address = args['address'] ?? '146 Park Rd, London NW8 7RG';
+    final String description = args['description'] ?? 'A beautiful and serene mosque serving the local and wider community with daily prayers, educational classes, and community events.';
+    final String imagePath = args['imagePath'] ?? 'assets/image/mosque01.png';
+    final String fajr = args['fajr'] ?? '04:15';
+    final String dhuhr = args['dhuhr'] ?? '13:05';
+    final String asr = args['asr'] ?? '15:30';
+    final String maghrib = args['maghrib'] ?? '20:15';
+    final String isha = args['isha'] ?? '21:45';
+    final String jummah = args['jummah'] ?? '13:15';
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -27,12 +40,25 @@ class FemaleMosqueDetailsUI extends StatelessWidget {
             // --- HEADER IMAGE ---
             Stack(
               children: [
-                Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  height: 300.h,
-                  fit: BoxFit.cover,
-                ),
+                imagePath.startsWith('assets/')
+                    ? Image.asset(
+                        imagePath,
+                        width: double.infinity,
+                        height: 300.h,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        imagePath,
+                        width: double.infinity,
+                        height: 300.h,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          'assets/image/mosque01.png',
+                          width: double.infinity,
+                          height: 300.h,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -138,7 +164,7 @@ class FemaleMosqueDetailsUI extends StatelessWidget {
                   ),
                   SizedBox(height: 12.h),
                   Text(
-                    'A beautiful and large mosque located in Regent\'s Park, serving the local and wider community with daily prayers, educational classes, and community events.',
+                    description,
                     style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       color: AppColors.bodyColor,
@@ -180,11 +206,11 @@ class FemaleMosqueDetailsUI extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 20.h),
-                        _buildPrayerRow('Fajr', '04:15'),
-                        _buildPrayerRow('Dhuhr', '13:05'),
-                        _buildPrayerRow('Asr', '15:30'),
-                        _buildPrayerRow('Maghrib', '20:15'),
-                        _buildPrayerRow('Isha', '21:45'),
+                        _buildPrayerRow('Fajr', fajr),
+                        _buildPrayerRow('Dhuhr', dhuhr),
+                        _buildPrayerRow('Asr', asr),
+                        _buildPrayerRow('Maghrib', maghrib),
+                        _buildPrayerRow('Isha', isha),
                         SizedBox(height: 10.h),
                         Container(
                           padding: EdgeInsets.all(15.w),
@@ -204,7 +230,7 @@ class FemaleMosqueDetailsUI extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '13:15',
+                                jummah,
                                 style: GoogleFonts.inter(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,

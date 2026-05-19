@@ -4,12 +4,16 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/female_role/discover/controller/mosquecontroller.dart';
+import 'package:muslim_community/female_role/discover/model/mosque_model.dart';
 
 class MosquesUI extends StatelessWidget {
   const MosquesUI({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(MosqueController());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,7 +28,7 @@ class MosquesUI extends StatelessWidget {
                   Icon(Icons.location_on, color: const Color(0xFFE57373), size: 16.sp),
                   SizedBox(width: 4.w),
                   Text(
-                    'London, UK',
+                    'Dhaka, Bangladesh',
                     style: GoogleFonts.inter(
                       fontSize: 12.sp,
                       color: AppColors.titleColor,
@@ -69,43 +73,59 @@ class MosquesUI extends StatelessWidget {
 
         // --- MOSQUE LIST ---
         Expanded(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            children: [
-              _buildMosqueCard(
-                'London Central Mosque',
-                '146 Park Rd, London NW8 7RG',
-                'Asr at 15:30',
-                '0.8 mi',
-                'assets/image/mosque01.png',
-                AppRoutes.femaleMosqueDetails,
-              ),
-              _buildMosqueCard(
-                'East London Mosque',
-                '82-92 Whitechapel Rd, London E1 1JQ',
-                'Asr at 15:30',
-                '2.4 mi',
-                'assets/image/mosque2.png',
-                AppRoutes.femaleMosqueDetails,
-              ),
-              _buildMosqueCard(
-                'Finsbury Park Mosque',
-                '7-11 St Thomas\'s Rd, London N4 2QH',
-                'Asr at 15:35',
-                '3.1 mi',
-                'assets/image/mosque03.png',
-                AppRoutes.femaleMosqueDetails,
-              ),
-            ],
-          ),
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
+            }
+
+            if (controller.mosques.isEmpty) {
+              return Center(
+                child: Text(
+                  'No nearby mosques found.',
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    color: AppColors.bodyColor,
+                  ),
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              itemCount: controller.mosques.length,
+              itemBuilder: (context, index) {
+                final mosque = controller.mosques[index];
+                return _buildMosqueCard(
+                  mosque.name,
+                  mosque.address,
+                  mosque.nextPrayer,
+                  mosque.distance,
+                  mosque.image,
+                  AppRoutes.femaleMosqueDetails,
+                  mosque,
+                );
+              },
+            );
+          }),
         ),
       ],
     );
   }
 
-  Widget _buildMosqueCard(String name, String address, String prayerTime, String distance, String imagePath, String route) {
+  Widget _buildMosqueCard(String name, String address, String prayerTime, String distance, String imagePath, String route, MosqueModel mosque) {
     return GestureDetector(
-      onTap: () => Get.toNamed(route, arguments: {'name': name, 'address': address, 'imagePath': imagePath}),
+      onTap: () => Get.toNamed(route, arguments: {
+        'name': mosque.name,
+        'address': mosque.address,
+        'description': mosque.description,
+        'imagePath': mosque.image,
+        'fajr': mosque.fajr,
+        'dhuhr': mosque.dhuhr,
+        'asr': mosque.asr,
+        'maghrib': mosque.maghrib,
+        'isha': mosque.isha,
+        'jummah': mosque.jummah,
+      }),
       child: Container(
         margin: EdgeInsets.only(bottom: 20.h),
         padding: EdgeInsets.all(12.w),
@@ -124,12 +144,25 @@ class MosquesUI extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15.r),
-              child: Image.asset(
-                imagePath,
-                width: 80.w,
-                height: 80.w,
-                fit: BoxFit.cover,
-              ),
+              child: imagePath.startsWith('assets/')
+                  ? Image.asset(
+                      imagePath,
+                      width: 80.w,
+                      height: 80.w,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      imagePath,
+                      width: 80.w,
+                      height: 80.w,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        'assets/image/mosque01.png',
+                        width: 80.w,
+                        height: 80.w,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
             ),
             SizedBox(width: 15.w),
             Expanded(

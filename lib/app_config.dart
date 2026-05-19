@@ -10,4 +10,8 @@ class AppConfig {
   static const String cancelConnectionEndpoint = "$baseUrl/connections/{id}/request";
   static const String pendingConnectionsEndpoint = "$baseUrl/connections/pending";
   static const String updateConnectionEndpoint = "$baseUrl/connections";
+  static const String learningContentsEndpoint = "$baseUrl/learning-contents";
+  static const String likeLearningContentEndpoint = "$baseUrl/learning-contents/{id}/like";
+  static const String learningCommentsEndpoint = "$baseUrl/learning-contents/{id}/comments";
+  static const String deleteLearningCommentEndpoint = "$baseUrl/learning-contents/comments/{id}";
 }

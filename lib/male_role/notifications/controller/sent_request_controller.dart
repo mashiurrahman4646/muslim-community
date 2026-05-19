@@ -13,19 +13,20 @@ class MaleSentRequestController extends GetxController {
 
   Future<void> fetchSentRequests() async {
     isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1));
+    // Using mock data for now as requested
+    await Future.delayed(const Duration(milliseconds: 500));
     sentRequests.value = [
       BrotherModel(
-        id: '3',
-        connectionId: 'c3',
-        name: 'Hamza Yusuf',
-        age: 30,
-        joinedAgo: '4 days ago',
-        distance: 6.7,
+        id: 'mock_1',
+        connectionId: 'conn_1',
+        name: 'Ahmed Hassan',
+        age: 28,
+        joinedAgo: '2 days ago',
+        distance: 1.8,
         status: 'Requested',
         imageUrl: '',
-        about: 'Working on community projects.',
-        interests: ['Tech', 'Community'],
+        about: 'Mock sent request for design preview.',
+        interests: ['Tech', 'Hiking'],
       ),
     ];
     isLoading.value = false;

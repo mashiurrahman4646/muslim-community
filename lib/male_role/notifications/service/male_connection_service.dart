@@ -8,8 +8,11 @@ class MaleConnectionService {
 
   Future<http.Response> getPendingRequests() async {
     final token = await _tokenService.getToken();
-    final uri = Uri.parse("${AppConfig.pendingConnectionsEndpoint}?type=received");
+    final uri = Uri.parse(AppConfig.pendingConnectionsEndpoint).replace(
+      queryParameters: {'type': 'received'}
+    );
 
+    print("Fetching pending requests from: $uri");
     return await http.get(
       uri,
       headers: {

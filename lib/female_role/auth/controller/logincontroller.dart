@@ -35,6 +35,15 @@ class FemaleLoginController extends GetxController {
         final refreshToken = data['data']?['refreshToken'] ?? data['refreshToken'];
 
         if (accessToken != null) {
+          final role = _tokenService.getRoleFromToken(accessToken);
+          
+          if (role != 'female' && role != 'sister') {
+            isLoading.value = false;
+            Get.snackbar('Login Failed', 'This account is not registered as a Sister',
+                backgroundColor: Colors.red, colorText: Colors.white);
+            return;
+          }
+
           await _tokenService.saveTokens(
             accessToken: accessToken,
             refreshToken: refreshToken ?? '',

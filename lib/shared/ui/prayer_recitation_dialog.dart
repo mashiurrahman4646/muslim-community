@@ -1,166 +1,183 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
+import 'package:muslim_community/shared/controller/dua_controller.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 class PrayerRecitationDialog extends StatelessWidget {
-  final String prayerName;
+  final String waqt;
+  final Color themeColor;
 
   const PrayerRecitationDialog({
     super.key,
-    required this.prayerName,
+    required this.waqt,
+    required this.themeColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(DuaController());
+    
+    // Set the dua for the specific waqt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.setDuaByWaqt(waqt);
+    });
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Container(
         padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
-          color: AppColors.backgroundColor,
-          borderRadius: BorderRadius.circular(40.r),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.r),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // --- Header with Close Button ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return SizedBox(
+              height: 200.h,
+              child: Center(child: CircularProgressIndicator(color: themeColor)),
+            );
+          }
+
+          final dua = controller.currentDua.value;
+          if (dua == null) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: Container(
-                    padding: EdgeInsets.all(4.w),
-                    child: Icon(Icons.close, color: AppColors.greyColor, size: 24.sp),
+                Text(
+                  "Dua for $waqt",
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titleColor,
                   ),
                 ),
+                SizedBox(height: 20.h),
+                Text(
+                  "No Dua found for this waqt yet.",
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    color: AppColors.bodyColor,
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                _buildCloseButton(),
               ],
-            ),
-            
-            // --- Title ---
-            Text(
-              "${prayerName.toUpperCase()} RECITATION",
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.goldColor,
-                letterSpacing: 1.2,
+            );
+          }
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                dua.title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.titleColor,
+                ),
               ),
-            ),
-            SizedBox(height: 30.h),
-
-            // --- Arabic Text ---
-            Text(
-              "أشهد أن لا إله إلا الله",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.amiri(
-                fontSize: 32.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.titleColor,
-                height: 1.5,
+              SizedBox(height: 8.h),
+              Text(
+                "Waqt: ${dua.waqt}",
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: themeColor,
+                ),
               ),
-            ),
-            SizedBox(height: 20.h),
-
-            // --- Transliteration ---
-            Text(
-              "Ash-hadu an la ilaha illallah",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.titleColor,
-              ),
-            ),
-            SizedBox(height: 10.h),
-
-            // --- Translation ---
-            Text(
-              "\"I bear witness that there is no god but Allah\"",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontStyle: FontStyle.italic,
-                color: AppColors.bodyColor,
-              ),
-            ),
-            SizedBox(height: 40.h),
-
-            // --- Divider ---
-            Divider(color: AppColors.greyColor.withOpacity(0.2), thickness: 1),
-            SizedBox(height: 30.h),
-
-            // --- Audio Player UI ---
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "0:00",
-                        style: GoogleFonts.inter(
-                          fontSize: 14.sp,
-                          color: AppColors.greyColor,
-                        ),
-                      ),
-                      Text(
-                        "3:45",
-                        style: GoogleFonts.inter(
-                          fontSize: 14.sp,
-                          color: AppColors.greyColor,
-                        ),
-                      ),
-                    ],
+              SizedBox(height: 20.h),
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: themeColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(15.r),
+                ),
+                child: Text(
+                  dua.details,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 16.sp,
+                    height: 1.6,
+                    color: AppColors.titleColor,
                   ),
-                  SizedBox(height: 5.h),
-                  SliderTheme(
-                    data: SliderThemeData(
-                      trackHeight: 4.h,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-                      overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
-                      activeTrackColor: AppColors.goldColor,
-                      inactiveTrackColor: AppColors.greyColor.withOpacity(0.2),
-                      thumbColor: AppColors.goldColor,
-                    ),
-                    child: Slider(
-                      value: 0.35,
-                      onChanged: (value) {},
-                    ),
+                ),
+              ),
+              SizedBox(height: 30.h),
+              
+              // Audio Player UI
+              if (dua.audioUrl.isNotEmpty) ...[
+                Obx(() => ProgressBar(
+                  progress: controller.position.value,
+                  buffered: controller.bufferedPosition.value,
+                  total: controller.duration.value,
+                  onSeek: (duration) {
+                    controller.seek(duration);
+                  },
+                  baseBarColor: themeColor.withOpacity(0.1),
+                  progressBarColor: themeColor,
+                  bufferedBarColor: themeColor.withOpacity(0.2),
+                  thumbColor: themeColor,
+                  barHeight: 4.0,
+                  thumbRadius: 6.0,
+                  timeLabelTextStyle: GoogleFonts.inter(
+                    color: AppColors.bodyColor,
+                    fontSize: 12.sp,
                   ),
-                  SizedBox(height: 20.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.skip_previous_rounded, color: AppColors.greyColor, size: 32.sp),
-                      ),
-                      SizedBox(width: 20.w),
-                      Container(
-                        width: 60.w,
-                        height: 60.w,
-                        decoration: const BoxDecoration(
-                          color: AppColors.titleColor,
+                )),
+                SizedBox(height: 20.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => controller.togglePlay(),
+                      child: Container(
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: themeColor,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.pause_rounded, color: Colors.white, size: 32.sp),
+                        child: Obx(() => Icon(
+                          controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                          color: Colors.white,
+                          size: 30.sp,
+                        )),
                       ),
-                      SizedBox(width: 20.w),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.skip_next_rounded, color: AppColors.greyColor, size: 32.sp),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.h),
+              ],
+              
+              _buildCloseButton(),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildCloseButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => Get.back(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[200],
+          elevation: 0,
+          padding: EdgeInsets.symmetric(vertical: 12.h),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
+        ),
+        child: Text(
+          "Close",
+          style: GoogleFonts.inter(
+            color: AppColors.titleColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

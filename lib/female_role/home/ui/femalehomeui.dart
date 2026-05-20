@@ -281,7 +281,7 @@ class FemaleHomeUI extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.dialog(PrayerRecitationDialog(prayerName: name));
+        Get.dialog(PrayerRecitationDialog(waqt: name, themeColor: AppColors.femaleColor));
       },
       child: Container(
         decoration: BoxDecoration(

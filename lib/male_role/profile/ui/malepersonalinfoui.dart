@@ -5,12 +5,15 @@ import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
 import 'package:muslim_community/male_role/profile/controller/male_personal_info_controller.dart';
 
+import 'package:muslim_community/male_role/home/controller/userdatacontroller.dart';
+
 class MalePersonalInfoUI extends StatelessWidget {
   const MalePersonalInfoUI({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(MalePersonalInfoController());
+    final userCtrl = Get.find<MaleUserDataController>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -49,219 +52,266 @@ class MalePersonalInfoUI extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-        child: Column(
-          children: [
-            // Profile Image & Info
-            Center(
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        width: 100.w,
-                        height: 100.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/image/male.png'),
-                            fit: BoxFit.cover,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 5,
-                        right: 5,
-                        child: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+      body: Obx(() {
+        if (controller.isFetchingProfile.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        }
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          child: Column(
+            children: [
+              // Profile Image & Info
+              Center(
+                child: Column(
+                  children: [
+                    Obx(() => Stack(
+                      children: [
+                        Container(
+                          width: 100.w,
+                          height: 100.w,
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4),
+                            image: controller.selectedProfileImage.value != null 
+                              ? DecorationImage(
+                                  image: FileImage(controller.selectedProfileImage.value!),
+                                  fit: BoxFit.cover,
+                                )
+                              : userCtrl.userProfileImage.value.isNotEmpty
+                                ? DecorationImage(
+                                    image: NetworkImage(userCtrl.userProfileImage.value),
+                                    fit: BoxFit.cover,
+                                  )
+                                : const DecorationImage(
+                                    image: AssetImage('assets/image/male.png'),
+                                    fit: BoxFit.cover,
+                                  ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
+                        ),
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
                           child: Container(
-                            padding: EdgeInsets.all(4.w),
+                            padding: EdgeInsets.all(2.w),
                             decoration: const BoxDecoration(
-                              color: AppColors.maleColor,
+                              color: Colors.white,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.check, color: Colors.white, size: 10.sp),
+                            child: Container(
+                              padding: EdgeInsets.all(4.w),
+                              decoration: const BoxDecoration(
+                                color: AppColors.maleColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.check, color: Colors.white, size: 10.sp),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15.h),
-                  Obx(() => controller.isEditingPersonalDetails.value 
-                    ? SizedBox(
-                        width: 200.w,
-                        child: TextField(
-                          controller: controller.nameCtrl,
-                          textAlign: TextAlign.center,
+                      ],
+                    )),
+                    SizedBox(height: 15.h),
+                    Obx(() => controller.isEditingPersonalDetails.value 
+                      ? SizedBox(
+                          width: 200.w,
+                          child: TextField(
+                            controller: controller.nameCtrl,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.titleColor,
+                            ),
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Brother ${controller.nameCtrl.text.split(' ').first}",
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 24.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.titleColor,
                           ),
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        "Brother ${controller.nameCtrl.text.split(' ').first}",
-                        style: GoogleFonts.playfairDisplay(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.titleColor,
-                        ),
                       )),
                   SizedBox(height: 5.h),
-                  Text(
-                    "Joined 8 months ago",
+                  Obx(() => Text(
+                    controller.joinedAgo.value,
                     style: GoogleFonts.inter(
                       fontSize: 13.sp,
                       color: AppColors.bodyColor,
                     ),
-                  ),
+                  )),
                   SizedBox(height: 15.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                    GestureDetector(
+                      onTap: () => controller.pickImage(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.r),
+                        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.camera_alt_outlined, color: AppColors.maleColor, size: 14.sp),
+                          SizedBox(width: 8.w),
+                          Text(
+                            controller.selectedProfileImage.value != null ? "Change Photo" : "Edit Photo",
+                            style: GoogleFonts.inter(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.titleColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                  Obx(() => controller.selectedProfileImage.value != null 
+                    ? Padding(
+                        padding: EdgeInsets.only(top: 10.h),
+                        child: GestureDetector(
+                          onTap: () => controller.saveAll(),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: AppColors.maleColor,
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: controller.isLoading.value 
+                              ? SizedBox(width: 14.sp, height: 14.sp, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text(
+                                  "Save Photo",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
+                  ],
+                ),
+              ),
+              SizedBox(height: 30.h),
+
+              // Verified Revert Banner
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15.r),
+                  border: Border.all(color: AppColors.maleColor.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.goldColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.shield_outlined, color: AppColors.goldColor, size: 20.sp),
+                    ),
+                    SizedBox(width: 15.w),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.camera_alt_outlined, color: AppColors.maleColor, size: 14.sp),
-                        SizedBox(width: 8.w),
+                        Row(
+                          children: [
+                            Text(
+                              "Verified Revert",
+                              style: GoogleFonts.inter(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.titleColor,
+                              ),
+                            ),
+                            SizedBox(width: 5.w),
+                            Icon(Icons.check_circle, color: Colors.green, size: 14.sp),
+                          ],
+                        ),
                         Text(
-                          "Edit Photo",
+                          "Verified on Oct 12, 2023",
                           style: GoogleFonts.inter(
                             fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.titleColor,
+                            color: AppColors.bodyColor.withOpacity(0.7),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 30.h),
+              SizedBox(height: 20.h),
 
-            // Verified Revert Banner
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.r),
-                border: Border.all(color: AppColors.maleColor.withOpacity(0.3)),
-              ),
-              child: Row(
+              // Personal Details Card
+              Obx(() => _buildSectionCard(
+                title: "Personal Details",
+                isEditingSection: controller.isEditingPersonalDetails.value,
+                onEditTap: () => controller.isEditingPersonalDetails.value = true,
+                onSaveTap: () => controller.saveAll(),
+                themeColor: AppColors.maleColor,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.goldColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.shield_outlined, color: AppColors.goldColor, size: 20.sp),
-                  ),
-                  SizedBox(width: 15.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Verified Revert",
-                            style: GoogleFonts.inter(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.titleColor,
-                            ),
-                          ),
-                          SizedBox(width: 5.w),
-                          Icon(Icons.check_circle, color: Colors.green, size: 14.sp),
-                        ],
-                      ),
-                      Text(
-                        "Verified on Oct 12, 2023",
-                        style: GoogleFonts.inter(
-                          fontSize: 12.sp,
-                          color: AppColors.bodyColor.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildDetailRow("Full Name", controller.nameCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
+                  _buildStaticRow("Age", controller.ageCtrl.text, icon: Icons.lock_outline),
+                  _buildStaticRow("Gender", "Brother", icon: Icons.lock_outline),
+                  _buildStaticRow("Location", controller.locationCtrl.text, icon: Icons.lock_outline),
+                  _buildStaticRow("How long Muslim?", controller.durationCtrl.text, icon: Icons.lock_outline),
+                  _buildStaticRow("Email", controller.emailCtrl.text, icon: Icons.lock_outline),
                 ],
-              ),
-            ),
-            SizedBox(height: 20.h),
+              )),
+              SizedBox(height: 20.h),
 
-            // Personal Details Card
-            Obx(() => _buildSectionCard(
-              title: "Personal Details",
-              isEditingSection: controller.isEditingPersonalDetails.value,
-              onEditTap: () => controller.isEditingPersonalDetails.value = true,
-              onSaveTap: () => controller.isEditingPersonalDetails.value = false,
-              themeColor: AppColors.maleColor,
-              children: [
-                _buildDetailRow("Full Name", controller.nameCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("Age", controller.ageCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildStaticRow("Gender", "Brother", icon: Icons.lock_outline),
-                _buildDetailRow("Location", controller.locationCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("How long Muslim?", controller.durationCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-                _buildDetailRow("Email", controller.emailCtrl, controller.isEditingPersonalDetails.value, AppColors.maleColor),
-              ],
-            )),
-            SizedBox(height: 20.h),
+              // About Me Card
+              Obx(() => _buildSectionCard(
+                title: "About Me",
+                isEditingSection: controller.isEditingAboutMe.value,
+                onEditTap: () => controller.isEditingAboutMe.value = true,
+                onSaveTap: () => controller.saveAll(),
+                themeColor: AppColors.maleColor,
+                children: [
+                  _buildEditableTextArea(controller.aboutCtrl, controller.isEditingAboutMe.value, AppColors.maleColor),
+                ],
+              )),
+              SizedBox(height: 20.h),
 
-            // About Me Card
-            Obx(() => _buildSectionCard(
-              title: "About Me",
-              isEditingSection: controller.isEditingAboutMe.value,
-              onEditTap: () => controller.isEditingAboutMe.value = true,
-              onSaveTap: () => controller.isEditingAboutMe.value = false,
-              themeColor: AppColors.maleColor,
-              children: [
-                _buildEditableTextArea(controller.aboutCtrl, controller.isEditingAboutMe.value, AppColors.maleColor),
-              ],
-            )),
-            SizedBox(height: 20.h),
+              // My Revert Story Card
+              Obx(() => _buildSectionCard(
+                title: "My Revert Story",
+                isEditingSection: controller.isEditingStory.value,
+                onEditTap: () => controller.isEditingStory.value = true,
+                onSaveTap: () => controller.saveAll(),
+                themeColor: AppColors.maleColor,
+                children: [
+                  _buildEditableTextArea(controller.storyCtrl, controller.isEditingStory.value, AppColors.maleColor),
+                ],
+              )),
+              SizedBox(height: 20.h),
 
-            // My Revert Story Card
-            Obx(() => _buildSectionCard(
-              title: "My Revert Story",
-              isEditingSection: controller.isEditingStory.value,
-              onEditTap: () => controller.isEditingStory.value = true,
-              onSaveTap: () => controller.isEditingStory.value = false,
-              themeColor: AppColors.maleColor,
-              children: [
-                _buildEditableTextArea(controller.storyCtrl, controller.isEditingStory.value, AppColors.maleColor),
-              ],
-            )),
-            SizedBox(height: 20.h),
-
-            // Interests Card
-            Obx(() => _buildInterestsSection(controller)),
-            SizedBox(height: 30.h),
-          ],
-        ),
-      ),
+              // Interests Card
+              Obx(() => _buildInterestsSection(controller)),
+              SizedBox(height: 30.h),
+              
+              // Global Save Button removed as requested
+              const SizedBox.shrink(),
+              SizedBox(height: 30.h),
+            ],
+          ),
+        );
+      }),
     );
   }
 

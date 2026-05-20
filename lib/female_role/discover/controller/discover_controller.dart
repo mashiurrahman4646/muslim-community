@@ -41,4 +41,8 @@ class FemaleDiscoverController extends GetxController {
   void loadMore() {
     _sisterGetController.fetchSisters(isRefresh: false);
   }
+
+  Future<void> fetchSisters() async {
+    await _sisterGetController.fetchSisters(isRefresh: true);
+  }
 }

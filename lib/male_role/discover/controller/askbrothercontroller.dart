@@ -26,8 +26,12 @@ class AskBrotherController extends GetxController {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List list = decoded['data'];
-          myQuestions.assignAll(list.map((json) => AskQuestionModel.fromJson(json)).toList());
+          final rawData = decoded['data'];
+          if (rawData is List) {
+            myQuestions.assignAll(rawData.map((json) => AskQuestionModel.fromJson(json)).toList());
+          } else if (rawData is Map) {
+            myQuestions.assignAll([AskQuestionModel.fromJson(Map<String, dynamic>.from(rawData))]);
+          }
         }
       } else {
         debugPrint("Error fetching my questions: ${response.body}");

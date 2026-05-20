@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
-import 'package:muslim_community/jummarole/askimam/ui/submissionsuccessui.dart';
+import 'package:muslim_community/male_role/discover/ui/ask_success_ui.dart';
 import 'package:muslim_community/female_role/discover/controller/asksistercontroller.dart';
 
 class AskSisterUI extends StatefulWidget {
@@ -26,10 +26,14 @@ class _AskSisterUIState extends State<AskSisterUI> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Tab Switcher
+    return RefreshIndicator(
+      onRefresh: () => controller.fetchMyQuestions(),
+      color: AppColors.femaleColor,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            // Tab Switcher
           Container(
             margin: EdgeInsets.symmetric(horizontal: 24.w),
             padding: EdgeInsets.all(6.w),
@@ -109,7 +113,8 @@ class _AskSisterUIState extends State<AskSisterUI> {
           SizedBox(height: 20.h),
         ],
       ),
-    );
+    ),  // SingleChildScrollView
+    ); // RefreshIndicator
   }
 
   Widget _buildAskForm() {
@@ -161,7 +166,7 @@ class _AskSisterUIState extends State<AskSisterUI> {
                         final success = await controller.submitQuestion(question);
                         if (success) {
                           _questionController.clear();
-                          Get.to(() => const SubmissionSuccessUI(), transition: Transition.fadeIn);
+                          Get.to(() => const AskSuccessUI(role: 'sister'), transition: Transition.fadeIn);
                         }
                       },
                 style: ElevatedButton.styleFrom(

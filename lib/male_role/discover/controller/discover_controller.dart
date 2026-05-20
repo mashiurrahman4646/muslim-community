@@ -41,4 +41,8 @@ class MaleDiscoverController extends GetxController {
   void loadMore() {
     _brotherGetController.fetchBrothers(isRefresh: false);
   }
+
+  Future<void> fetchBrothers() async {
+    await _brotherGetController.fetchBrothers(isRefresh: true);
+  }
 }

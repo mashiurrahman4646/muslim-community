@@ -213,41 +213,46 @@ class MaleDiscoverUI extends StatelessWidget {
           return false;
         },
         child: Obx(
-          () => GridView.builder(
-            padding: EdgeInsets.only(bottom: 20.h),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.65,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
+          () => RefreshIndicator(
+            onRefresh: () => controller.fetchBrothers(),
+            color: _roleColor,
+            child: GridView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.only(bottom: 20.h),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.65,
+                crossAxisSpacing: 12.w,
+                mainAxisSpacing: 12.h,
+              ),
+              itemCount: controller.filteredBrothers.length,
+              itemBuilder: (context, index) {
+                final brother = controller.filteredBrothers[index];
+                return BrotherCard(
+                  brother: brother,
+                  index: index,
+                  onConnectPressed: () => Get.find<MaleRequestSendController>().sendRequest(brother.id),
+                  onCancelPressed: () {
+                    print("=== CANCEL BUTTON TAPPED ===");
+                    print("  brother.id         : ${brother.id}");
+                    print("  brother.connectionId: ${brother.connectionId}");
+                    if (brother.connectionId != null) {
+                      Get.find<MaleRequestCancelController>().cancelRequest(brother.id, brother.connectionId!);
+                    } else {
+                      print("  ⚠️ connectionId is NULL! Request cannot be cancelled.");
+                      Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
+                    }
+                  },
+                  onConfirmPressed: () {
+                    if (brother.connectionId != null) {
+                      Get.find<MaleRequestAcceptController>().acceptRequest(brother.id, brother.connectionId!);
+                    } else {
+                      Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
+                    }
+                  },
+                );
+              },
             ),
-            itemCount: controller.filteredBrothers.length,
-            itemBuilder: (context, index) {
-              final brother = controller.filteredBrothers[index];
-              return BrotherCard(
-                brother: brother,
-                index: index,
-                onConnectPressed: () => Get.find<MaleRequestSendController>().sendRequest(brother.id),
-                onCancelPressed: () {
-                  print("=== CANCEL BUTTON TAPPED ===");
-                  print("  brother.id         : ${brother.id}");
-                  print("  brother.connectionId: ${brother.connectionId}");
-                  if (brother.connectionId != null) {
-                    Get.find<MaleRequestCancelController>().cancelRequest(brother.id, brother.connectionId!);
-                  } else {
-                    print("  ⚠️ connectionId is NULL! Request cannot be cancelled.");
-                    Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
-                  }
-                },
-                onConfirmPressed: () {
-                  if (brother.connectionId != null) {
-                    Get.find<MaleRequestAcceptController>().acceptRequest(brother.id, brother.connectionId!);
-                  } else {
-                    Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
-                  }
-                },
-              );
-            },
           ),
         ),
       ),

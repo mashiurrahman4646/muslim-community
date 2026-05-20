@@ -1,6 +1,7 @@
 class AskQuestionModel {
   final String id;
   final String userId;
+  final String userRole;
   final String question;
   final String status;
   final List<AnswerModel> answers;
@@ -10,6 +11,7 @@ class AskQuestionModel {
   AskQuestionModel({
     required this.id,
     required this.userId,
+    required this.userRole,
     required this.question,
     required this.status,
     required this.answers,
@@ -21,17 +23,34 @@ class AskQuestionModel {
     return AskQuestionModel(
       id: json['id'] ?? json['_id'] ?? '',
       userId: json['userId'] ?? '',
+      userRole: json['userRole'] ?? '',
       question: json['question'] ?? '',
       status: json['status'] ?? 'pending',
-      answers: (json['answers'] as List?)
-              ?.map((e) => AnswerModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
+      answers: (json['answers'] as List?)?.map((e) {
+            if (e is String) {
+              return AnswerModel(
+                id: '',
+                answer: e,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
+            } else if (e is Map) {
+              return AnswerModel.fromJson(Map<String, dynamic>.from(e));
+            } else {
+              return AnswerModel(
+                id: '',
+                answer: e?.toString() ?? '',
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
+            }
+          }).toList() ??
           [],
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+          ? (DateTime.tryParse(json['createdAt']) ?? DateTime.now())
           : DateTime.now(),
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+          ? (DateTime.tryParse(json['updatedAt']) ?? DateTime.now())
           : DateTime.now(),
     );
   }
@@ -58,13 +77,13 @@ class AnswerModel {
     return AnswerModel(
       id: json['id'] ?? json['_id'] ?? '',
       questionId: json['questionId'],
-      answer: json['answer'] ?? '',
+      answer: json['answer'] ?? json['ans'] ?? json['content'] ?? json['text'] ?? json['reply'] ?? '',
       answeredBy: json['answeredBy'],
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+          ? (DateTime.tryParse(json['createdAt']) ?? DateTime.now())
           : DateTime.now(),
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+          ? (DateTime.tryParse(json['updatedAt']) ?? DateTime.now())
           : DateTime.now(),
     );
   }

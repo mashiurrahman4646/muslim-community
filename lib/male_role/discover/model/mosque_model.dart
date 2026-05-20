@@ -14,6 +14,8 @@ class MosqueModel {
   final String maghrib;
   final String isha;
   final String jummah;
+  final String mapLink;
+  final String website;
 
   MosqueModel({
     required this.id,
@@ -31,9 +33,18 @@ class MosqueModel {
     required this.maghrib,
     required this.isha,
     required this.jummah,
+    required this.mapLink,
+    required this.website,
   });
 
   factory MosqueModel.fromJson(Map<String, dynamic> json) {
+    // Safely parse numbers
+    double parseDouble(dynamic val) {
+      if (val is num) return val.toDouble();
+      if (val is String) return double.tryParse(val) ?? 0.0;
+      return 0.0;
+    }
+
     // Distance fallback formatting using backend's distanceInKm field
     final distVal = json['distanceInKm'] ?? json['distance'];
     String distanceStr = '0.0 km';
@@ -48,6 +59,14 @@ class MosqueModel {
 
     // Image fallback assets to ensure high quality visual presentation if no url is present
     String img = json['image'] ?? json['imagePath'] ?? '';
+    if (img.isNotEmpty) {
+      if (img.contains('localhost:5002')) {
+        img = img.replaceAll('localhost:5002', '10.10.7.47:5002');
+      } else if (img.contains('127.0.0.1:5002')) {
+        img = img.replaceAll('127.0.0.1:5002', '10.10.7.47:5002');
+      }
+    }
+    
     if (img.isEmpty) {
       final String nameLower = nameStr.toLowerCase();
       if (nameLower.contains('central')) {
@@ -69,6 +88,14 @@ class MosqueModel {
       nextPr = 'Asr at $asrTime';
     }
 
+    final double latVal = parseDouble(json['latitude'] ?? json['lat']);
+    final double lngVal = parseDouble(json['longitude'] ?? json['lng']);
+    
+    final String mapLinkStr = json['mapLink'] ?? 
+        (latVal != 0.0 && lngVal != 0.0 
+            ? 'https://www.google.com/maps/search/?api=1&query=$latVal,$lngVal' 
+            : '');
+
     return MosqueModel(
       id: json['id'] ?? json['_id'] ?? '',
       name: nameStr,
@@ -77,14 +104,16 @@ class MosqueModel {
       image: img,
       distance: distanceStr,
       nextPrayer: nextPr,
-      latitude: (json['latitude'] ?? json['lat'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['longitude'] ?? json['lng'] as num?)?.toDouble() ?? 0.0,
+      latitude: latVal,
+      longitude: lngVal,
       fajr: prayers['fajr'] ?? json['fajr'] ?? '04:15',
       dhuhr: prayers['dhuhr'] ?? json['dhuhr'] ?? '13:05',
       asr: prayers['asr'] ?? json['asr'] ?? '15:30',
       maghrib: prayers['maghrib'] ?? json['maghrib'] ?? '20:15',
       isha: prayers['isha'] ?? json['isha'] ?? '21:45',
       jummah: prayers['jummah'] ?? json['jummah'] ?? '13:15',
+      mapLink: mapLinkStr,
+      website: json['website'] ?? '',
     );
   }
 }

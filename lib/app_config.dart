@@ -16,4 +16,6 @@ class AppConfig {
   static const String deleteLearningCommentEndpoint = "$baseUrl/learning-contents/comments/{id}";
   static const String askQuestionEndpoint = "$baseUrl/ask-question";
   static const String myQuestionsEndpoint = "$baseUrl/ask-question/my-questions";
+  static const String legalEndpoint = "$baseUrl/legal";
+  static const String duasEndpoint = "$baseUrl/duas";
 }

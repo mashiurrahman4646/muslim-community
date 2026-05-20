@@ -25,7 +25,11 @@ class MosquesUI extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.location_on, color: const Color(0xFFE57373), size: 16.sp),
+                  Icon(
+                    Icons.location_on,
+                    color: const Color(0xFFE57373),
+                    size: 16.sp,
+                  ),
                   SizedBox(width: 4.w),
                   Text(
                     'Dhaka, Bangladesh',
@@ -48,7 +52,11 @@ class MosquesUI extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.search, color: AppColors.bodyColor.withValues(alpha: 0.5), size: 20.sp),
+                    Icon(
+                      Icons.search,
+                      color: AppColors.bodyColor.withValues(alpha: 0.5),
+                      size: 20.sp,
+                    ),
                     SizedBox(width: 10.w),
                     Expanded(
                       child: TextField(
@@ -75,7 +83,9 @@ class MosquesUI extends StatelessWidget {
         Expanded(
           child: Obx(() {
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.femaleColor),
+              );
             }
 
             if (controller.mosques.isEmpty) {
@@ -90,21 +100,27 @@ class MosquesUI extends StatelessWidget {
               );
             }
 
-            return ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: controller.mosques.length,
-              itemBuilder: (context, index) {
-                final mosque = controller.mosques[index];
-                return _buildMosqueCard(
-                  mosque.name,
-                  mosque.address,
-                  mosque.nextPrayer,
-                  mosque.distance,
-                  mosque.image,
-                  AppRoutes.femaleMosqueDetails,
-                  mosque,
-                );
+            return RefreshIndicator(
+              onRefresh: () async {
+                await controller.fetchMosques();
               },
+              color: AppColors.femaleColor,
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                itemCount: controller.mosques.length,
+                itemBuilder: (context, index) {
+                  final mosque = controller.mosques[index];
+                  return _buildMosqueCard(
+                    mosque.name,
+                    mosque.address,
+                    mosque.nextPrayer,
+                    mosque.distance,
+                    mosque.image,
+                    AppRoutes.femaleMosqueDetails,
+                    mosque,
+                  );
+                },
+              ),
             );
           }),
         ),
@@ -112,20 +128,33 @@ class MosquesUI extends StatelessWidget {
     );
   }
 
-  Widget _buildMosqueCard(String name, String address, String prayerTime, String distance, String imagePath, String route, MosqueModel mosque) {
+  Widget _buildMosqueCard(
+    String name,
+    String address,
+    String prayerTime,
+    String distance,
+    String imagePath,
+    String route,
+    MosqueModel mosque,
+  ) {
     return GestureDetector(
-      onTap: () => Get.toNamed(route, arguments: {
-        'name': mosque.name,
-        'address': mosque.address,
-        'description': mosque.description,
-        'imagePath': mosque.image,
-        'fajr': mosque.fajr,
-        'dhuhr': mosque.dhuhr,
-        'asr': mosque.asr,
-        'maghrib': mosque.maghrib,
-        'isha': mosque.isha,
-        'jummah': mosque.jummah,
-      }),
+      onTap: () => Get.toNamed(
+        route,
+        arguments: {
+          'name': mosque.name,
+          'address': mosque.address,
+          'description': mosque.description,
+          'imagePath': mosque.image,
+          'fajr': mosque.fajr,
+          'dhuhr': mosque.dhuhr,
+          'asr': mosque.asr,
+          'maghrib': mosque.maghrib,
+          'isha': mosque.isha,
+          'jummah': mosque.jummah,
+          'mapLink': mosque.mapLink,
+          'website': mosque.website,
+        },
+      ),
       child: Container(
         margin: EdgeInsets.only(bottom: 20.h),
         padding: EdgeInsets.all(12.w),
@@ -191,7 +220,10 @@ class MosquesUI extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFBF0F0),
                           borderRadius: BorderRadius.circular(8.r),
@@ -206,7 +238,11 @@ class MosquesUI extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.near_me_outlined, size: 12.sp, color: AppColors.bodyColor),
+                      Icon(
+                        Icons.near_me_outlined,
+                        size: 12.sp,
+                        color: AppColors.bodyColor,
+                      ),
                       SizedBox(width: 4.w),
                       Text(
                         distance,

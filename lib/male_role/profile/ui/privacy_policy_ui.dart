@@ -3,12 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
+import 'package:muslim_community/female_role/profile/controller/privacyandtramcontroller.dart';
 
 class MalePrivacyPolicyUI extends StatelessWidget {
   const MalePrivacyPolicyUI({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(PrivacyAndTermsController());
+    
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -46,31 +49,39 @@ class MalePrivacyPolicyUI extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceColor,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Text(
-            """Brother Privacy Policy
+      body: Obx(() {
+        if (controller.isLoading.value && controller.privacyPolicyContent.isEmpty) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        }
+        
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceColor,
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Text(
+              controller.privacyPolicyContent.value.isNotEmpty 
+                  ? controller.privacyPolicyContent.value 
+                  : """Brother Privacy Policy
 
 Your privacy is important to us. It is Muslim Community's policy to respect your privacy regarding any information we may collect from our brothers across the application.
 
 We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent.
 
 We don't share any personally identifying information publicly or with third-parties, except when required to by law.""",
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              color: AppColors.bodyColor,
-              height: 1.6,
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                color: AppColors.bodyColor,
+                height: 1.6,
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

@@ -31,4 +31,7 @@ class MosqueController extends GetxController {
     super.onInit();
     fetchNearbyMosques();
   }
+
+  /// Alias used by RefreshIndicator in the UI
+  Future<void> fetchMosques() => fetchNearbyMosques();
 }

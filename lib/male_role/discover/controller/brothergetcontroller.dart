@@ -18,6 +18,23 @@ class BrotherGetController extends GetxController {
   var hasMore = true.obs;
   var isFetchingMore = false.obs;
 
+  // Pre-fetch location to have it ready
+  double? _cachedLat;
+  double? _cachedLng;
+
+  Future<void> _preFetchLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+        timeLimit: const Duration(seconds: 3),
+      );
+      _cachedLat = position.latitude;
+      _cachedLng = position.longitude;
+    } catch (e) {
+      print("Pre-fetch location failed: $e");
+    }
+  }
+
   Future<void> fetchBrothers({bool isRefresh = false}) async {
     if (isRefresh) {
       page.value = 1;
@@ -29,20 +46,25 @@ class BrotherGetController extends GetxController {
     }
     
     try {
-      double latitude = 23.779999;
-      double longitude = 90.406693;
+      double latitude = _cachedLat ?? 23.779999;
+      double longitude = _cachedLng ?? 90.406693;
       
-      try {
-        print("Fetching current position...");
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
-          timeLimit: const Duration(seconds: 5),
-        );
-        latitude = position.latitude;
-        longitude = position.longitude;
-        print("Position fetched: $latitude, $longitude");
-      } catch (e) {
-        print("Geolocator failed in discover, using fallback coordinates: $e");
+      // Only fetch if we don't have cached data or it's a refresh
+      if (_cachedLat == null || isRefresh) {
+        try {
+          print("Fetching current position...");
+          Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.low, // Lower accuracy for faster results
+            timeLimit: const Duration(seconds: 3), // Reduced timeout
+          );
+          latitude = position.latitude;
+          longitude = position.longitude;
+          _cachedLat = latitude;
+          _cachedLng = longitude;
+          print("Position fetched: $latitude, $longitude");
+        } catch (e) {
+          print("Geolocator failed in discover, using fallback/cached coordinates: $e");
+        }
       }
 
       print("Calling getProfiles with: lat=$latitude, lon=$longitude, search=${searchTerm.value}, filter=${filter.value}, page=${page.value}");
@@ -69,7 +91,13 @@ class BrotherGetController extends GetxController {
             brothers.clear();
           }
         } else {
-          final fetchedBrothers = profilesData.map((json) {
+          // Strictly filter only BROTHER profiles from the API response
+          final filteredProfiles = profilesData.where((json) {
+            final gender = (json['userType'] ?? json['gender'] ?? '').toString().toUpperCase();
+            return gender == 'BROTHER';
+          }).toList();
+
+          final fetchedBrothers = filteredProfiles.map((json) {
             final int age = json['age'] ?? 30;
             String joinedAgo = 'New Revert';
             if (json['revertDate'] != null) {
@@ -166,6 +194,9 @@ class BrotherGetController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Pre-fetch position to speed up subsequent loads
+    _preFetchLocation();
+    
     // Ensure user data is loaded before fetching brothers to correctly map status
     if (_userCtrl.userId.value.isEmpty) {
       _userCtrl.getUserData().then((_) => fetchBrothers(isRefresh: true));

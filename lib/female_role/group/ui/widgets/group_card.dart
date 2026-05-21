@@ -96,36 +96,13 @@ class GroupCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Get.toNamed(
-                      AppRoutes.femaleGroupDetails,
-                      arguments: group,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: _roleColor,
-                      side: BorderSide(
-                        color: _roleColor.withValues(alpha: 0.2),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                    ),
-                    child: Text(
-                      'View Group',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 15.w),
-                Expanded(
                   child: ElevatedButton(
                     onPressed: onJoinToggle,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined
-                          ? const Color(0xFFE57373)
+                      backgroundColor: group.isJoined 
+                          ? _roleColor.withValues(alpha: 0.2) 
                           : _roleColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: group.isJoined ? _roleColor : Colors.white,
                       elevation: 0,
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       shape: RoundedRectangleBorder(
@@ -133,8 +110,35 @@ class GroupCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      group.isJoined ? 'Leave' : 'Join',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                      'Join Group',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600, 
+                        fontSize: 12.sp
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onJoinToggle,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: group.isJoined 
+                          ? const Color(0xFFD32F2F) 
+                          : Colors.grey.withValues(alpha: 0.2),
+                      foregroundColor: group.isJoined ? Colors.white : Colors.grey,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.r),
+                      ),
+                    ),
+                    child: Text(
+                      'Leave Group',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 12.sp
+                      ),
                     ),
                   ),
                 ),

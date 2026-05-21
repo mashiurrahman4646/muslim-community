@@ -4,11 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
 
+import 'package:muslim_community/female_role/profile/controller/changepasswordcontroller.dart';
+
 class FemaleChangePasswordUI extends StatelessWidget {
   const FemaleChangePasswordUI({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(FemaleChangePasswordController());
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -67,36 +71,35 @@ class FemaleChangePasswordUI extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPasswordField(
+                  Obx(() => _buildPasswordField(
                     label: "PREVIOUS PASSWORD",
                     hint: "Enter your current password",
-                  ),
+                    controller: controller.currentPasswordCtrl,
+                    obscureText: !controller.isCurrentPasswordVisible.value,
+                    onToggle: controller.toggleCurrentPasswordVisibility,
+                  )),
                   SizedBox(height: 20.h),
-                  _buildPasswordField(
+                  Obx(() => _buildPasswordField(
                     label: "NEW PASSWORD",
                     hint: "Enter your new password",
-                  ),
+                    controller: controller.newPasswordCtrl,
+                    obscureText: !controller.isNewPasswordVisible.value,
+                    onToggle: controller.toggleNewPasswordVisibility,
+                  )),
                   SizedBox(height: 20.h),
-                  _buildPasswordField(
+                  Obx(() => _buildPasswordField(
                     label: "CONFIRM NEW PASSWORD",
                     hint: "Re-enter your new password",
-                  ),
+                    controller: controller.confirmPasswordCtrl,
+                    obscureText: !controller.isConfirmPasswordVisible.value,
+                    onToggle: controller.toggleConfirmPasswordVisibility,
+                  )),
                   SizedBox(height: 40.h),
                   SizedBox(
                     width: double.infinity,
                     height: 56.h,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Change password logic here
-                        Get.back();
-                        Get.snackbar(
-                          "Success",
-                          "Password changed successfully",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.green.shade400,
-                          colorText: Colors.white,
-                        );
-                      },
+                    child: Obx(() => ElevatedButton(
+                      onPressed: controller.isLoading.value ? null : () => controller.changePassword(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.femaleColor,
                         shape: RoundedRectangleBorder(
@@ -104,15 +107,17 @@ class FemaleChangePasswordUI extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: Text(
-                        "Change Password",
-                        style: GoogleFonts.inter(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                      child: controller.isLoading.value
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            "Change Password",
+                            style: GoogleFonts.inter(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                    )),
                   ),
                 ],
               ),
@@ -123,7 +128,13 @@ class FemaleChangePasswordUI extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField({required String label, required String hint}) {
+  Widget _buildPasswordField({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    required bool obscureText,
+    required VoidCallback onToggle,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,7 +149,8 @@ class FemaleChangePasswordUI extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         TextField(
-          obscureText: true,
+          controller: controller,
+          obscureText: obscureText,
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             color: AppColors.titleColor,
@@ -153,7 +165,14 @@ class FemaleChangePasswordUI extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.grey.withOpacity(0.5), size: 20.sp),
+            suffixIcon: GestureDetector(
+              onTap: onToggle,
+              child: Icon(
+                obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: Colors.grey.withOpacity(0.5),
+                size: 20.sp,
+              ),
+            ),
           ),
         ),
       ],

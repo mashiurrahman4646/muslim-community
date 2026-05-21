@@ -3,12 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
+import 'package:muslim_community/female_role/group/controller/group_controller.dart';
+import 'package:muslim_community/female_role/group/model/group_post_model.dart';
+import 'package:muslim_community/female_role/home/controller/userdatacontroller.dart';
 
 class FemalePostDetailsUI extends StatelessWidget {
   const FemalePostDetailsUI({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final FemaleGroupController controller = Get.find<FemaleGroupController>();
+    final FemaleUserDataController userDataController = Get.isRegistered<FemaleUserDataController>()
+        ? Get.find<FemaleUserDataController>()
+        : Get.put(FemaleUserDataController());
+
+    final GroupPostModel initialPost = Get.arguments;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -24,25 +34,13 @@ class FemalePostDetailsUI extends StatelessWidget {
             ),
           ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'New Reverts in London',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.titleColor,
-              ),
-            ),
-            Text(
-              '125 members',
-              style: GoogleFonts.inter(
-                fontSize: 12.sp,
-                color: AppColors.bodyColor,
-              ),
-            ),
-          ],
+        title: Text(
+          'Post Details',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: AppColors.titleColor,
+          ),
         ),
       ),
       body: Column(
@@ -50,105 +48,221 @@ class FemalePostDetailsUI extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Recent Posts',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.titleColor,
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
+              child: Obx(() {
+                final post = controller.groupPosts.firstWhere(
+                  (p) => p.id == initialPost.id,
+                  orElse: () => initialPost,
+                );
 
-                  // --- POST CARD ---
-                  Container(
-                    padding: EdgeInsets.all(20.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 18.r,
-                              backgroundImage: const AssetImage('assets/icons/abubakr.png'),
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Tariq M.',
-                                    style: GoogleFonts.playfairDisplay(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.titleColor,
-                                    ),
-                                  ),
-                                  Text(
-                                    '5h ago',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11.sp,
-                                      color: AppColors.bodyColor,
-                                    ),
-                                  ),
-                                ],
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // --- POST CARD ---
+                    Container(
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 18.r,
+                                backgroundImage: post.userImage.isNotEmpty
+                                    ? NetworkImage(post.userImage)
+                                    : const AssetImage('assets/image/female.png') as ImageProvider,
+                                onBackgroundImageError: post.userImage.isNotEmpty ? (e, s) {} : null,
                               ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      post.userName,
+                                      style: GoogleFonts.playfairDisplay(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.titleColor,
+                                      ),
+                                    ),
+                                    Text(
+                                      post.createdAt.split('T')[0],
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11.sp,
+                                        color: AppColors.bodyColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 15.h),
+                          Text(
+                            post.content,
+                            style: GoogleFonts.inter(
+                              fontSize: 14.sp,
+                              color: AppColors.titleColor.withValues(alpha: 0.8),
+                              height: 1.5,
                             ),
-                            IconButton(
-                              icon: Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
-                              onPressed: () {},
-                            ),
+                          ),
+                          if (post.attachments.isNotEmpty) ...[
+                            SizedBox(height: 15.h),
+                            ...post.attachments.map((url) => Padding(
+                              padding: EdgeInsets.only(bottom: 10.h),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15.r),
+                                child: Image.network(
+                                  url,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
+                                    width: double.infinity,
+                                    height: 200.h,
+                                    color: Colors.grey[200],
+                                    child: Icon(Icons.image_not_supported, color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            )),
                           ],
-                        ),
-                        SizedBox(height: 15.h),
-                        Text(
-                          'Are we still meeting up this Friday near Regent\'s Park mosque?',
-                          style: GoogleFonts.inter(
-                            fontSize: 14.sp,
-                            color: AppColors.titleColor.withValues(alpha: 0.8),
-                            height: 1.5,
+                          SizedBox(height: 20.h),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () => controller.likePost(post.id),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      post.isLiked ? Icons.favorite : Icons.favorite_border,
+                                      color: post.isLiked ? const Color(0xFFE57373) : AppColors.bodyColor,
+                                      size: 18.sp,
+                                    ),
+                                    SizedBox(width: 6.w),
+                                    Text(
+                                      post.likesCount.toString(),
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12.sp,
+                                        color: AppColors.bodyColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 20.w),
+                              Icon(Icons.chat_bubble_outline, color: AppColors.bodyColor, size: 18.sp),
+                              SizedBox(width: 6.w),
+                              Text(
+                                post.commentsCount.toString(),
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.sp,
+                                  color: AppColors.bodyColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    SizedBox(height: 30.h),
+                    
+                    // --- COMMENTS SECTION ---
+                    Text(
+                      'Comments',
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.titleColor,
+                      ),
+                    ),
+                    SizedBox(height: 15.h),
+                    
+                    if (controller.postComments.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: Text(
+                            'No comments yet. Write a comment below!',
+                            style: GoogleFonts.inter(color: AppColors.bodyColor),
                           ),
                         ),
-                        SizedBox(height: 20.h),
-                        Row(
-                          children: [
-                            Icon(Icons.favorite, color: const Color(0xFFE57373).withValues(alpha: 0.6), size: 18.sp),
-                            SizedBox(width: 6.w),
-                            Text(
-                              '8',
-                              style: GoogleFonts.inter(
-                                fontSize: 12.sp,
-                                color: AppColors.bodyColor,
-                              ),
-                            ),
-                            SizedBox(width: 20.w),
-                            Icon(Icons.chat_bubble_outline, color: AppColors.bodyColor, size: 18.sp),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.postComments.where((c) => c.parentCommentId == null).length,
+                        itemBuilder: (context, index) {
+                          final mainComments = controller.postComments.where((c) => c.parentCommentId == null).toList();
+                          if (index >= mainComments.length) return const SizedBox.shrink();
+                          final mainComment = mainComments[index];
+                          final replies = controller.postComments.where((c) => c.parentCommentId == mainComment.id).toList();
+                          
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildCommentItem(context, mainComment, isReply: false),
+                              if (replies.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(left: 40.w),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemCount: replies.length,
+                                    itemBuilder: (context, rIndex) {
+                                      return _buildCommentItem(context, replies[rIndex], isReply: true);
+                                    },
+                                  ),
+                                ),
+                              SizedBox(height: 12.h),
+                            ],
+                          );
+                        },
+                      ),
+                  ],
+                );
+              }),
             ),
           ),
 
-          // --- COMMENT SECTION ---
+          // --- REPLY PREVIEW ---
+          Obx(() {
+            if (controller.replyingToCommentId.value.isEmpty) return const SizedBox.shrink();
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              color: AppColors.backgroundColor.withValues(alpha: 0.8),
+              child: Row(
+                children: [
+                  Icon(Icons.reply, size: 16.sp, color: AppColors.femaleColor),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      'Replying to ${controller.replyingToUserName.value}',
+                      style: GoogleFonts.inter(fontSize: 12.sp, color: AppColors.bodyColor),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => controller.cancelReply(),
+                    child: Icon(Icons.close, size: 16.sp, color: AppColors.bodyColor),
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          // --- COMMENT INPUT BOX ---
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
             decoration: BoxDecoration(
@@ -168,21 +282,31 @@ class FemalePostDetailsUI extends StatelessWidget {
             child: SafeArea(
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundImage: const AssetImage('assets/image/female.png'),
-                  ),
+                  Obx(() {
+                    final img = userDataController.userProfileImage.value;
+                    return CircleAvatar(
+                      radius: 20.r,
+                      backgroundImage: img.isNotEmpty
+                          ? NetworkImage(img)
+                          : const AssetImage('assets/image/female.png') as ImageProvider,
+                      onBackgroundImageError: img.isNotEmpty ? (e, s) {} : null,
+                    );
+                  }),
                   SizedBox(width: 15.w),
                   Expanded(
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: AppColors.backgroundColor,
+                        color: AppColors.femaleColor.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(20.r),
+                        border: Border.all(color: AppColors.femaleColor.withValues(alpha: 0.1)),
                       ),
                       child: TextField(
+                        controller: controller.commentContentCtrl,
                         decoration: InputDecoration(
-                          hintText: 'Write a comment...',
+                          hintText: controller.replyingToCommentId.value.isEmpty 
+                              ? 'Write a comment...' 
+                              : 'Write a reply...',
                           hintStyle: GoogleFonts.inter(
                             fontSize: 13.sp,
                             color: AppColors.bodyColor.withValues(alpha: 0.6),
@@ -196,16 +320,102 @@ class FemalePostDetailsUI extends StatelessWidget {
                   SizedBox(width: 10.w),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE9DCC9),
+                      color: AppColors.femaleColor.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: Icon(Icons.send_rounded, color: AppColors.titleColor, size: 20.sp),
-                      onPressed: () {},
+                      icon: Icon(Icons.send_rounded, color: AppColors.femaleColor, size: 20.sp),
+                      onPressed: () {
+                        controller.addComment(initialPost.id);
+                      },
                     ),
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentItem(BuildContext context, dynamic comment, {required bool isReply}) {
+    final controller = Get.find<FemaleGroupController>();
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.all(15.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 15.r,
+            backgroundImage: comment.userImage.isNotEmpty
+                ? NetworkImage(comment.userImage)
+                : const AssetImage('assets/image/female.png') as ImageProvider,
+            onBackgroundImageError: comment.userImage.isNotEmpty ? (e, s) {} : null,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      comment.userName,
+                      style: GoogleFonts.inter(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.titleColor,
+                      ),
+                    ),
+                    Text(
+                      comment.createdAt.contains('T')
+                          ? comment.createdAt.split('T')[0]
+                          : comment.createdAt,
+                      style: GoogleFonts.inter(
+                        fontSize: 10.sp,
+                        color: AppColors.bodyColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  comment.content,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.sp,
+                    color: AppColors.titleColor.withValues(alpha: 0.8),
+                  ),
+                ),
+                if (!isReply)
+                  GestureDetector(
+                    onTap: () => controller.setReply(comment.id, comment.userName),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.h),
+                      child: Text(
+                        'Reply',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.sp,
+                          color: AppColors.femaleColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

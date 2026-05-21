@@ -42,6 +42,27 @@ class TokenService {
     await prefs.remove(_roleKey);
   }
 
+  // Parse JWT token to get the userId dynamically from payload
+  String? getUserIdFromToken(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      
+      final payload = parts[1];
+      String normalized = base64Url.normalize(payload);
+      final decodedBytes = base64Url.decode(normalized);
+      final decodedString = utf8.decode(decodedBytes);
+      final Map<String, dynamic> payloadMap = jsonDecode(decodedString);
+      
+      return payloadMap['id']?.toString() ?? 
+             payloadMap['_id']?.toString() ?? 
+             payloadMap['userId']?.toString() ??
+             payloadMap['sub']?.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Parse JWT token to get the role dynamically from payload
   String? getRoleFromToken(String token) {
     try {

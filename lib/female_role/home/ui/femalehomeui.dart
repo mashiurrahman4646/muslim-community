@@ -174,6 +174,7 @@ class FemaleHomeUI extends StatelessWidget {
   }
 
   Widget _buildPrayerTimes(HomeController controller) {
+    final prayerCtrl = controller.prayerTimeController;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -192,13 +193,13 @@ class FemaleHomeUI extends StatelessWidget {
                       color: AppColors.titleColor,
                     ),
                   ),
-                  Text(
-                    "Today · Thursday, 15 Dhul-Hijjah",
+                  Obx(() => Text(
+                    "Today · ${prayerCtrl.todayDate.value.isNotEmpty ? prayerCtrl.todayDate.value : 'Loading...'} · ${prayerCtrl.hijriDate.value}",
                     style: GoogleFonts.inter(
                       fontSize: 12.sp,
                       color: AppColors.bodyColor,
                     ),
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -237,28 +238,37 @@ class FemaleHomeUI extends StatelessWidget {
           ],
         ),
         SizedBox(height: 20.h),
-        // --- Static Prayer Cards with Asset Icons ---
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          mainAxisSpacing: 15.h,
-          crossAxisSpacing: 15.w,
-          childAspectRatio: 0.8,
-          children: [
-            _buildPrayerCard("Fajr", "05:12", 'assets/icons/fajr.png'),
-            _buildPrayerCard("Sunrise", "06:45", 'assets/icons/sunrise.png'),
-            _buildPrayerCard("Dhuhr", "12:30", 'assets/icons/dhuhr.png'),
-            _buildPrayerCard("Asr", "15:45", 'assets/icons/asr.png'),
-            _buildPrayerCard(
-              "Maghrib",
-              "18:15",
-              'assets/icons/maghrib.png',
-              isNext: true,
-            ),
-            _buildPrayerCard("Isha", "19:45", 'assets/icons/isha.png'),
-          ],
-        ),
+        // --- Dynamic Prayer Cards from API ---
+        Obx(() {
+          if (prayerCtrl.isLoading.value) {
+            return SizedBox(
+              height: 150.h,
+              child: const Center(child: CircularProgressIndicator(color: AppColors.femaleColor)),
+            );
+          }
+          
+          final timings = prayerCtrl.prayerTimings;
+          if (timings.isEmpty) {
+            return const Center(child: Text("No timings available"));
+          }
+
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: 15.h,
+            crossAxisSpacing: 15.w,
+            childAspectRatio: 0.8,
+            children: [
+              _buildPrayerCard("Fajr", timings['Fajr'] ?? "--:--", 'assets/icons/fajr.png', isNext: prayerCtrl.nextPrayerName.value == "Fajr"),
+              _buildPrayerCard("Sunrise", timings['Sunrise'] ?? "--:--", 'assets/icons/sunrise.png', isNext: false),
+              _buildPrayerCard("Dhuhr", timings['Dhuhr'] ?? "--:--", 'assets/icons/dhuhr.png', isNext: prayerCtrl.nextPrayerName.value == "Dhuhr"),
+              _buildPrayerCard("Asr", timings['Asr'] ?? "--:--", 'assets/icons/asr.png', isNext: prayerCtrl.nextPrayerName.value == "Asr"),
+              _buildPrayerCard("Maghrib", timings['Maghrib'] ?? "--:--", 'assets/icons/maghrib.png', isNext: prayerCtrl.nextPrayerName.value == "Maghrib"),
+              _buildPrayerCard("Isha", timings['Isha'] ?? "--:--", 'assets/icons/isha.png', isNext: prayerCtrl.nextPrayerName.value == "Isha"),
+            ],
+          );
+        }),
         SizedBox(height: 20.h),
         Center(
           child: Text(

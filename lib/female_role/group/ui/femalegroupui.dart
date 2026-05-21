@@ -41,9 +41,9 @@ class FemaleGroupUI extends StatelessWidget {
               child: Obx(() {
                 return ListView.builder(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: controller.filteredGroups.length,
+                  itemCount: controller.groups.length,
                   itemBuilder: (context, index) {
-                    final group = controller.filteredGroups[index];
+                    final group = controller.groups[index];
                     return GroupCard(
                       group: group,
                       onJoinToggle: () => controller.toggleJoin(group.id),

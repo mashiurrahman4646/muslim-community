@@ -18,4 +18,8 @@ class AppConfig {
   static const String myQuestionsEndpoint = "$baseUrl/ask-question/my-questions";
   static const String legalEndpoint = "$baseUrl/legal";
   static const String duasEndpoint = "$baseUrl/duas";
+  static const String changePasswordEndpoint = "$baseUrl/auth/change-password";
+  static const String prayerTimesEndpoint = "$baseUrl/prayer-times";
+  static const String groupsEndpoint = "$baseUrl/groups";
+  static const String groupPostsEndpoint = "$baseUrl/groups/posts";
 }

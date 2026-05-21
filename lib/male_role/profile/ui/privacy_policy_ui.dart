@@ -3,14 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
-import 'package:muslim_community/female_role/profile/controller/privacyandtramcontroller.dart';
+import 'package:muslim_community/male_role/profile/controller/male_privacy_terms_controller.dart';
 
 class MalePrivacyPolicyUI extends StatelessWidget {
   const MalePrivacyPolicyUI({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(PrivacyAndTermsController());
+    final controller = Get.put(MalePrivacyAndTermsController());
     
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,

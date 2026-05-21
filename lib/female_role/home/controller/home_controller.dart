@@ -1,24 +1,15 @@
 import 'package:muslim_community/female_role/home/controller/qibla_controller.dart';
+import 'package:muslim_community/female_role/home/controller/payertimecontroller.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   final QiblaController qiblaController = Get.put(QiblaController());
+  final FemalePrayerTimeController prayerTimeController = Get.put(FemalePrayerTimeController());
 
   var isLoading = true.obs;
-  var prayerTimings = <String, dynamic>{
-    'timings': {
-      'Fajr': '05:12',
-      'Sunrise': '06:45',
-      'Dhuhr': '12:30',
-      'Asr': '15:45',
-      'Maghrib': '18:15',
-      'Isha': '19:45',
-    },
-  }.obs;
   var currentLocation = "Dhaka, Bangladesh".obs;
-  var nextPrayer = "Maghrib".obs;
 
   @override
   void onInit() {
@@ -30,8 +21,11 @@ class HomeController extends GetxController {
     try {
       isLoading(true);
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        desiredAccuracy: LocationAccuracy.medium,
       );
+
+      // Fetch prayer times using the new controller
+      await prayerTimeController.fetchPrayerTimes(position.latitude, position.longitude);
 
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
@@ -43,7 +37,6 @@ class HomeController extends GetxController {
             "${place.locality ?? ''}, ${place.country ?? ''}";
       }
 
-      // Prayer timings are now static as requested
       isLoading(false);
     } catch (e) {
       print("Error fetching location: $e");

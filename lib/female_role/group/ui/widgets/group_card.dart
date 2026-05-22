@@ -17,7 +17,22 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.toNamed(AppRoutes.femaleGroupDetails, arguments: group),
+      onTap: () {
+        if (group.isJoined) {
+          Get.toNamed(
+            AppRoutes.femaleGroupDetails,
+            arguments: group,
+          );
+        } else {
+          Get.snackbar(
+            "Access Denied",
+            "Please join the group first to see its posts and members.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        }
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.h),
         padding: EdgeInsets.all(20.w),
@@ -95,53 +110,50 @@ class GroupCard extends StatelessWidget {
             // --- BUTTONS ---
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onJoinToggle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined 
-                          ? _roleColor.withValues(alpha: 0.2) 
-                          : _roleColor,
-                      foregroundColor: group.isJoined ? _roleColor : Colors.white,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+                if (!group.isJoined)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onJoinToggle,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _roleColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Join Group',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600, 
-                        fontSize: 12.sp
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onJoinToggle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined 
-                          ? const Color(0xFFD32F2F) 
-                          : Colors.grey.withValues(alpha: 0.2),
-                      foregroundColor: group.isJoined ? Colors.white : Colors.grey,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Leave Group',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 12.sp
+                      child: Text(
+                        'Join Group',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                if (group.isJoined)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onJoinToggle,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD32F2F),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Leave Group',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],

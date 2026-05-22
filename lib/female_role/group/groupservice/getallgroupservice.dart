@@ -22,6 +22,19 @@ class FemaleGetAllGroupService {
     );
   }
 
+  Future<http.Response> getGroupPosts(String groupId) async {
+    final token = await _tokenService.getToken();
+    final uri = Uri.parse("${AppConfig.groupsEndpoint}/$groupId/posts");
+
+    return await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   Future<http.Response> joinGroup(String groupId) async {
     final token = await _tokenService.getToken();
     final uri = Uri.parse('${AppConfig.groupsEndpoint}/$groupId/join');
@@ -48,22 +61,10 @@ class FemaleGetAllGroupService {
     );
   }
 
-  Future<http.Response> getGroupPosts(String groupId) async {
-    final token = await _tokenService.getToken();
-    final uri = Uri.parse('${AppConfig.groupsEndpoint}/$groupId/posts');
-    
-    return await http.get(
-      uri,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-  }
-
   Future<http.Response> createGroupPost(String groupId, String content, {List<String>? imagePaths}) async {
     final token = await _tokenService.getToken();
-    final uri = Uri.parse('${AppConfig.groupsEndpoint}/$groupId/posts');
+    // Using the specific path shown in screenshot: {{baseUrl}}/groups/{{groupId}}/posts
+    final uri = Uri.parse("${AppConfig.groupsEndpoint}/$groupId/posts");
     
     // If no images, use regular JSON post
     if (imagePaths == null || imagePaths.isEmpty) {
@@ -75,6 +76,7 @@ class FemaleGetAllGroupService {
         },
         body: jsonEncode({
           'content': content,
+          'attachments': [],
         }),
       );
     }
@@ -85,7 +87,6 @@ class FemaleGetAllGroupService {
       'Authorization': 'Bearer $token',
     });
     
-    // Ensure content is sent as a string field
     request.fields['content'] = content;
     
     for (String path in imagePaths) {
@@ -93,24 +94,43 @@ class FemaleGetAllGroupService {
       final mimeType = mimeTypeData != null ? mimeTypeData[0] : 'image';
       final mimeSubType = mimeTypeData != null ? mimeTypeData[1] : 'jpeg';
 
-      // Some backends prefer 'attachments' while others like 'attachments[]'
-      // We will use 'attachments' as it's more standard for multipart
       request.files.add(await http.MultipartFile.fromPath(
         'attachments', 
         path,
         contentType: MediaType(mimeType, mimeSubType),
       ));
     }
-    
+
     final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-    
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      debugPrint("[POST_ERROR] Status: ${response.statusCode}");
-      debugPrint("[POST_ERROR] Body: ${response.body}");
-    }
-    
-    return response;
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  Future<http.Response> deletePost(String postId) async {
+    final token = await _tokenService.getToken();
+    final url = AppConfig.deletePostEndpoint.replaceAll('{postId}', postId);
+    final uri = Uri.parse(url);
+
+    return await http.delete(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+  }
+
+  Future<http.Response> deleteComment(String commentId) async {
+    final token = await _tokenService.getToken();
+    final url = AppConfig.deleteCommentEndpoint.replaceAll('{commentId}', commentId);
+    final uri = Uri.parse(url);
+
+    return await http.delete(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
   }
 
   Future<http.Response> likePost(String postId) async {

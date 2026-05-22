@@ -26,7 +26,7 @@ class FemalePendingRequestUI extends StatelessWidget {
       }
 
       return RefreshIndicator(
-        onRefresh: () => controller.fetchPendingRequests(),
+        onRefresh: () => controller.fetchPendingRequests(isRefresh: true),
         color: AppColors.femaleColor,
         child: controller.pendingRequests.isEmpty
             ? ListView(
@@ -40,13 +40,30 @@ class FemalePendingRequestUI extends StatelessWidget {
                   ),
                 ],
               )
-            : ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                itemCount: controller.pendingRequests.length,
-                itemBuilder: (context, index) {
-                  final sister = controller.pendingRequests[index];
-                  return _buildRequestCard(sister, controller);
+            : NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                    controller.fetchPendingRequests();
+                  }
+                  return false;
                 },
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                  itemCount: controller.pendingRequests.length + (controller.isFetchingMore.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < controller.pendingRequests.length) {
+                      final sister = controller.pendingRequests[index];
+                      return _buildRequestCard(sister, controller);
+                    } else {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(color: AppColors.femaleColor),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
       );
     });

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/group/controller/group_controller.dart';
 import 'package:muslim_community/male_role/group/model/group_post_model.dart';
+import 'package:muslim_community/male_role/group/model/group_comment_model.dart';
 import 'package:muslim_community/male_role/home/controller/userdatacontroller.dart';
 
 class MalePostDetailsUI extends StatelessWidget {
@@ -18,6 +19,11 @@ class MalePostDetailsUI extends StatelessWidget {
         : Get.put(MaleUserDataController());
 
     final GroupPostModel initialPost = Get.arguments;
+    
+    // Fetch live comments when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchPostComments(initialPost.id);
+    });
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -106,6 +112,46 @@ class MalePostDetailsUI extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              if (post.userId == userDataController.userId.value)
+                                PopupMenuButton<String>(
+                                  icon: Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
+                                  onSelected: (value) {
+                                    if (value == 'delete') {
+                                      Get.dialog(
+                                        AlertDialog(
+                                          title: const Text("Delete Post"),
+                                          content: const Text("Are you sure you want to delete this post?"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Get.back(),
+                                              child: const Text("Cancel"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Get.back();
+                                                controller.deletePost(post.groupId, post.id);
+                                                Get.back(); // Back to group details
+                                              },
+                                              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                          SizedBox(width: 10),
+                                          Text("Delete", style: TextStyle(color: Colors.red)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                           SizedBox(height: 15.h),
@@ -339,8 +385,9 @@ class MalePostDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentItem(BuildContext context, dynamic comment, {required bool isReply}) {
+  Widget _buildCommentItem(BuildContext context, GroupCommentModel comment, {required bool isReply}) {
     final controller = Get.find<MaleGroupController>();
+    final userDataController = Get.find<MaleUserDataController>();
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.all(15.w),
@@ -373,22 +420,71 @@ class MalePostDetailsUI extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      comment.userName,
-                      style: GoogleFonts.inter(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.titleColor,
+                    Expanded(
+                      child: Text(
+                        comment.userName,
+                        style: GoogleFonts.inter(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.titleColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(
-                      comment.createdAt.contains('T')
-                          ? comment.createdAt.split('T')[0]
-                          : comment.createdAt,
-                      style: GoogleFonts.inter(
-                        fontSize: 10.sp,
-                        color: AppColors.bodyColor.withValues(alpha: 0.6),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          comment.createdAt.contains('T')
+                              ? comment.createdAt.split('T')[0]
+                              : comment.createdAt,
+                          style: GoogleFonts.inter(
+                            fontSize: 10.sp,
+                            color: AppColors.bodyColor.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        if (comment.userId == userDataController.userId.value)
+                          PopupMenuButton<String>(
+                            icon: Icon(Icons.more_vert, size: 16.sp, color: AppColors.bodyColor),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onSelected: (value) {
+                              if (value == 'delete') {
+                                Get.dialog(
+                                  AlertDialog(
+                                    title: const Text("Delete Comment"),
+                                    content: const Text("Are you sure you want to delete this comment?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Get.back(),
+                                        child: const Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Get.back();
+                                          final postId = Get.arguments.id;
+                                          controller.deleteComment(postId, comment.id);
+                                        },
+                                        child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                                    SizedBox(width: 8),
+                                    Text("Delete", style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                   ],
                 ),

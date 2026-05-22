@@ -1,3 +1,6 @@
+import 'package:muslim_community/utils/date_formatter.dart';
+import 'package:muslim_community/app_config.dart';
+
 class GroupCommentModel {
   final String id;
   final String content;
@@ -37,6 +40,14 @@ class GroupCommentModel {
 
     if (image.isNotEmpty) {
       image = image.replaceAll('`', '').trim();
+      if (!image.startsWith('http')) {
+        final serverRoot = AppConfig.baseUrl.replaceAll('/api/v1', '');
+        if (!image.startsWith('/')) {
+          image = '$serverRoot/$image';
+        } else {
+          image = '$serverRoot$image';
+        }
+      }
     }
 
     return GroupCommentModel(
@@ -45,7 +56,7 @@ class GroupCommentModel {
       userName: name,
       userImage: image,
       parentCommentId: json['parentCommentId'],
-      createdAt: json['createdAt'] ?? '',
+      createdAt: DateFormatter.formatPostTime(json['createdAt'] ?? ''),
       userId: uId,
     );
   }

@@ -7,12 +7,14 @@ import 'package:muslim_community/female_role/messages/controller/chat_controller
 import 'package:muslim_community/female_role/messages/model/chat_message_model.dart';
 
 class FemaleChatUI extends StatelessWidget {
+  final String chatId;
   final String userName;
   final String? userImage;
   final bool isOnline;
 
   const FemaleChatUI({
     super.key,
+    required this.chatId,
     required this.userName,
     this.userImage,
     this.isOnline = true,
@@ -21,6 +23,11 @@ class FemaleChatUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FemaleChatController controller = Get.put(FemaleChatController());
+
+    // Fetch messages when UI opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchMessages(chatId);
+    });
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -36,17 +43,40 @@ class FemaleChatUI extends StatelessWidget {
             ),
 
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                children: [
-                  _buildTodayPill(),
-                  SizedBox(height: 20.h),
-                  Obx(
-                    () => Column(
-                      children: controller.messages.map((msg) => _buildChatBubble(msg)).toList(),
-                    ),
-                  ),
-                ],
+              child: Obx(
+                () {
+                  if (controller.isLoading.value && controller.messages.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  
+                  if (controller.messages.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No messages yet. Start a conversation!',
+                        style: GoogleFonts.inter(color: AppColors.bodyColor),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    itemCount: controller.messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = controller.messages[index];
+                      // Show date pill for the first message or if date changes (simplified for now)
+                      if (index == 0) {
+                        return Column(
+                          children: [
+                            _buildTodayPill(),
+                            SizedBox(height: 20.h),
+                            _buildChatBubble(msg),
+                          ],
+                        );
+                      }
+                      return _buildChatBubble(msg);
+                    },
+                  );
+                },
               ),
             ),
             
@@ -83,7 +113,20 @@ class FemaleChatUI extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
                     child: userImage != null
-                        ? Image.asset(userImage!, fit: BoxFit.cover, width: 40.h, height: 40.h)
+                        ? (userImage!.startsWith('assets/')
+                            ? Image.asset(userImage!, fit: BoxFit.cover, width: 40.h, height: 40.h)
+                            : Image.network(
+                                userImage!,
+                                fit: BoxFit.cover,
+                                width: 40.h,
+                                height: 40.h,
+                                errorBuilder: (context, error, stackTrace) => Center(
+                                  child: Text(
+                                    userName.isNotEmpty ? userName[0] : '',
+                                    style: TextStyle(color: AppColors.femaleColor, fontSize: 18.sp),
+                                  ),
+                                ),
+                              ))
                         : Center(
                             child: Text(
                               userName.isNotEmpty ? userName[0] : '',
@@ -207,6 +250,7 @@ class FemaleChatUI extends StatelessWidget {
   }
 
   Widget _buildMessageInput() {
+    final FemaleChatController controller = Get.find<FemaleChatController>();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
       decoration: BoxDecoration(
@@ -228,6 +272,7 @@ class FemaleChatUI extends StatelessWidget {
                 border: Border.all(color: AppColors.goldColor.withValues(alpha: 0.2)),
               ),
               child: TextField(
+                controller: controller.messageController,
                 decoration: InputDecoration(
                   hintText: 'Type a message...',
                   hintStyle: GoogleFonts.inter(
@@ -237,17 +282,21 @@ class FemaleChatUI extends StatelessWidget {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 12.h),
                 ),
+                onSubmitted: (_) => controller.sendMessage(chatId),
               ),
             ),
           ),
           SizedBox(width: 15.w),
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: const BoxDecoration(
-              color: AppColors.femaleColor,
-              shape: BoxShape.circle,
+          GestureDetector(
+            onTap: () => controller.sendMessage(chatId),
+            child: Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: const BoxDecoration(
+                color: AppColors.femaleColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.send, color: Colors.white, size: 18.sp),
             ),
-            child: Icon(Icons.send, color: Colors.white, size: 18.sp),
           ),
         ],
       ),

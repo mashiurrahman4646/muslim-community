@@ -52,12 +52,32 @@ class MaleMessagesUI extends StatelessWidget {
               // --- MESSAGES LIST ---
               Expanded(
                 child: Obx(
-                  () => ListView.builder(
-                    itemCount: controller.filteredMessages.length,
-                    itemBuilder: (context, index) {
-                      return MessageTile(message: controller.filteredMessages[index]);
-                    },
-                  ),
+                  () {
+                    if (controller.isLoading.value && controller.messages.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    
+                    if (controller.filteredMessages.isEmpty) {
+                      return Center(
+                        child: Text(
+                          controller.searchQuery.value.isEmpty 
+                              ? 'No chats found' 
+                              : 'No matches found',
+                          style: GoogleFonts.inter(color: AppColors.bodyColor),
+                        ),
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () => controller.fetchChatList(),
+                      child: ListView.builder(
+                        itemCount: controller.filteredMessages.length,
+                        itemBuilder: (context, index) {
+                          return MessageTile(message: controller.filteredMessages[index]);
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

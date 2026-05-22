@@ -8,10 +8,14 @@ import 'package:muslim_community/female_role/group/model/group_post_model.dart';
 import 'package:muslim_community/female_role/group/model/group_comment_model.dart';
 import 'package:muslim_community/female_role/group/groupservice/getallgroupservice.dart';
 import 'package:muslim_community/services/tokenservice.dart';
+import 'package:muslim_community/female_role/home/controller/userdatacontroller.dart';
 
 class FemaleGroupController extends GetxController {
   final FemaleGetAllGroupService _groupService = FemaleGetAllGroupService();
   final TokenService _tokenService = TokenService();
+  final FemaleUserDataController _userDataController = Get.isRegistered<FemaleUserDataController>()
+      ? Get.find<FemaleUserDataController>()
+      : Get.put(FemaleUserDataController());
   
   var isLoading = false.obs;
   var isPostsLoading = false.obs;
@@ -21,56 +25,8 @@ class FemaleGroupController extends GetxController {
   var allGroups = <GroupModel>[]; // Original data
 
   var currentGroup = Rxn<GroupModel>();
-  var groupPosts = <GroupPostModel>[
-    GroupPostModel(
-      id: "p1",
-      groupId: "1",
-      userId: "u1",
-      userName: "Tariq M.",
-      userImage: "",
-      content: "Are we still meeting up this Friday near Regent's Park mosque?",
-      attachments: [],
-      likesCount: 8,
-      commentsCount: 2,
-      isPinned: false,
-      isLiked: false,
-      createdAt: "5h ago",
-    ),
-    GroupPostModel(
-      id: "p2",
-      groupId: "1",
-      userId: "u2",
-      userName: "Sarah J.",
-      userImage: "",
-      content: "Does anyone have recommendations for beginner tafsir books?",
-      attachments: [],
-      likesCount: 12,
-      commentsCount: 5,
-      isPinned: false,
-      isLiked: true,
-      createdAt: "1d ago",
-    ),
-  ].obs;
-
-  var postComments = <GroupCommentModel>[
-     GroupCommentModel(
-       id: "c1",
-       userId: "u3",
-       userName: "Fatima",
-       userImage: "",
-       content: "Yes, inshaAllah! I'll be there at 2 PM.",
-       createdAt: "2h ago",
-     ),
-     GroupCommentModel(
-       id: "c2",
-       userId: "u4",
-       userName: "Zainab",
-       userImage: "",
-       content: "Me too!",
-       parentCommentId: "c1",
-       createdAt: "1h ago",
-     ),
-   ].obs;
+  var groupPosts = <GroupPostModel>[].obs;
+  var postComments = <GroupCommentModel>[].obs;
 
   final postContentCtrl = TextEditingController();
   final commentContentCtrl = TextEditingController();
@@ -86,45 +42,92 @@ class FemaleGroupController extends GetxController {
     _initializeGroups();
   }
 
-  void _initializeGroups() async {
-    // Audit: Strictly only SISTER groups from your real API response.
-    allGroups = [
-      GroupModel(
-        id: "6a0e32cc3f039328ec6c127e",
-        name: "All girls are now independent",
-        category: "lessi🤝😒on",
-        memberCount: 1,
-        description: "All girls are now independent All girls are now independent All girls are now independent",
-        userType: "SISTER",
-        isJoined: false,
-        icon: Icons.woman_outlined,
-      ),
-      GroupModel(
-        id: "6a0dffdd0043fd3af997e6df",
-        name: "vbvbvbvbvvb",
-        category: "education",
-        memberCount: 0,
-        description: "আমাদের দৃষ্টিতে এই এপ্রোচটি বেশি কার্যকর এবং ব্যবহারবান্ধব হবে।",
-        userType: "SISTER",
-        isJoined: false,
-        icon: Icons.school_outlined,
-      ),
-    ];
+  Future<void> _initializeGroups() async {
+    await _fetchGroupsInternal(setLoading: true);
+  }
 
-    // REDUNDANT PRIVACY FILTER: Strictly enforce userType check at runtime
-    groups.value = allGroups.where((g) => g.userType == "SISTER").toList();
+  Future<void> refreshGroups() async {
+    await _fetchGroupsInternal(setLoading: false);
+  }
+
+  Future<void> _fetchGroupsInternal({required bool setLoading}) async {
+    if (setLoading) isLoading.value = true;
+    try {
+      final token = await _tokenService.getToken();
+      if (token == null) return;
+
+      final role = _tokenService.getRoleFromToken(token);
+      if (role == 'female') {
+        final response = await _groupService.getAllGroups();
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          final List<dynamic> data = responseData['data'] ?? [];
+
+          final currentUserId = _userDataController.userId.value;
+
+          allGroups = data
+              .map((json) => GroupModel.fromJson(json, currentUserId: currentUserId))
+              .where((g) => g.userType == "SISTER")
+              .toList();
+
+          groups.value = allGroups;
+
+          final currentId = currentGroup.value?.id;
+          if (currentId != null && currentId.isNotEmpty) {
+            currentGroup.value = groups.firstWhereOrNull((g) => g.id == currentId) ?? currentGroup.value;
+          }
+        }
+      } else {
+        print("Access Denied: Token role is $role, but trying to access Female Group Controller");
+        groups.clear();
+      }
+    } catch (e) {
+      print("Error initializing groups: $e");
+    } finally {
+      if (setLoading) isLoading.value = false;
+    }
   }
 
   void updateInitialGroup(GroupModel initialGroup) {
     currentGroup.value = groups.firstWhereOrNull((g) => g.id == initialGroup.id) ?? initialGroup;
+    fetchGroupPosts(initialGroup.id);
   }
 
-  void fetchGroupPosts(String groupId) {
-    // Already static
+  Future<void> fetchGroupPosts(String groupId) async {
+    try {
+      isPostsLoading.value = true;
+      final response = await _groupService.getGroupPosts(groupId);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> postsData = responseData['data'] ?? [];
+        
+        groupPosts.value = postsData.map((json) => GroupPostModel.fromJson(json)).toList();
+      } else {
+        print("Failed to fetch posts: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching posts: $e");
+    } finally {
+      isPostsLoading.value = false;
+    }
   }
 
-  void fetchPostComments(String postId) {
-    // Already static
+  Future<void> fetchPostComments(String postId) async {
+    try {
+      isCommentsLoading.value = true;
+      final response = await _groupService.getPostComments(postId);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> commentsData = responseData['data'] ?? [];
+        postComments.value = commentsData.map((json) => GroupCommentModel.fromJson(json)).toList();
+      }
+    } catch (e) {
+      print("Error fetching comments: $e");
+    } finally {
+      isCommentsLoading.value = false;
+    }
   }
 
   Future<void> toggleJoin(String groupId) async {
@@ -133,6 +136,7 @@ class FemaleGroupController extends GetxController {
 
     final g = groups[index];
     final wasJoined = g.isJoined;
+    final desiredAfter = !wasJoined;
 
     try {
       isLoading.value = true;
@@ -140,24 +144,67 @@ class FemaleGroupController extends GetxController {
           ? await _groupService.leaveGroup(groupId)
           : await _groupService.joinGroup(groupId);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
+      final message = (responseData['message'] ?? "").toString().toLowerCase();
+
+      bool success = response.statusCode == 200 || response.statusCode == 201;
+      bool? serverIsMember;
+      final dataVal = responseData['data'];
+      if (dataVal is Map) {
+        final v = dataVal['isMember'] ?? dataVal['isJoined'] ?? dataVal['joined'] ?? dataVal['is_member'] ?? dataVal['is_joined'];
+        if (v != null) {
+          serverIsMember = v == true || v.toString().toLowerCase() == 'true';
+        }
+      }
+
+      bool isMemberAfter = serverIsMember ?? desiredAfter;
+
+      if (message.contains('already') && message.contains('member')) {
+        isMemberAfter = true;
+        success = true;
+      }
+      if (message.contains('not') && message.contains('member')) {
+        isMemberAfter = false;
+        success = true;
+      }
+
+      if (success) {
+        final memberCountAfter = isMemberAfter == wasJoined
+            ? g.memberCount
+            : isMemberAfter
+                ? g.memberCount + 1
+                : (g.memberCount - 1).clamp(0, 1 << 30).toInt();
+
         groups[index] = GroupModel(
           id: g.id,
           name: g.name,
           category: g.category,
-          memberCount: wasJoined ? g.memberCount - 1 : g.memberCount + 1,
+          memberCount: memberCountAfter,
           description: g.description,
-          isJoined: !wasJoined,
+          isJoined: isMemberAfter,
           userType: g.userType,
+          coverImage: g.coverImage,
           icon: g.icon,
         );
         if (currentGroup.value?.id == groupId) {
           currentGroup.value = groups[index];
         }
-        Get.snackbar("Success", wasJoined ? "Left group" : "Joined group");
+
+        String snackMsg;
+        if (!wasJoined && isMemberAfter) {
+          snackMsg = message.contains("already") ? "You are already a member" : "Joined group";
+        } else if (wasJoined && !isMemberAfter) {
+          snackMsg = message.contains("not") ? "You were not a member" : "Left group";
+        } else if (wasJoined && isMemberAfter) {
+          snackMsg = "Still a member";
+        } else {
+          snackMsg = "Not joined";
+        }
+        Get.snackbar("Success", snackMsg);
+
+        await refreshGroups();
       } else {
-        final errorData = jsonDecode(response.body);
-        Get.snackbar("Error", errorData['message'] ?? "Failed to update group status");
+        Get.snackbar("Error", responseData['message'] ?? "Failed to update group status");
       }
     } catch (e) {
       Get.snackbar("Error", "An error occurred: $e");
@@ -166,34 +213,42 @@ class FemaleGroupController extends GetxController {
     }
   }
 
-  void createPost(String groupId) {
+  Future<void> createPost(String groupId) async {
     if (postContentCtrl.text.isEmpty) return;
     
-    final newPost = GroupPostModel(
-      id: DateTime.now().toString(),
-      groupId: groupId,
-      userId: "me",
-      userName: "Aisha (Me)",
-      userImage: "",
-      content: postContentCtrl.text,
-      attachments: [],
-      likesCount: 0,
-      commentsCount: 0,
-      isPinned: false,
-      isLiked: false,
-      createdAt: "Just now",
-    );
-    
-    groupPosts.insert(0, newPost);
-    postContentCtrl.clear();
-    selectedImages.clear();
-    Get.snackbar("Success", "Post created (Static Mode)");
+    try {
+      isLoading.value = true;
+      final response = await _groupService.createGroupPost(
+        groupId, 
+        postContentCtrl.text,
+        imagePaths: selectedImages.map((f) => f.path).toList(),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        postContentCtrl.clear();
+        selectedImages.clear();
+        fetchGroupPosts(groupId);
+        Get.snackbar("Success", "Post created successfully");
+      } else {
+        final errorData = jsonDecode(response.body);
+        Get.snackbar("Error", errorData['message'] ?? "Failed to create post");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void likePost(String postId) {
+  Future<void> likePost(String postId) async {
     final index = groupPosts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      final p = groupPosts[index];
+    if (index == -1) return;
+
+    final p = groupPosts[index];
+    final wasLiked = p.isLiked;
+
+    try {
+      // Optimistic UI update
       groupPosts[index] = GroupPostModel(
         id: p.id,
         groupId: p.groupId,
@@ -202,52 +257,120 @@ class FemaleGroupController extends GetxController {
         userImage: p.userImage,
         content: p.content,
         attachments: p.attachments,
-        likesCount: p.isLiked ? p.likesCount - 1 : p.likesCount + 1,
+        likesCount: wasLiked ? p.likesCount - 1 : p.likesCount + 1,
         commentsCount: p.commentsCount,
         isPinned: p.isPinned,
-        isLiked: !p.isLiked,
+        isLiked: !wasLiked,
         createdAt: p.createdAt,
       );
+
+      final response = await _groupService.likePost(postId);
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        // Rollback on error
+        groupPosts[index] = p;
+        final errorData = jsonDecode(response.body);
+        Get.snackbar("Error", errorData['message'] ?? "Failed to like post");
+      }
+    } catch (e) {
+      groupPosts[index] = p;
+      Get.snackbar("Error", "An error occurred: $e");
     }
   }
 
-  void addComment(String postId) {
+  Future<void> addComment(String postId) async {
     if (commentContentCtrl.text.isEmpty) return;
 
-    final newComment = GroupCommentModel(
-      id: DateTime.now().toString(),
-      userId: "me",
-      userName: "Aisha (Me)",
-      userImage: "",
-      content: commentContentCtrl.text,
-      parentCommentId: replyingToCommentId.value.isEmpty ? null : replyingToCommentId.value,
-      createdAt: "Just now",
-    );
-
-    postComments.add(newComment);
-    
-    // Update comment count on post
-    final postIndex = groupPosts.indexWhere((p) => p.id == postId);
-    if (postIndex != -1) {
-      final p = groupPosts[postIndex];
-      groupPosts[postIndex] = GroupPostModel(
-        id: p.id,
-        groupId: p.groupId,
-        userId: p.userId,
-        userName: p.userName,
-        userImage: p.userImage,
-        content: p.content,
-        attachments: p.attachments,
-        likesCount: p.likesCount,
-        commentsCount: p.commentsCount + 1,
-        isPinned: p.isPinned,
-        isLiked: p.isLiked,
-        createdAt: p.createdAt,
+    try {
+      final response = await _groupService.addPostComment(
+        postId,
+        commentContentCtrl.text,
+        parentCommentId: replyingToCommentId.value.isEmpty ? null : replyingToCommentId.value,
       );
-    }
 
-    commentContentCtrl.clear();
-    cancelReply();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        commentContentCtrl.clear();
+        replyingToCommentId.value = "";
+        replyingToUserName.value = "";
+        
+        // Refresh comments list
+        await fetchPostComments(postId);
+        
+        // Manually update the comment count in the local list for immediate UI feedback
+        final index = groupPosts.indexWhere((p) => p.id == postId);
+        if (index != -1) {
+          final p = groupPosts[index];
+          groupPosts[index] = GroupPostModel(
+            id: p.id,
+            groupId: p.groupId,
+            userId: p.userId,
+            userName: p.userName,
+            userImage: p.userImage,
+            content: p.content,
+            attachments: p.attachments,
+            likesCount: p.likesCount,
+            commentsCount: p.commentsCount + 1,
+            isPinned: p.isPinned,
+            isLiked: p.isLiked,
+            createdAt: p.createdAt,
+          );
+          groupPosts.refresh();
+        }
+        
+        Get.snackbar("Success", "Comment added successfully");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+    }
+  }
+
+  Future<void> deleteComment(String postId, String commentId) async {
+    try {
+      final response = await _groupService.deleteComment(commentId);
+      if (response.statusCode == 200) {
+        fetchPostComments(postId);
+        // Update the comment count in the local list
+        final index = groupPosts.indexWhere((p) => p.id == postId);
+        if (index != -1) {
+          final p = groupPosts[index];
+          groupPosts[index] = GroupPostModel(
+            id: p.id,
+            groupId: p.groupId,
+            userId: p.userId,
+            userName: p.userName,
+            userImage: p.userImage,
+            content: p.content,
+            attachments: p.attachments,
+            likesCount: p.likesCount,
+            commentsCount: (p.commentsCount - 1).clamp(0, 999999),
+            isPinned: p.isPinned,
+            isLiked: p.isLiked,
+            createdAt: p.createdAt,
+          );
+          groupPosts.refresh();
+        }
+        Get.snackbar("Success", "Comment deleted successfully");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+    }
+  }
+
+  Future<void> deletePost(String groupId, String postId) async {
+    try {
+      isLoading.value = true;
+      final response = await _groupService.deletePost(postId);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        groupPosts.removeWhere((p) => p.id == postId);
+        Get.snackbar("Success", "Post deleted successfully");
+      } else {
+        final errorData = jsonDecode(response.body);
+        Get.snackbar("Error", errorData['message'] ?? "Failed to delete post");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void setReply(String commentId, String userName) {
@@ -271,4 +394,3 @@ class FemaleGroupController extends GetxController {
     selectedImages.removeAt(index);
   }
 }
-

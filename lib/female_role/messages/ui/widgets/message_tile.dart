@@ -20,6 +20,7 @@ class MessageTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.to(() => FemaleChatUI(
+          chatId: message.id,
           userName: message.name,
           userImage: message.imageUrl,
           isOnline: true, // Mock online status
@@ -128,13 +129,25 @@ class MessageTile extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15.r),
-          child: Image.asset(
-            message.imageUrl!,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
+          child: message.imageUrl!.startsWith('assets/')
+              ? Image.asset(
+                  message.imageUrl!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                )
+              : Image.network(
+                  message.imageUrl!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[200],
+                    child: Icon(Icons.person, color: Colors.grey, size: 30.sp),
+                  ),
+                ),
         ),
       );
     } else {

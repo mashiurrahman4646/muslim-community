@@ -133,130 +133,135 @@ class MaleGroupDetailsUI extends StatelessWidget {
 
               SizedBox(height: 30.h),
 
-              // --- CREATE POST SECTION ---
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() {
-                        final img = userDataController.userProfileImage.value;
-                        return CircleAvatar(
-                          radius: 20.r,
-                          backgroundImage: img.isNotEmpty
-                              ? NetworkImage(img)
-                              : const AssetImage('assets/icons/abubakr.png') as ImageProvider,
-                          onBackgroundImageError: img.isNotEmpty ? (e, s) {} : null,
-                        );
-                      }),
-                      SizedBox(width: 15.w),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20.r),
-                                border: Border.all(color: AppColors.maleColor.withValues(alpha: 0.15)),
-                              ),
-                              child: TextField(
-                                controller: controller.postContentCtrl,
-                                maxLines: null,
-                                minLines: 3,
-                                decoration: InputDecoration(
-                                  hintText: 'Share something with the group...',
-                                  hintStyle: GoogleFonts.inter(
-                                    fontSize: 13.sp,
-                                    color: AppColors.bodyColor.withValues(alpha: 0.6),
+              // --- CREATE POST SECTION (MEMBERS ONLY) ---
+              Obx(() {
+                final group = controller.currentGroup.value;
+                if (group == null || !group.isJoined) return const SizedBox.shrink();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Obx(() {
+                          final img = userDataController.userProfileImage.value;
+                          return CircleAvatar(
+                            radius: 20.r,
+                            backgroundImage: img.isNotEmpty
+                                ? NetworkImage(img)
+                                : const AssetImage('assets/icons/abubakr.png') as ImageProvider,
+                            onBackgroundImageError: img.isNotEmpty ? (e, s) {} : null,
+                          );
+                        }),
+                        SizedBox(width: 15.w),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  border: Border.all(color: AppColors.maleColor.withValues(alpha: 0.15)),
+                                ),
+                                child: TextField(
+                                  controller: controller.postContentCtrl,
+                                  maxLines: null,
+                                  minLines: 3,
+                                  decoration: InputDecoration(
+                                    hintText: 'Share something with the group...',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 13.sp,
+                                      color: AppColors.bodyColor.withValues(alpha: 0.6),
+                                    ),
+                                    border: InputBorder.none,
+                                    isDense: true,
                                   ),
-                                  border: InputBorder.none,
-                                  isDense: true,
                                 ),
                               ),
-                            ),
-                            Obx(() {
-                              if (controller.selectedImages.isEmpty) return const SizedBox.shrink();
-                              return Padding(
-                                padding: EdgeInsets.only(top: 10.h),
-                                child: SizedBox(
-                                  height: 80.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: controller.selectedImages.length,
-                                    separatorBuilder: (context, index) => SizedBox(width: 10.w),
-                                    itemBuilder: (context, index) {
-                                      return Stack(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(10.r),
-                                            child: Image.file(
-                                              controller.selectedImages[index],
-                                              width: 80.w,
-                                              height: 80.h,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: 5.h,
-                                            right: 5.w,
-                                            child: GestureDetector(
-                                              onTap: () => controller.removeImage(index),
-                                              child: Container(
-                                                padding: EdgeInsets.all(4.w),
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.black54,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.close, color: Colors.white, size: 12.sp),
+                              Obx(() {
+                                if (controller.selectedImages.isEmpty) return const SizedBox.shrink();
+                                return Padding(
+                                  padding: EdgeInsets.only(top: 10.h),
+                                  child: SizedBox(
+                                    height: 80.h,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: controller.selectedImages.length,
+                                      separatorBuilder: (context, index) => SizedBox(width: 10.w),
+                                      itemBuilder: (context, index) {
+                                        return Stack(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(10.r),
+                                              child: Image.file(
+                                                controller.selectedImages[index],
+                                                width: 80.w,
+                                                height: 80.h,
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            }),
-                            SizedBox(height: 10.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  onPressed: () => controller.pickImages(),
-                                  icon: Icon(Icons.image_outlined, color: AppColors.maleColor),
-                                ),
-                                SizedBox(width: 10.w),
-                                ElevatedButton(
-                                  onPressed: () => controller.createPost(group.id),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFD9E2ED),
-                                    foregroundColor: AppColors.maleColor,
-                                    elevation: 0,
-                                    padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 8.h),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.r),
+                                            Positioned(
+                                              top: 5.h,
+                                              right: 5.w,
+                                              child: GestureDetector(
+                                                onTap: () => controller.removeImage(index),
+                                                child: Container(
+                                                  padding: EdgeInsets.all(4.w),
+                                                  decoration: const BoxDecoration(
+                                                    color: Colors.black54,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(Icons.close, color: Colors.white, size: 12.sp),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ),
-                                  child: Obx(() => controller.isLoading.value 
-                                    ? SizedBox(width: 15.w, height: 15.h, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.maleColor))
-                                    : Text(
-                                        'Post',
-                                        style: GoogleFonts.inter(fontSize: 12.sp, fontWeight: FontWeight.w600),
-                                      ),
+                                );
+                              }),
+                              SizedBox(height: 10.h),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => controller.pickImages(),
+                                    icon: Icon(Icons.image_outlined, color: AppColors.maleColor),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  SizedBox(width: 10.w),
+                                  ElevatedButton(
+                                    onPressed: () => controller.createPost(group.id),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFD9E2ED),
+                                      foregroundColor: AppColors.maleColor,
+                                      elevation: 0,
+                                      padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 8.h),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20.r),
+                                      ),
+                                    ),
+                                    child: Obx(() => controller.isLoading.value 
+                                      ? SizedBox(width: 15.w, height: 15.h, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.maleColor))
+                                      : Text(
+                                          'Post',
+                                          style: GoogleFonts.inter(fontSize: 12.sp, fontWeight: FontWeight.w600),
+                                        ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
+                  ],
+                );
+              }),
 
               SizedBox(height: 30.h),
 
@@ -304,6 +309,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
 
   Widget _buildPostCard(BuildContext context, GroupPostModel post) {
     final controller = Get.find<MaleGroupController>();
+    final MaleUserDataController userDataController = Get.find<MaleUserDataController>();
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.malePostDetails, arguments: post),
       child: Container(
@@ -354,10 +360,47 @@ class MaleGroupDetailsUI extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
-                  onPressed: () {},
-                ),
+                if (post.userId == userDataController.userId.value)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        Get.dialog(
+                          AlertDialog(
+                            title: const Text("Delete Post"),
+                            content: const Text("Are you sure you want to delete this post?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                  controller.deletePost(post.groupId, post.id);
+                                },
+                                child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                            SizedBox(width: 10),
+                            Text("Delete", style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
               ],
             ),
             SizedBox(height: 15.h),

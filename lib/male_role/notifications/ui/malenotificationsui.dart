@@ -73,12 +73,34 @@ class MaleNotificationsUI extends StatelessWidget {
 
   Widget _buildNotificationList(MaleNotificationController controller) {
     return Obx(
-      () => ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-        itemCount: controller.notifications.length,
-        itemBuilder: (context, index) {
-          return _buildNotificationCard(controller.notifications[index]);
-        },
+      () => RefreshIndicator(
+        onRefresh: () => controller.fetchNotifications(),
+        color: AppColors.maleColor,
+        child: controller.isLoading.value && controller.notifications.isEmpty
+            ? const Center(child: CircularProgressIndicator(color: AppColors.maleColor))
+            : controller.notifications.isEmpty
+                ? ListView(
+                    children: [
+                      SizedBox(height: 200.h),
+                      Center(
+                        child: Text(
+                          'No notifications',
+                          style: GoogleFonts.inter(fontSize: 16.sp, color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    itemCount: controller.notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = controller.notifications[index];
+                      return GestureDetector(
+                        onTap: () => controller.markAsRead(notification.id),
+                        child: _buildNotificationCard(notification),
+                      );
+                    },
+                  ),
       ),
     );
   }

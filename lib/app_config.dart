@@ -6,10 +6,18 @@ class AppConfig {
   static const String refreshTokenEndpoint = "$baseUrl/auth/refresh-token";
   static const String getProfileEndpoint = "$baseUrl/users/me";
   static const String getProfilesEndpoint = "$baseUrl/users/profiles";
+  static const String connectionsEndpoint = "$baseUrl/connections";
   static const String connectionRequestEndpoint = "$baseUrl/connections/request";
-  static const String cancelConnectionEndpoint = "$baseUrl/connections/{id}/request";
-  static const String pendingConnectionsEndpoint = "$baseUrl/connections/pending";
+  static const String cancelConnectionEndpoint = "$baseUrl/connections/{id}/cancel";
+  static const String pendingConnectionsEndpoint = "$baseUrl/connections/requests";
   static const String updateConnectionEndpoint = "$baseUrl/connections";
+  static const String prayersNotificationsEndpoint = "$baseUrl/notifications/me";
+  static const String markNotificationReadEndpoint = "$baseUrl/notifications/{id}/read";
+  static const String markAllNotificationsReadEndpoint = "$baseUrl/notifications/read-all";
+  static const String groupPostsEndpoint = "$baseUrl/groups/posts";
+  static const String deletePostEndpoint = "$baseUrl/groups/posts/{postId}";
+  static const String postCommentsEndpoint = "$baseUrl/groups/posts/{postId}/comments";
+  static const String deleteCommentEndpoint = "$baseUrl/groups/comments/{commentId}";
   static const String learningContentsEndpoint = "$baseUrl/learning-contents";
   static const String likeLearningContentEndpoint = "$baseUrl/learning-contents/{id}/like";
   static const String learningCommentsEndpoint = "$baseUrl/learning-contents/{id}/comments";
@@ -21,5 +29,7 @@ class AppConfig {
   static const String changePasswordEndpoint = "$baseUrl/auth/change-password";
   static const String prayerTimesEndpoint = "$baseUrl/prayer-times";
   static const String groupsEndpoint = "$baseUrl/groups";
-  static const String groupPostsEndpoint = "$baseUrl/groups/posts";
+  static const String chatListEndpoint = "$baseUrl/chats";
+  static const String messagesEndpoint = "$baseUrl/messages";
+  static String getChatMessagesEndpoint(String chatId) => "$baseUrl/messages/chat/$chatId";
 }

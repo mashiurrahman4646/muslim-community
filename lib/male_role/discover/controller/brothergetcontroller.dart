@@ -73,7 +73,7 @@ class BrotherGetController extends GetxController {
         latitude: latitude,
         longitude: longitude,
         searchTerm: searchTerm.value,
-        filter: filter.value,
+        filter: filter.value == 'nearby-me' ? '' : filter.value, // Empty filter for all users
         page: page.value,
         limit: 10,
       );
@@ -91,13 +91,7 @@ class BrotherGetController extends GetxController {
             brothers.clear();
           }
         } else {
-          // Strictly filter only BROTHER profiles from the API response
-          final filteredProfiles = profilesData.where((json) {
-            final gender = (json['userType'] ?? json['gender'] ?? '').toString().toUpperCase();
-            return gender == 'BROTHER';
-          }).toList();
-
-          final fetchedBrothers = filteredProfiles.map((json) {
+          final fetchedBrothers = profilesData.map((json) {
             final int age = json['age'] ?? 30;
             String joinedAgo = 'New Revert';
             if (json['revertDate'] != null) {
@@ -116,11 +110,17 @@ class BrotherGetController extends GetxController {
               }
             }
             
-            String rawStatus = (json['connectionStatus'] ?? json['status'] ?? '').toString().toLowerCase();
             String mappedStatus = 'Connect';
             
-            // Get connection data if it exists
             final connection = json['connection'] ?? json['connectionData'];
+            final String rawStatus = (json['connectionStatus'] ??
+                    json['status'] ??
+                    (connection is Map ? (connection['status'] ?? connection['connectionStatus']) : null) ??
+                    '')
+                .toString()
+                .toLowerCase();
+            final String rawDirection =
+                (connection is Map ? connection['direction'] : null)?.toString().toLowerCase() ?? '';
             
             // SENDER ID extraction
             final senderId = connection != null 
@@ -133,8 +133,13 @@ class BrotherGetController extends GetxController {
             if (rawStatus == 'received' || rawStatus == 'incoming') {
               mappedStatus = 'Received';
             } else if (rawStatus == 'pending' || rawStatus == 'requested' || rawStatus == 'sent') {
-              // If it's pending, check if I am the sender or receiver
-              if (senderId != null && currentUserId.isNotEmpty && senderId.toString() != currentUserId.toString()) {
+              if (rawDirection == 'incoming') {
+                mappedStatus = 'Received';
+              } else if (rawDirection == 'outgoing') {
+                mappedStatus = 'Requested';
+              } else if (senderId != null &&
+                  currentUserId.isNotEmpty &&
+                  senderId.toString() != currentUserId.toString()) {
                 mappedStatus = 'Received';
               } else {
                 mappedStatus = 'Requested';
@@ -149,6 +154,7 @@ class BrotherGetController extends GetxController {
             // Diagnostic Log
             print("--- Mapping Profile: ${json['name']} ---");
             print("  rawStatus: $rawStatus");
+            print("  rawDirection: $rawDirection");
             print("  senderId from API: $senderId");
             print("  currentUserId: $currentUserId");
             print("  mappedStatus: $mappedStatus");
@@ -176,7 +182,12 @@ class BrotherGetController extends GetxController {
           if (isRefresh) {
             brothers.value = fetchedBrothers;
           } else {
-            brothers.addAll(fetchedBrothers);
+            // Prevent duplicates when loading more
+            for (var newBrother in fetchedBrothers) {
+              if (!brothers.any((b) => b.id == newBrother.id)) {
+                brothers.add(newBrother);
+              }
+            }
           }
           page.value++;
         }

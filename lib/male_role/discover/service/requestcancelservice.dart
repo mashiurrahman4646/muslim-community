@@ -11,9 +11,8 @@ class MaleRequestCancelService {
     final uri = Uri.parse(url);
 
     print("  🔗 Cancel URL: $url");
-    print("  🔑 Token exists: ${token != null && token.isNotEmpty}");
 
-    return await http.delete(
+    return await http.post(
       uri,
       headers: {
         'Content-Type': 'application/json',

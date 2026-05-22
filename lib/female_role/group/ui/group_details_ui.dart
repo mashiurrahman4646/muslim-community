@@ -132,10 +132,14 @@ class FemaleGroupDetailsUI extends StatelessWidget {
 
               SizedBox(height: 30.h),
 
-              // --- CREATE POST SECTION ---
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              // --- CREATE POST SECTION (MEMBERS ONLY) ---
+              Obx(() {
+                final group = controller.currentGroup.value;
+                if (group == null || !group.isJoined) return const SizedBox.shrink();
+                
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Obx(() {
                     final img = userDataController.userProfileImage.value;
                     return CircleAvatar(
@@ -246,7 +250,8 @@ class FemaleGroupDetailsUI extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              );
+            }),
 
               SizedBox(height: 30.h),
               Text(
@@ -279,6 +284,7 @@ class FemaleGroupDetailsUI extends StatelessWidget {
   }
 
   Widget _buildPostCard(BuildContext context, GroupPostModel post) {
+    final FemaleUserDataController userDataController = Get.find<FemaleUserDataController>();
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.femalePostDetails, arguments: post),
       child: Container(
@@ -330,7 +336,48 @@ class FemaleGroupDetailsUI extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
+                if (post.userId == userDataController.userId.value)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        Get.dialog(
+                          AlertDialog(
+                            title: const Text("Delete Post"),
+                            content: const Text("Are you sure you want to delete this post?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                  final FemaleGroupController controller = Get.find<FemaleGroupController>();
+                                  controller.deletePost(post.groupId, post.id);
+                                },
+                                child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                            SizedBox(width: 10),
+                            Text("Delete", style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Icon(Icons.more_vert, color: AppColors.bodyColor, size: 20.sp),
               ],
             ),
             SizedBox(height: 15.h),

@@ -10,18 +10,26 @@ class GroupCard extends StatelessWidget {
   final GroupModel group;
   final VoidCallback onJoinToggle;
 
-  const GroupCard({
-    super.key,
-    required this.group,
-    required this.onJoinToggle,
-  });
+  const GroupCard({super.key, required this.group, required this.onJoinToggle});
 
   static const Color _roleColor = AppColors.maleColor;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.toNamed(AppRoutes.maleGroupDetails, arguments: group),
+      onTap: () {
+        if (group.isJoined) {
+          Get.toNamed(AppRoutes.maleGroupDetails, arguments: group);
+        } else {
+          Get.snackbar(
+            "Access Denied",
+            "Please join the group first to see its posts and members.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        }
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.h),
         padding: EdgeInsets.all(20.w),
@@ -79,9 +87,9 @@ class GroupCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             SizedBox(height: 15.h),
-            
+
             // --- DESCRIPTION ---
             Text(
               group.description,
@@ -93,59 +101,56 @@ class GroupCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            
+
             SizedBox(height: 20.h),
-            
+
             // --- BUTTONS ---
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onJoinToggle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined 
-                          ? _roleColor.withValues(alpha: 0.2) 
-                          : _roleColor,
-                      foregroundColor: group.isJoined ? _roleColor : Colors.white,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+                if (!group.isJoined)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onJoinToggle,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _roleColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Join Group',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600, 
-                        fontSize: 12.sp
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onJoinToggle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: group.isJoined 
-                          ? const Color(0xFFD32F2F) 
-                          : Colors.grey.withValues(alpha: 0.2),
-                      foregroundColor: group.isJoined ? Colors.white : Colors.grey,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Leave Group',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 12.sp
+                      child: Text(
+                        'Join Group',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                if (group.isJoined)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onJoinToggle,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD32F2F),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Leave Group',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],

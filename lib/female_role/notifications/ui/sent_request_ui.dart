@@ -14,26 +14,50 @@ class FemaleSentRequestUI extends StatelessWidget {
     final FemaleSentRequestController controller = Get.put(FemaleSentRequestController());
 
     return Obx(() {
-      if (controller.isLoading.value) {
+      if (controller.isLoading.value && controller.sentRequests.isEmpty) {
         return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
       }
 
-      if (controller.sentRequests.isEmpty) {
-        return Center(
-          child: Text(
-            'No sent requests',
-            style: GoogleFonts.inter(fontSize: 16.sp, color: Colors.grey),
-          ),
-        );
-      }
-
-      return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-        itemCount: controller.sentRequests.length,
-        itemBuilder: (context, index) {
-          final sister = controller.sentRequests[index];
-          return _buildRequestCard(sister, controller);
-        },
+      return RefreshIndicator(
+        onRefresh: () => controller.fetchSentRequests(isRefresh: true),
+        color: AppColors.femaleColor,
+        child: controller.sentRequests.isEmpty
+            ? ListView(
+                children: [
+                  SizedBox(height: 200.h),
+                  Center(
+                    child: Text(
+                      'No sent requests',
+                      style: GoogleFonts.inter(fontSize: 16.sp, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              )
+            : NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                    controller.fetchSentRequests();
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                  itemCount: controller.sentRequests.length + (controller.isFetchingMore.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < controller.sentRequests.length) {
+                      final sister = controller.sentRequests[index];
+                      return _buildRequestCard(sister, controller);
+                    } else {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(color: AppColors.femaleColor),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
       );
     });
   }
@@ -90,7 +114,11 @@ class FemaleSentRequestUI extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () {
                       if (sister.connectionId != null) {
+                        print("UI: Cancel button clicked for connectionId: ${sister.connectionId}");
                         controller.cancelRequest(sister.connectionId!, sister.id);
+                      } else {
+                        print("UI: Cancel button clicked but connectionId is NULL");
+                        Get.snackbar("Error", "Connection ID missing");
                       }
                     },
                     style: OutlinedButton.styleFrom(

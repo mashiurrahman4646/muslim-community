@@ -40,6 +40,10 @@ import 'package:muslim_community/male_role/discover/ui/jumma_now_playing_ui.dart
 
 import 'female_role/group/ui/female_post_details_ui.dart';
 
+import 'package:muslim_community/female_role/auth/ui/resetpassword.dart';
+import 'package:muslim_community/male_role/auth/ui/resetpassword.dart';
+import 'package:muslim_community/jummarole/auth/ui/resetpassword.dart';
+
 class AppRoutes {
   static const String splash = '/splash';
   static const String selectRole = '/selectRole';
@@ -58,6 +62,9 @@ class AppRoutes {
   static const String maleForgetPasswordOTP = '/maleForgetPasswordOTP';
   static const String jummaForgetPasswordEmail = '/jummaForgetPasswordEmail';
   static const String jummaForgetPasswordOTP = '/jummaForgetPasswordOTP';
+  static const String femaleResetPassword = '/femaleResetPassword';
+  static const String maleResetPassword = '/maleResetPassword';
+  static const String jummaResetPassword = '/jummaResetPassword';
   static const String jummaNavbar = '/jummaNavbar';
   static const String maleNavbar = '/maleNavbar';
   static const String femaleNavbar = '/femaleNavbar';
@@ -156,6 +163,18 @@ class AppRoutes {
     GetPage(
       name: jummaForgetPasswordOTP,
       page: () => const JummaForgetPasswordOTPUI(),
+    ),
+    GetPage(
+      name: femaleResetPassword,
+      page: () => const FemaleResetPasswordUI(),
+    ),
+    GetPage(
+      name: maleResetPassword,
+      page: () => const MaleResetPasswordUI(),
+    ),
+    GetPage(
+      name: jummaResetPassword,
+      page: () => const JummaResetPasswordUI(),
     ),
     GetPage(name: jummaNavbar, page: () => const JummaNavbarUI()),
     GetPage(name: maleNavbar, page: () => const MaleNavbarUI()),

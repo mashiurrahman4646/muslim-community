@@ -2,13 +2,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:muslim_community/male_role/discover/model/brother_model.dart';
 import 'package:muslim_community/male_role/discover/service/brothergetservice.dart';
 import 'package:muslim_community/male_role/home/controller/userdatacontroller.dart';
+import 'package:muslim_community/services/socket_service.dart';
 
 class BrotherGetController extends GetxController {
   final BrotherGetService _service = BrotherGetService();
   final MaleUserDataController _userCtrl = Get.find<MaleUserDataController>();
+  final SocketService _socketService = SocketService();
   
   var isLoading = false.obs;
   var brothers = <BrotherModel>[].obs;
@@ -35,11 +38,11 @@ class BrotherGetController extends GetxController {
     }
   }
 
-  Future<void> fetchBrothers({bool isRefresh = false}) async {
+  Future<void> fetchBrothers({bool isRefresh = false, bool isSilent = false}) async {
     if (isRefresh) {
       page.value = 1;
       hasMore.value = true;
-      isLoading.value = true;
+      if (!isSilent) isLoading.value = true;
     } else {
       if (!hasMore.value || isFetchingMore.value) return;
       isFetchingMore.value = true;
@@ -67,8 +70,6 @@ class BrotherGetController extends GetxController {
         }
       }
 
-      print("Calling getProfiles with: lat=$latitude, lon=$longitude, search=${searchTerm.value}, filter=${filter.value}, page=${page.value}");
-
       final response = await _service.getProfiles(
         latitude: latitude,
         longitude: longitude,
@@ -78,12 +79,9 @@ class BrotherGetController extends GetxController {
         limit: 10,
       );
 
-      print("API Response Status: ${response.statusCode}");
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> profilesData = responseData['data'] ?? [];
-        print("Received ${profilesData.length} profiles from API");
         
         if (profilesData.isEmpty) {
           hasMore.value = false;
@@ -147,17 +145,8 @@ class BrotherGetController extends GetxController {
             } else if (rawStatus == 'accepted' || rawStatus == 'connected' || rawStatus == 'friends') {
               mappedStatus = 'Connected';
             } else if (rawStatus == 'rejected' || rawStatus == 'rejected_by_receiver' || rawStatus == 'rejected_by_sender') {
-              // If rejected, show 'Connect' button again as requested by backend
               mappedStatus = 'Connect';
             }
-
-            // Diagnostic Log
-            print("--- Mapping Profile: ${json['name']} ---");
-            print("  rawStatus: $rawStatus");
-            print("  rawDirection: $rawDirection");
-            print("  senderId from API: $senderId");
-            print("  currentUserId: $currentUserId");
-            print("  mappedStatus: $mappedStatus");
 
             return BrotherModel(
               id: (json['_id'] ?? json['id'] ?? '').toString(),
@@ -180,7 +169,12 @@ class BrotherGetController extends GetxController {
           }).toList();
 
           if (isRefresh) {
-            brothers.value = fetchedBrothers;
+            // Check for changes before assigning to avoid UI flicker
+            if (brothers.length != fetchedBrothers.length) {
+              brothers.assignAll(fetchedBrothers);
+            } else {
+               brothers.assignAll(fetchedBrothers);
+            }
           } else {
             // Prevent duplicates when loading more
             for (var newBrother in fetchedBrothers) {
@@ -197,7 +191,7 @@ class BrotherGetController extends GetxController {
     } catch (e) {
       print("Error fetching brothers in controller: $e");
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
       isFetchingMore.value = false;
     }
   }
@@ -205,16 +199,46 @@ class BrotherGetController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Pre-fetch position to speed up subsequent loads
     _preFetchLocation();
-    
-    // Ensure user data is loaded before fetching brothers to correctly map status
-    if (_userCtrl.userId.value.isEmpty) {
-      _userCtrl.getUserData().then((_) => fetchBrothers(isRefresh: true));
-    } else {
-      fetchBrothers(isRefresh: true);
+    fetchBrothers(isRefresh: true);
+    _setupSocketListeners();
+  }
+
+  @override
+  void onClose() {
+    _removeSocketListeners();
+    super.onClose();
+  }
+
+  void _setupSocketListeners() async {
+    // Background update via Sockets (Real-time & Battery efficient)
+    try {
+      if (!_socketService.isConnected) {
+        await _socketService.connect();
+      }
+      
+      // Listen for global data updates
+      _socketService.on('UPDATE_DISCOVERY', (data) {
+        print("SOCKET_DEBUG: Discovery update received for brothers");
+        if (!isLoading.value && !isFetchingMore.value && searchTerm.value.isEmpty) {
+          fetchBrothers(isRefresh: true, isSilent: true);
+        }
+      });
+      
+      _socketService.on('NEW_BROTHER', (data) {
+        print("SOCKET_DEBUG: New brother added, refreshing list");
+        if (!isLoading.value && !isFetchingMore.value && searchTerm.value.isEmpty) {
+          fetchBrothers(isRefresh: true, isSilent: true);
+        }
+      });
+    } catch (e) {
+      print("Error setting up socket listeners for brothers: $e");
     }
-    debounce(searchTerm, (_) => fetchBrothers(isRefresh: true), time: const Duration(milliseconds: 500));
+  }
+
+  void _removeSocketListeners() {
+    _socketService.off('UPDATE_DISCOVERY');
+    _socketService.off('NEW_BROTHER');
   }
 
   void searchBrothers(String query) {

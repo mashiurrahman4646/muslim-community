@@ -1,50 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/shared/auth/controller/forget_password_controller.dart';
 
-class JummaForgetPasswordOTPUI extends StatefulWidget {
+class JummaForgetPasswordOTPUI extends StatelessWidget {
   const JummaForgetPasswordOTPUI({super.key});
-
-  @override
-  State<JummaForgetPasswordOTPUI> createState() => _JummaForgetPasswordOTPUIState();
-}
-
-class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-  final List<TextEditingController> _controllers = List.generate(4, (index) => TextEditingController());
-  int _focusedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    for (int i = 0; i < 4; i++) {
-      _focusNodes[i].addListener(() {
-        if (_focusNodes[i].hasFocus) {
-          setState(() {
-            _focusedIndex = i;
-          });
-        }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF436E50);
+    final controller = Get.find<ForgetPasswordController>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -110,7 +77,7 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
               
               SizedBox(height: 20.h),
               Text(
-                'We have sent a 4-digit code to your email.\nPlease enter it below to continue.',
+                'We have sent a 6-digit code to your email.\nPlease enter it below to continue.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
@@ -134,13 +101,13 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
                   children: [
                     Icon(Icons.email_outlined, size: 16.sp, color: Colors.grey),
                     SizedBox(width: 8.w),
-                    Text(
-                      'a*****@gmail.com',
+                    Obx(() => Text(
+                      controller.email.value,
                       style: GoogleFonts.inter(
                         fontSize: 13.sp,
                         color: Colors.grey.shade700,
                       ),
-                    ),
+                    )),
                     SizedBox(width: 4.w),
                     Container(
                       width: 6.w,
@@ -156,12 +123,12 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
               // OTP Input
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (index) => _buildOTPField(index, themeColor)),
+                children: List.generate(6, (index) => _buildOTPField(index, themeColor, controller)),
               ),
               
               SizedBox(height: 15.h),
               Text(
-                'ENTER 4-DIGIT CODE',
+                'ENTER 6-DIGIT CODE',
                 style: GoogleFonts.inter(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
@@ -172,7 +139,7 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
 
               SizedBox(height: 30.h),
               
-              // Timer
+              // Timer (Placeholder for now)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -182,14 +149,14 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
                     'Code expires in ',
                     style: GoogleFonts.inter(fontSize: 13.sp, color: Colors.grey),
                   ),
-                  Text(
-                    '02:47',
+                  Obx(() => Text(
+                    controller.timerText.value,
                     style: GoogleFonts.inter(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
                       color: themeColor,
                     ),
-                  ),
+                  )),
                 ],
               ),
 
@@ -199,8 +166,10 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
               SizedBox(
                 width: double.infinity,
                 height: 56.h,
-                child: ElevatedButton(
-                  onPressed: () => Get.offAllNamed(AppRoutes.jummaLogin),
+                child: Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value 
+                    ? null 
+                    : () => controller.verifyOtp(AppRoutes.jummaResetPassword),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shape: RoundedRectangleBorder(
@@ -208,12 +177,9 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
                     ),
                     elevation: 0,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.help_outline, color: Colors.white, size: 18.sp),
-                      SizedBox(width: 10.w),
-                      Text(
+                  child: controller.isLoading.value
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
                         'Verify & Continue',
                         style: GoogleFonts.inter(
                           fontSize: 16.sp,
@@ -221,28 +187,12 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
                           color: Colors.white,
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                )),
               ),
 
-              SizedBox(height: 40.h),
-              
-              // Divider
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.grey.shade300)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: Icon(Icons.nights_stay_outlined, color: Colors.grey.shade300, size: 16.sp),
-                  ),
-                  Expanded(child: Divider(color: Colors.grey.shade300)),
-                ],
-              ),
-              
               SizedBox(height: 30.h),
 
-              // Footer
+              // Resend
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -253,17 +203,21 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
                       color: const Color(0xFF636E72),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
+                  Obx(() => GestureDetector(
+                    onTap: controller.secondsRemaining.value == 0
+                        ? () => controller.sendOtp(AppRoutes.jummaForgetPasswordOTP)
+                        : null,
                     child: Text(
                       'Resend',
                       style: GoogleFonts.inter(
                         fontSize: 14.sp,
-                        color: themeColor,
+                        color: controller.secondsRemaining.value == 0
+                            ? themeColor
+                            : Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
+                  )),
                 ],
               ),
               SizedBox(height: 30.h),
@@ -274,46 +228,42 @@ class _JummaForgetPasswordOTPUIState extends State<JummaForgetPasswordOTPUI> {
     );
   }
 
-  Widget _buildOTPField(int index, Color themeColor) {
-    bool isFocused = _focusedIndex == index;
+  Widget _buildOTPField(int index, Color themeColor, ForgetPasswordController controller) {
     return Container(
-      width: 65.w,
-      height: 75.h,
+      width: 45.w,
+      height: 55.w,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: isFocused ? const Color(0xFF436E50) : themeColor.withOpacity(0.3),
-          width: 2,
+          color: themeColor.withOpacity(0.3),
+          width: 1.5,
         ),
       ),
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        onChanged: (value) {
-          if (value.length == 1 && index < 3) {
-            _focusNodes[index + 1].requestFocus();
-          }
-          if (value.isEmpty && index > 0) {
-            _focusNodes[index - 1].requestFocus();
-          }
-        },
-        showCursor: false,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.inter(
-          fontSize: 24.sp,
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFF2D3436),
+      child: Center(
+        child: TextField(
+          controller: controller.otpControllers[index],
+          focusNode: controller.focusNodes[index],
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 22.sp,
+            fontWeight: FontWeight.bold,
+            color: themeColor,
+          ),
+          decoration: const InputDecoration(
+            counterText: "",
+            border: InputBorder.none,
+          ),
+          onChanged: (value) {
+            if (value.isNotEmpty && index < 5) {
+              controller.focusNodes[index + 1].requestFocus();
+            } else if (value.isEmpty && index > 0) {
+              controller.focusNodes[index - 1].requestFocus();
+            }
+          },
         ),
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: const InputDecoration(
-          counterText: "",
-          border: InputBorder.none,
-        ),
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
       ),
     );
   }

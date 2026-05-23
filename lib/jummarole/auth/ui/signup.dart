@@ -6,12 +6,15 @@ import 'package:muslim_community/approut.dart';
 import 'package:flutter/gestures.dart';
 import 'package:muslim_community/jummarole/profile/ui/privacy_policy_ui.dart';
 import 'package:muslim_community/jummarole/profile/ui/terms_conditions_ui.dart';
+import 'package:muslim_community/jummarole/auth/controller/jumma_signup_controller.dart';
+
 class JummaSignUpUI extends StatelessWidget {
   const JummaSignUpUI({super.key});
 
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF436E50); // Jumma color
+    final controller = Get.put(JummaSignupController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -80,6 +83,7 @@ class JummaSignUpUI extends StatelessWidget {
                       hint: 'Enter your full name',
                       icon: Icons.person_outline,
                       themeColor: themeColor,
+                      textController: controller.nameController,
                     ),
                     SizedBox(height: 16.h),
                     _buildInputField(
@@ -87,20 +91,33 @@ class JummaSignUpUI extends StatelessWidget {
                       hint: 'Enter your email',
                       icon: Icons.email_outlined,
                       themeColor: themeColor,
+                      textController: controller.emailController,
                     ),
                     SizedBox(height: 16.h),
-                    _buildInputField(
-                      label: 'PASSWORD',
-                      hint: 'Create a password',
-                      icon: Icons.lock_outline,
-                      themeColor: themeColor,
-                      isPassword: true,
-                    ),
+                    Obx(() => _buildInputField(
+                          label: 'PASSWORD',
+                          hint: 'Create a password',
+                          icon: Icons.lock_outline,
+                          themeColor: themeColor,
+                          isPassword: true,
+                          obscureText: !controller.isPasswordVisible.value,
+                          textController: controller.passwordController,
+                          onToggleVisibility: () =>
+                              controller.togglePasswordVisibility(),
+                        )),
                     SizedBox(height: 16.h),
-                    _buildInputField(
-                      label: 'AGE',
-                      hint: 'Minimum 16 years',
-                      themeColor: themeColor,
+                    GestureDetector(
+                      onTap: () => controller.pickDateOfBirth(context),
+                      child: AbsorbPointer(
+                        child: Obx(() => _buildInputField(
+                              label: 'DATE OF BIRTH',
+                              hint: controller.dateOfBirth.value.isEmpty
+                                  ? 'Select date of birth'
+                                  : controller.dateOfBirth.value.split('T')[0],
+                              icon: Icons.calendar_today_outlined,
+                              themeColor: themeColor,
+                            )),
+                      ),
                     ),
                     SizedBox(height: 24.h),
 
@@ -108,36 +125,41 @@ class JummaSignUpUI extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       height: 56.h,
-                      child: ElevatedButton(
-                        onPressed: () => Get.toNamed(AppRoutes.jummaSignUpOTP),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/icons/creataccout.png',
-                              width: 20.w,
-                              height: 20.w,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 10.w),
-                            Text(
-                              'Create Account',
-                              style: GoogleFonts.inter(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                      child: Obx(() => ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () => controller.signup(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: themeColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.r),
                               ),
+                              elevation: 0,
                             ),
-                          ],
-                        ),
-                      ),
+                            child: controller.isLoading.value
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/icons/creataccout.png',
+                                        width: 20.w,
+                                        height: 20.w,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        'Create Account',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          )),
                     ),
                   ],
                 ),
@@ -226,6 +248,9 @@ class JummaSignUpUI extends StatelessWidget {
     IconData? icon,
     required Color themeColor,
     bool isPassword = false,
+    bool obscureText = false,
+    TextEditingController? textController,
+    VoidCallback? onToggleVisibility,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,20 +276,36 @@ class JummaSignUpUI extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         TextField(
-          obscureText: isPassword,
+          controller: textController,
+          obscureText: isPassword ? obscureText : false,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
-            prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20.sp) : null,
-            suffixIcon: isPassword ? Icon(Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 20.sp) : null,
+            hintStyle:
+                GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
+            prefixIcon: icon != null
+                ? Icon(icon, color: Colors.grey.shade400, size: 20.sp)
+                : null,
+            suffixIcon: isPassword
+                ? GestureDetector(
+                    onTap: onToggleVisibility,
+                    child: Icon(
+                      obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.grey.shade400,
+                      size: 20.sp,
+                    ),
+                  )
+                : null,
             filled: true,
             fillColor: const Color(0xFFEDF4F1).withOpacity(0.5),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide.none,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           ),
         ),
       ],

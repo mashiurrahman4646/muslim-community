@@ -42,7 +42,7 @@ class FemaleMessagesUI extends StatelessWidget {
               
               // --- DIVIDER ---
               Divider(
-                color: AppColors.goldColor.withValues(alpha: 0.15),
+                color: AppColors.goldColor.withOpacity(0.15),
                 thickness: 1,
                 height: 1,
               ),
@@ -95,7 +95,7 @@ class FemaleMessagesUI extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r), // Pill shape for search bar
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity(0.02),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -106,12 +106,12 @@ class FemaleMessagesUI extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Search messages...',
           hintStyle: GoogleFonts.inter(
-            color: Colors.grey.withValues(alpha: 0.5),
+            color: Colors.grey.withOpacity(0.5),
             fontSize: 13.sp,
           ),
           prefixIcon: Icon(
             Icons.search,
-            color: AppColors.femaleColor.withValues(alpha: 0.5),
+            color: AppColors.femaleColor.withOpacity(0.5),
             size: 20.sp,
           ),
           border: InputBorder.none,

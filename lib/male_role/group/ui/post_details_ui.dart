@@ -71,7 +71,7 @@ class MalePostDetailsUI extends StatelessWidget {
                         borderRadius: BorderRadius.circular(25.r),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
+                            color: Colors.black.withOpacity(0.02),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -159,7 +159,7 @@ class MalePostDetailsUI extends StatelessWidget {
                             post.content,
                             style: GoogleFonts.inter(
                               fontSize: 14.sp,
-                              color: AppColors.titleColor.withValues(alpha: 0.8),
+                              color: AppColors.titleColor.withOpacity(0.8),
                               height: 1.5,
                             ),
                           ),
@@ -288,7 +288,7 @@ class MalePostDetailsUI extends StatelessWidget {
             if (controller.replyingToCommentId.value.isEmpty) return const SizedBox.shrink();
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-              color: AppColors.backgroundColor.withValues(alpha: 0.8),
+              color: AppColors.backgroundColor.withOpacity(0.8),
               child: Row(
                 children: [
                   Icon(Icons.reply, size: 16.sp, color: AppColors.maleColor),
@@ -319,7 +319,7 @@ class MalePostDetailsUI extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -343,9 +343,9 @@ class MalePostDetailsUI extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: AppColors.maleColor.withValues(alpha: 0.05),
+                        color: AppColors.maleColor.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(color: AppColors.maleColor.withValues(alpha: 0.1)),
+                        border: Border.all(color: AppColors.maleColor.withOpacity(0.1)),
                       ),
                       child: TextField(
                         controller: controller.commentContentCtrl,
@@ -355,7 +355,7 @@ class MalePostDetailsUI extends StatelessWidget {
                               : 'Write a reply...',
                           hintStyle: GoogleFonts.inter(
                             fontSize: 13.sp,
-                            color: AppColors.bodyColor.withValues(alpha: 0.6),
+                            color: AppColors.bodyColor.withOpacity(0.6),
                           ),
                           border: InputBorder.none,
                           isDense: true,
@@ -366,7 +366,7 @@ class MalePostDetailsUI extends StatelessWidget {
                   SizedBox(width: 10.w),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.maleColor.withValues(alpha: 0.15),
+                      color: AppColors.maleColor.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -396,7 +396,7 @@ class MalePostDetailsUI extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.01),
+            color: Colors.black.withOpacity(0.01),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -439,7 +439,7 @@ class MalePostDetailsUI extends StatelessWidget {
                               : comment.createdAt,
                           style: GoogleFonts.inter(
                             fontSize: 10.sp,
-                            color: AppColors.bodyColor.withValues(alpha: 0.6),
+                            color: AppColors.bodyColor.withOpacity(0.6),
                           ),
                         ),
                         if (comment.userId == userDataController.userId.value)
@@ -493,7 +493,7 @@ class MalePostDetailsUI extends StatelessWidget {
                   comment.content,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
-                    color: AppColors.titleColor.withValues(alpha: 0.8),
+                    color: AppColors.titleColor.withOpacity(0.8),
                   ),
                 ),
                 if (!isReply)

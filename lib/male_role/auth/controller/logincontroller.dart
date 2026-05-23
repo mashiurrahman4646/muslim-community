@@ -10,6 +10,11 @@ class MaleLoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final isLoading = false.obs;
+  final isPasswordVisible = false.obs;
+
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
 
   final MaleLoginService _loginService = MaleLoginService();
   final TokenService _tokenService = TokenService();

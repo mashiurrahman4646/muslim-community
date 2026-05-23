@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/approut.dart';
 import 'package:muslim_community/male_role/discover/controller/jummacontroller.dart';
-import 'package:muslim_community/male_role/discover/model/khutbah_model.dart';
+import 'package:muslim_community/shared/model/khutbah_model.dart';
 
 class JummaUI extends StatelessWidget {
   const JummaUI({super.key});

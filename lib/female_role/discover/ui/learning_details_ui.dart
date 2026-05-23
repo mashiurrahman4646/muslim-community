@@ -46,7 +46,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
     _initializePlayer();
     
     if (_contentId != null) {
-      Get.find<LearningController>().fetchComments(_contentId!);
+      Get.find<FemaleLearningController>().fetchComments(_contentId!);
     }
   }
 
@@ -194,7 +194,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                 top: 40.h,
                 left: 20.w,
                 child: CircleAvatar(
-                  backgroundColor: Colors.white.withValues(alpha: 0.8),
+                  backgroundColor: Colors.white.withOpacity(0.8),
                   child: IconButton(
                     icon: Icon(Icons.arrow_back_ios_new, color: AppColors.femaleColor, size: 18.sp),
                     onPressed: () => Get.back(),
@@ -252,10 +252,10 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                               }
                             });
                             try {
-                              final LearningController controller = Get.find<LearningController>();
+                              final FemaleLearningController controller = Get.find<FemaleLearningController>();
                               controller.toggleLike(_contentId!);
                             } catch (e) {
-                              print("Could not find LearningController: $e");
+                              print("Could not find FemaleLearningController: $e");
                             }
                           }
                         },
@@ -268,12 +268,12 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: _isLiked 
-                                      ? AppColors.femaleColor.withValues(alpha: 0.3) 
-                                      : AppColors.bodyColor.withValues(alpha: 0.1),
+                                      ? AppColors.femaleColor.withOpacity(0.3) 
+                                      : AppColors.bodyColor.withOpacity(0.1),
                                 ),
                                 boxShadow: _isLiked ? [
                                   BoxShadow(
-                                    color: AppColors.femaleColor.withValues(alpha: 0.2),
+                                    color: AppColors.femaleColor.withOpacity(0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   )
@@ -299,7 +299,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                       ),
                       SizedBox(width: 25.w),
                       Obx(() {
-                        final controller = Get.find<LearningController>();
+                        final controller = Get.find<FemaleLearningController>();
                         int idx = controller.learningContents.indexWhere((c) => c.id == _contentId);
                         int count = idx != -1 ? controller.learningContents[idx].commentsCount : (int.tryParse(args['commentsCount']?.toString() ?? '0') ?? 0);
                         return _buildStatItem(Icons.chat_bubble_outline, count.toString());
@@ -307,7 +307,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                     ],
                   ),
                   SizedBox(height: 25.h),
-                  Divider(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+                  Divider(color: AppColors.bodyColor.withOpacity(0.1)),
                   SizedBox(height: 25.h),
                   Text(
                     'Comments',
@@ -319,7 +319,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                   ),
                   SizedBox(height: 20.h),
                   Obx(() {
-                    final controller = Get.find<LearningController>();
+                    final controller = Get.find<FemaleLearningController>();
                     if (controller.isCommentsLoading.value) {
                       return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
                     }
@@ -330,7 +330,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                           'No comments yet. Be the first to comment!',
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
-                            color: AppColors.bodyColor.withValues(alpha: 0.6),
+                            color: AppColors.bodyColor.withOpacity(0.6),
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -521,7 +521,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -580,7 +580,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                           decoration: BoxDecoration(
                             color: AppColors.backgroundColor,
                             borderRadius: BorderRadius.circular(25.r),
-                            border: Border.all(color: const Color(0xFFE57373).withValues(alpha: 0.2)),
+                            border: Border.all(color: const Color(0xFFE57373).withOpacity(0.2)),
                           ),
                           child: TextField(
                             controller: _commentController,
@@ -588,7 +588,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                               hintText: _replyToCommentId != null ? 'Reply to $_replyToUserName...' : 'Add a comment...',
                               hintStyle: GoogleFonts.inter(
                                 fontSize: 14.sp,
-                                color: AppColors.bodyColor.withValues(alpha: 0.6),
+                                color: AppColors.bodyColor.withOpacity(0.6),
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -614,7 +614,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                                 _replyToUserName = null;
                               });
                               FocusScope.of(context).unfocus();
-                              final success = await Get.find<LearningController>().addComment(
+                              final success = await Get.find<FemaleLearningController>().addComment(
                                 _contentId!,
                                 text,
                                 parentCommentId: parentId,
@@ -624,7 +624,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                                   'Error',
                                   'Failed to post comment. Please try again.',
                                   snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
+                                  backgroundColor: Colors.redAccent.withOpacity(0.8),
                                   colorText: Colors.white,
                                 );
                               }
@@ -672,7 +672,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+            border: Border.all(color: AppColors.bodyColor.withOpacity(0.1)),
           ),
           child: Icon(icon, size: 20.sp, color: AppColors.bodyColor),
         ),
@@ -707,7 +707,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15.r),
-                  border: Border.all(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+                  border: Border.all(color: AppColors.bodyColor.withOpacity(0.1)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -739,7 +739,7 @@ class _FemaleLearningDetailsUIState extends State<FemaleLearningDetailsUI> {
                   time,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
-                    color: AppColors.bodyColor.withValues(alpha: 0.5),
+                    color: AppColors.bodyColor.withOpacity(0.5),
                   ),
                 ),
               ),

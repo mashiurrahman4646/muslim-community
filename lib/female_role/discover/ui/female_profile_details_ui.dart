@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/discover/model/sister_model.dart';
+import 'package:muslim_community/female_role/discover/controller/femaleprofiledetaliscontroller.dart';
 
 class FemaleProfileDetailsUI extends StatelessWidget {
   final SisterModel sister;
@@ -12,43 +13,58 @@ class FemaleProfileDetailsUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FemaleProfileDetailsController controller = Get.put(FemaleProfileDetailsController());
+    
+    // Fetch live profile details when UI opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchProfile(sister.id);
+    });
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderInfo(),
-                  SizedBox(height: 30.h),
-                  _buildSectionTitle("About Me"),
-                  SizedBox(height: 10.h),
-                  _buildSectionContent(sister.about),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle("My Revert Story / Journey"),
-                  SizedBox(height: 10.h),
-                  _buildSectionContent(sister.revertHistory),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle("Interests"),
-                  SizedBox(height: 10.h),
-                  _buildInterests(),
-                  SizedBox(height: 40.h),
-                  _buildActionButtons(),
-                  SizedBox(height: 40.h),
-                ],
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
+        }
+
+        final liveSister = controller.sister.value ?? sister;
+
+        return CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(liveSister),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderInfo(liveSister),
+                    SizedBox(height: 30.h),
+                    _buildSectionTitle("About Me"),
+                    SizedBox(height: 10.h),
+                    _buildSectionContent(liveSister.about),
+                    SizedBox(height: 25.h),
+                    _buildSectionTitle("My Revert Story / Journey"),
+                    SizedBox(height: 10.h),
+                    _buildSectionContent(liveSister.revertHistory),
+                    SizedBox(height: 25.h),
+                    _buildSectionTitle("Interests"),
+                    SizedBox(height: 10.h),
+                    _buildInterests(liveSister),
+                    SizedBox(height: 40.h),
+                    _buildActionButtons(liveSister),
+                    SizedBox(height: 40.h),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(SisterModel displaySister) {
     return SliverAppBar(
       expandedHeight: 350.h,
       pinned: true,
@@ -71,14 +87,19 @@ class FemaleProfileDetailsUI extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              sister.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/image/female.png',
-                fit: BoxFit.cover,
-              ),
-            ),
+            displaySister.imageUrl.isNotEmpty && displaySister.imageUrl.startsWith('http')
+                ? Image.network(
+                    displaySister.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/image/female.png',
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    'assets/image/female.png',
+                    fit: BoxFit.cover,
+                  ),
             // Gradient to make text readable
             Container(
               decoration: BoxDecoration(
@@ -92,7 +113,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
                 ),
               ),
             ),
-            if (sister.isOnline)
+            if (displaySister.isOnline)
               Positioned(
                 bottom: 20.h,
                 right: 20.w,
@@ -131,7 +152,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderInfo() {
+  Widget _buildHeaderInfo(SisterModel displaySister) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -147,7 +168,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          "${sister.name}, ${sister.age}",
+                          "${displaySister.name}, ${displaySister.age}",
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 28.sp,
                             fontWeight: FontWeight.bold,
@@ -157,7 +178,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (sister.isVerified) ...[
+                      if (displaySister.isVerified) ...[
                         SizedBox(width: 8.w),
                         Icon(Icons.verified, color: AppColors.femaleColor, size: 22.sp),
                       ],
@@ -165,7 +186,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
                   ),
                   SizedBox(height: 5.h),
                   Text(
-                    "Joined ${sister.joinedAgo}",
+                    displaySister.joinedAgo.isNotEmpty ? "Joined ${displaySister.joinedAgo}" : "Member",
                     style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       color: AppColors.bodyColor,
@@ -185,7 +206,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
                   Icon(Icons.location_on_outlined, color: AppColors.femaleColor, size: 16.sp),
                   SizedBox(width: 4.w),
                   Text(
-                    "${sister.distance} mi",
+                    "${displaySister.distance} mi",
                     style: GoogleFonts.inter(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
@@ -197,7 +218,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
             ),
           ],
         ),
-        if (sister.isNewRevert) ...[
+        if (displaySister.isNewRevert) ...[
           SizedBox(height: 15.h),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
@@ -257,15 +278,15 @@ class FemaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildInterests() {
-    if (sister.interests.isEmpty) {
+  Widget _buildInterests(SisterModel displaySister) {
+    if (displaySister.interests.isEmpty) {
       return _buildSectionContent("No interests provided yet.");
     }
 
     return Wrap(
       spacing: 10.w,
       runSpacing: 10.h,
-      children: sister.interests.map((interest) {
+      children: displaySister.interests.map((interest) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           decoration: BoxDecoration(
@@ -286,10 +307,10 @@ class FemaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
-    final bool isConnected = sister.status == 'Connected';
-    final bool isRequested = sister.status == 'Requested';
-    final bool isConnect = sister.status == 'Connect';
+  Widget _buildActionButtons(SisterModel displaySister) {
+    final bool isConnected = displaySister.status == 'Connected';
+    final bool isRequested = displaySister.status == 'Requested';
+    final bool isConnect = displaySister.status == 'Connect';
 
     return SizedBox(
       width: double.infinity,
@@ -314,7 +335,7 @@ class FemaleProfileDetailsUI extends StatelessWidget {
               SizedBox(width: 8.w),
             ],
             Text(
-              sister.status,
+              displaySister.status,
               style: GoogleFonts.inter(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,

@@ -12,7 +12,7 @@ class AskImamUI extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.question_answer, size: 60.sp, color: AppColors.maleColor.withValues(alpha: 0.5)),
+          Icon(Icons.question_answer, size: 60.sp, color: AppColors.maleColor.withOpacity(0.5)),
           SizedBox(height: 20.h),
           Text(
             'Ask Imam Module',

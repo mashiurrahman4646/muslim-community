@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:get/get.dart';
 import 'package:muslim_community/male_role/discover/model/brother_model.dart';
+import 'package:muslim_community/male_role/discover/controller/maleprofileservicecontroller.dart';
 
 class MaleProfileDetailsUI extends StatelessWidget {
   final BrotherModel brother;
@@ -12,43 +13,58 @@ class MaleProfileDetailsUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MaleProfileDetailsController controller = Get.put(MaleProfileDetailsController());
+    
+    // Fetch live profile details when UI opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchProfile(brother.id);
+    });
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderInfo(),
-                  SizedBox(height: 30.h),
-                  _buildSectionTitle("About Me"),
-                  SizedBox(height: 10.h),
-                  _buildSectionContent(brother.about),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle("My Revert Story / Journey"),
-                  SizedBox(height: 10.h),
-                  _buildSectionContent(brother.revertHistory),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle("Interests"),
-                  SizedBox(height: 10.h),
-                  _buildInterests(),
-                  SizedBox(height: 40.h),
-                  _buildActionButtons(),
-                  SizedBox(height: 40.h),
-                ],
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        }
+
+        final liveBrother = controller.brother.value ?? brother;
+
+        return CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(liveBrother),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderInfo(liveBrother),
+                    SizedBox(height: 30.h),
+                    _buildSectionTitle("About Me"),
+                    SizedBox(height: 10.h),
+                    _buildSectionContent(liveBrother.about),
+                    SizedBox(height: 25.h),
+                    _buildSectionTitle("My Revert Story / Journey"),
+                    SizedBox(height: 10.h),
+                    _buildSectionContent(liveBrother.revertHistory),
+                    SizedBox(height: 25.h),
+                    _buildSectionTitle("Interests"),
+                    SizedBox(height: 10.h),
+                    _buildInterests(liveBrother),
+                    SizedBox(height: 40.h),
+                    _buildActionButtons(liveBrother),
+                    SizedBox(height: 40.h),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(BrotherModel displayBrother) {
     return SliverAppBar(
       expandedHeight: 350.h,
       pinned: true,
@@ -71,14 +87,19 @@ class MaleProfileDetailsUI extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              brother.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/image/male.png',
-                fit: BoxFit.cover,
-              ),
-            ),
+            displayBrother.imageUrl.isNotEmpty && displayBrother.imageUrl.startsWith('http')
+                ? Image.network(
+                    displayBrother.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/image/male.png',
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    'assets/image/male.png',
+                    fit: BoxFit.cover,
+                  ),
             // Gradient to make text readable
             Container(
               decoration: BoxDecoration(
@@ -92,7 +113,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
                 ),
               ),
             ),
-            if (brother.isOnline)
+            if (displayBrother.isOnline)
               Positioned(
                 bottom: 20.h,
                 right: 20.w,
@@ -131,7 +152,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderInfo() {
+  Widget _buildHeaderInfo(BrotherModel displayBrother) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -147,7 +168,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          "${brother.name}, ${brother.age}",
+                          "${displayBrother.name}, ${displayBrother.age}",
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 28.sp,
                             fontWeight: FontWeight.bold,
@@ -157,7 +178,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (brother.isVerified) ...[
+                      if (displayBrother.isVerified) ...[
                         SizedBox(width: 8.w),
                         Icon(Icons.verified, color: AppColors.maleColor, size: 22.sp),
                       ],
@@ -165,7 +186,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
                   ),
                   SizedBox(height: 5.h),
                   Text(
-                    "Joined ${brother.joinedAgo}",
+                    displayBrother.joinedAgo.isNotEmpty ? "Joined ${displayBrother.joinedAgo}" : "Member",
                     style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       color: AppColors.bodyColor,
@@ -185,7 +206,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
                   Icon(Icons.location_on_outlined, color: AppColors.maleColor, size: 16.sp),
                   SizedBox(width: 4.w),
                   Text(
-                    "${brother.distance} mi",
+                    "${displayBrother.distance} mi",
                     style: GoogleFonts.inter(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
@@ -197,7 +218,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
             ),
           ],
         ),
-        if (brother.isNewRevert) ...[
+        if (displayBrother.isNewRevert) ...[
           SizedBox(height: 15.h),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
@@ -257,15 +278,15 @@ class MaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildInterests() {
-    if (brother.interests.isEmpty) {
+  Widget _buildInterests(BrotherModel displayBrother) {
+    if (displayBrother.interests.isEmpty) {
       return _buildSectionContent("No interests provided yet.");
     }
 
     return Wrap(
       spacing: 10.w,
       runSpacing: 10.h,
-      children: brother.interests.map((interest) {
+      children: displayBrother.interests.map((interest) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           decoration: BoxDecoration(
@@ -286,10 +307,10 @@ class MaleProfileDetailsUI extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
-    final bool isConnected = brother.status == 'Connected';
-    final bool isRequested = brother.status == 'Requested';
-    final bool isConnect = brother.status == 'Connect';
+  Widget _buildActionButtons(BrotherModel displayBrother) {
+    final bool isConnected = displayBrother.status == 'Connected';
+    final bool isRequested = displayBrother.status == 'Requested';
+    final bool isConnect = displayBrother.status == 'Connect';
 
     return SizedBox(
       width: double.infinity,
@@ -314,7 +335,7 @@ class MaleProfileDetailsUI extends StatelessWidget {
               SizedBox(width: 8.w),
             ],
             Text(
-              brother.status,
+              displayBrother.status,
               style: GoogleFonts.inter(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,

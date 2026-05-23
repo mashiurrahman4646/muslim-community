@@ -2,13 +2,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:muslim_community/female_role/discover/model/sister_model.dart';
 import 'package:muslim_community/female_role/discover/service/sistergetservice.dart';
 import 'package:muslim_community/female_role/home/controller/userdatacontroller.dart';
+import 'package:muslim_community/services/socket_service.dart';
 
 class SisterGetController extends GetxController {
   final SisterGetService _service = SisterGetService();
   final FemaleUserDataController _userCtrl = Get.find<FemaleUserDataController>();
+  final SocketService _socketService = SocketService();
   
   var isLoading = false.obs;
   var sisters = <SisterModel>[].obs;
@@ -35,11 +38,11 @@ class SisterGetController extends GetxController {
     }
   }
 
-  Future<void> fetchSisters({bool isRefresh = false}) async {
+  Future<void> fetchSisters({bool isRefresh = false, bool isSilent = false}) async {
     if (isRefresh) {
       page.value = 1;
       hasMore.value = true;
-      isLoading.value = true;
+      if (!isSilent) isLoading.value = true;
     } else {
       if (!hasMore.value || isFetchingMore.value) return;
       isFetchingMore.value = true;
@@ -93,7 +96,6 @@ class SisterGetController extends GetxController {
         } else {
           final fetchedSisters = profilesData.map((json) {
             final int age = json['age'] ?? 30;
-            // ... joinedAgo logic ...
             String joinedAgo = 'New Revert';
             if (json['revertDate'] != null) {
               try {
@@ -148,17 +150,8 @@ class SisterGetController extends GetxController {
             } else if (rawStatus == 'accepted' || rawStatus == 'connected' || rawStatus == 'friends') {
               mappedStatus = 'Connected';
             } else if (rawStatus == 'rejected' || rawStatus == 'rejected_by_receiver' || rawStatus == 'rejected_by_sender') {
-              // If rejected, show 'Connect' button again as requested by backend
               mappedStatus = 'Connect';
             }
-
-            // Diagnostic Log
-            print("--- Mapping Profile: ${json['name']} ---");
-            print("  rawStatus: $rawStatus");
-            print("  rawDirection: $rawDirection");
-            print("  senderId from API: $senderId");
-            print("  currentUserId: $currentUserId");
-            print("  mappedStatus: $mappedStatus");
 
             return SisterModel(
               id: (json['_id'] ?? json['id'] ?? '').toString(),
@@ -181,7 +174,11 @@ class SisterGetController extends GetxController {
           }).toList();
 
           if (isRefresh) {
-            sisters.value = fetchedSisters;
+            if (sisters.length != fetchedSisters.length) {
+              sisters.assignAll(fetchedSisters);
+            } else {
+              sisters.assignAll(fetchedSisters);
+            }
           } else {
             // Prevent duplicates when loading more
             for (var newSister in fetchedSisters) {
@@ -198,7 +195,7 @@ class SisterGetController extends GetxController {
     } catch (e) {
       print("Error fetching sisters in controller: $e");
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
       isFetchingMore.value = false;
     }
   }
@@ -206,16 +203,48 @@ class SisterGetController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Pre-fetch position to speed up subsequent loads
     _preFetchLocation();
     
-    // Ensure user data is loaded before fetching sisters to correctly map status
     if (_userCtrl.userId.value.isEmpty) {
       _userCtrl.getUserData().then((_) => fetchSisters(isRefresh: true));
     } else {
       fetchSisters(isRefresh: true);
     }
+    _setupSocketListeners();
     debounce(searchTerm, (_) => fetchSisters(isRefresh: true), time: const Duration(milliseconds: 500));
+  }
+
+  @override
+  void onClose() {
+    _removeSocketListeners();
+    super.onClose();
+  }
+
+  void _setupSocketListeners() async {
+    try {
+      if (!_socketService.isConnected) {
+        await _socketService.connect();
+      }
+      _socketService.on('UPDATE_DISCOVERY', (data) {
+        print("SOCKET_DEBUG: Discovery update received for sisters");
+        if (!isLoading.value && !isFetchingMore.value && searchTerm.value.isEmpty) {
+          fetchSisters(isRefresh: true, isSilent: true);
+        }
+      });
+      _socketService.on('NEW_SISTER', (data) {
+        print("SOCKET_DEBUG: New sister added, refreshing list");
+        if (!isLoading.value && !isFetchingMore.value && searchTerm.value.isEmpty) {
+          fetchSisters(isRefresh: true, isSilent: true);
+        }
+      });
+    } catch (e) {
+      print("Error setting up socket listeners for sisters: $e");
+    }
+  }
+
+  void _removeSocketListeners() {
+    _socketService.off('UPDATE_DISCOVERY');
+    _socketService.off('NEW_SISTER');
   }
 
   void searchSisters(String query) {

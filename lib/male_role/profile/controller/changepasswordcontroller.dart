@@ -43,7 +43,7 @@ class MaleChangePasswordController extends GetxController {
 
       final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Clear token and redirect to login after password change
         await _tokenService.removeToken();
         Get.offAllNamed(AppRoutes.selectRole);

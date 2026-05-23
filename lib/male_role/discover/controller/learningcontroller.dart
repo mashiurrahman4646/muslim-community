@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/discover/model/learning_content_model.dart';
 import 'package:muslim_community/female_role/discover/model/learning_comment_model.dart';
 import 'package:muslim_community/male_role/discover/service/learningservice.dart';
 import 'package:muslim_community/male_role/home/controller/userdatacontroller.dart';
+import 'package:muslim_community/services/socket_service.dart';
 
 class MaleLearningController extends GetxController {
   final MaleLearningService _service = MaleLearningService();
+  final SocketService _socketService = SocketService();
   
   var isLoading = false.obs;
   var learningContents = <LearningContentModel>[].obs;
@@ -18,24 +21,62 @@ class MaleLearningController extends GetxController {
   void onInit() {
     super.onInit();
     fetchLearningContents();
+    _setupSocketListeners();
   }
 
-  Future<void> fetchLearningContents() async {
-    isLoading.value = true;
+  @override
+  void onClose() {
+    _removeSocketListeners();
+    super.onClose();
+  }
+
+  void _setupSocketListeners() async {
+    try {
+      if (!_socketService.isConnected) {
+        await _socketService.connect();
+      }
+      _socketService.on('UPDATE_DISCOVERY', (data) {
+        print("SOCKET_DEBUG: Discovery update received for learning");
+        fetchLearningContents(isSilent: true);
+      });
+      _socketService.on('NEW_LEARNING', (data) {
+        print("SOCKET_DEBUG: New learning content added");
+        fetchLearningContents(isSilent: true);
+      });
+    } catch (e) {
+      print("Error setting up socket listeners for learning: $e");
+    }
+  }
+
+  void _removeSocketListeners() {
+    _socketService.off('UPDATE_DISCOVERY');
+    _socketService.off('NEW_LEARNING');
+  }
+
+  Future<void> fetchLearningContents({bool isSilent = false}) async {
+    if (!isSilent) isLoading.value = true;
     try {
       final response = await _service.getLearningContents();
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> data = responseData['data'] ?? [];
         
-        learningContents.value = data.map((json) => LearningContentModel.fromJson(json)).toList();
+        final List<LearningContentModel> newContents = data.map((json) => LearningContentModel.fromJson(json)).toList();
+        
+        // Update the list only if there's a change to avoid unnecessary UI rebuilds
+        if (learningContents.length != newContents.length) {
+          learningContents.value = newContents;
+        } else {
+          // Deep check or just assign for simplicity if needed
+          learningContents.value = newContents;
+        }
       } else {
         print("Failed to fetch male learning contents: ${response.statusCode}");
       }
     } catch (e) {
       print("Error fetching male learning contents: $e");
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
     }
   }
 

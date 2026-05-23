@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muslim_community/male_role/discover/model/ask_question_model.dart';
+import 'package:muslim_community/shared/model/ask_question_model.dart';
 import 'package:muslim_community/female_role/discover/service/asksisterservice.dart';
+import 'package:muslim_community/services/socket_service.dart';
 
 class AskSisterController extends GetxController {
   final AskSisterService _service = AskSisterService();
+  final SocketService _socketService = SocketService();
 
   final RxList<AskQuestionModel> myQuestions = <AskQuestionModel>[].obs;
   final RxBool isLoading = false.obs;
@@ -15,10 +18,40 @@ class AskSisterController extends GetxController {
   void onInit() {
     super.onInit();
     fetchMyQuestions();
+    _setupSocketListeners();
   }
 
-  Future<void> fetchMyQuestions() async {
-    isLoading.value = true;
+  @override
+  void onClose() {
+    _removeSocketListeners();
+    super.onClose();
+  }
+
+  void _setupSocketListeners() async {
+    try {
+      if (!_socketService.isConnected) {
+        await _socketService.connect();
+      }
+      _socketService.on('UPDATE_DISCOVERY', (data) {
+        print("SOCKET_DEBUG: Discovery update received for female questions");
+        fetchMyQuestions(isSilent: true);
+      });
+      _socketService.on('NEW_QUESTION', (data) {
+        print("SOCKET_DEBUG: New female question/answer update");
+        fetchMyQuestions(isSilent: true);
+      });
+    } catch (e) {
+      print("Error setting up socket listeners for ask sister: $e");
+    }
+  }
+
+  void _removeSocketListeners() {
+    _socketService.off('UPDATE_DISCOVERY');
+    _socketService.off('NEW_QUESTION');
+  }
+
+  Future<void> fetchMyQuestions({bool isSilent = false}) async {
+    if (!isSilent) isLoading.value = true;
     try {
       final response = await _service.getMyQuestions();
       debugPrint("Fetch my questions status: ${response.statusCode}");
@@ -27,10 +60,18 @@ class AskSisterController extends GetxController {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           final rawData = decoded['data'];
+          final List<AskQuestionModel> fetchedQuestions = [];
+          
           if (rawData is List) {
-            myQuestions.assignAll(rawData.map((json) => AskQuestionModel.fromJson(json)).toList());
+            fetchedQuestions.addAll(rawData.map((json) => AskQuestionModel.fromJson(json)).toList());
           } else if (rawData is Map) {
-            myQuestions.assignAll([AskQuestionModel.fromJson(Map<String, dynamic>.from(rawData))]);
+            fetchedQuestions.add(AskQuestionModel.fromJson(Map<String, dynamic>.from(rawData)));
+          }
+
+          if (myQuestions.length != fetchedQuestions.length) {
+            myQuestions.assignAll(fetchedQuestions);
+          } else {
+            myQuestions.assignAll(fetchedQuestions);
           }
         }
       } else {
@@ -39,7 +80,7 @@ class AskSisterController extends GetxController {
     } catch (e) {
       debugPrint("Exception fetching my questions: $e");
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
     }
   }
 

@@ -13,16 +13,18 @@ class JummaChangePasswordService {
     final token = await _tokenService.getToken();
     final uri = Uri.parse(AppConfig.changePasswordEndpoint);
     
-    return await http.post(
+    final response = await http.post(
       uri,
       headers: {
-        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       }),
     );
+    
+    return response;
   }
 }

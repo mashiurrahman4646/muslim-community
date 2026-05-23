@@ -82,14 +82,17 @@ class FemaleLoginUI extends StatelessWidget {
                       controller: controller.emailController,
                     ),
                     SizedBox(height: 20.h),
-                    _buildInputField(
-                      label: 'PASSWORD',
-                      hint: 'Enter your password',
-                      icon: Icons.lock_outline,
-                      themeColor: themeColor,
-                      isPassword: true,
-                      controller: controller.passwordController,
-                    ),
+                    Obx(() => _buildInputField(
+                          label: 'PASSWORD',
+                          hint: 'Enter your password',
+                          icon: Icons.lock_outline,
+                          themeColor: themeColor,
+                          isPassword: true,
+                          obscureText: !controller.isPasswordVisible.value,
+                          controller: controller.passwordController,
+                          onToggleVisibility: () =>
+                              controller.togglePasswordVisibility(),
+                        )),
                     SizedBox(height: 12.h),
                     Align(
                       alignment: Alignment.centerRight,
@@ -177,7 +180,9 @@ class FemaleLoginUI extends StatelessWidget {
     required IconData icon,
     required Color themeColor,
     bool isPassword = false,
+    bool obscureText = false,
     TextEditingController? controller,
+    VoidCallback? onToggleVisibility,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,20 +199,34 @@ class FemaleLoginUI extends StatelessWidget {
         SizedBox(height: 10.h),
         TextField(
           controller: controller,
-          obscureText: isPassword,
+          obscureText: isPassword ? obscureText : false,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
-            prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 20.sp),
-            suffixIcon: isPassword ? Icon(Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 20.sp) : null,
+            hintStyle:
+                GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
+            prefixIcon:
+                Icon(icon, color: Colors.grey.shade400, size: 20.sp),
+            suffixIcon: isPassword
+                ? GestureDetector(
+                    onTap: onToggleVisibility,
+                    child: Icon(
+                      obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.grey.shade400,
+                      size: 20.sp,
+                    ),
+                  )
+                : null,
             filled: true,
-            fillColor: const Color(0xFFEDF4F1).withOpacity(0.6),
+            fillColor: const Color(0xFFEDF4F1).withOpacity(0.5),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide.none,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           ),
         ),
       ],

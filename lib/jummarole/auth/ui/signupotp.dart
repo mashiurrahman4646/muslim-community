@@ -1,33 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/jummarole/auth/controller/jumma_otp_controller.dart';
 
-class JummaSignUpOTPUI extends StatefulWidget {
+class JummaSignUpOTPUI extends StatelessWidget {
   const JummaSignUpOTPUI({super.key});
-
-  @override
-  State<JummaSignUpOTPUI> createState() => _JummaSignUpOTPUIState();
-}
-
-class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
-  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
-  final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
-
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF436E50);
+    final controller = Get.put(JummaOtpController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -45,7 +27,6 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // Updated Icon from Assets
               Center(
                 child: Container(
                   width: 140,
@@ -78,7 +59,7 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
               ),
               const SizedBox(height: 15),
               Text(
-                'We have sent a 4-digit code to your email.\nPlease enter it below to continue.',
+                'We have sent a 6-digit code to your email.\nPlease enter it below to continue.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 15,
@@ -90,6 +71,7 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
 
               // Email Badge
               Container(
+                constraints: BoxConstraints(maxWidth: Get.width * 0.8),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -99,11 +81,17 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.email_outlined, size: 16, color: themeColor.withOpacity(0.6)),
+                    Icon(Icons.email_outlined,
+                        size: 16, color: themeColor.withOpacity(0.6)),
                     const SizedBox(width: 8),
-                    Text(
-                      'a*****@gmail.com',
-                      style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF2D3436)),
+                    Flexible(
+                      child: Obx(() => Text(
+                            controller.email.value,
+                            style: GoogleFonts.inter(
+                                fontSize: 14, color: const Color(0xFF2D3436)),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          )),
                     ),
                     const SizedBox(width: 4),
                     const Icon(Icons.circle, size: 4, color: Color(0xFFF1C40F)),
@@ -112,14 +100,14 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
               ),
               const SizedBox(height: 40),
 
-              // Workable OTP Fields
+              // 6-digit OTP Fields
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (index) => _buildOTPBox(index, themeColor)),
+                children: List.generate(6, (index) => _buildOTPBox(index, themeColor, controller)),
               ),
               const SizedBox(height: 15),
               Text(
-                'ENTER 4-DIGIT CODE',
+                'ENTER 6-DIGIT CODE',
                 style: GoogleFonts.inter(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
@@ -139,14 +127,14 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
                     'Code expires in ',
                     style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade600),
                   ),
-                  Text(
-                    '02:47',
+                  Obx(() => Text(
+                    controller.timerText.value,
                     style: GoogleFonts.inter(
                       fontSize: 14, 
                       color: themeColor,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  )),
                 ],
               ),
               const SizedBox(height: 40),
@@ -155,29 +143,31 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton(
-                  onPressed: () => Get.offAllNamed(AppRoutes.jummaLogin),
+                child: Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value ? null : () => controller.verifyOtp(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 0,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.help_outline, size: 18, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Verify & Continue',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                  child: controller.isLoading.value 
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.help_outline, size: 18, color: Colors.white),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Verify & Continue',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                )),
               ),
               const SizedBox(height: 30),
 
@@ -189,13 +179,20 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
                     "Didn't receive the code? ",
                     style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade600),
                   ),
-                  Text(
-                    'Resend',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: themeColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  GestureDetector(
+                    onTap: () {
+                      controller.resendOtp();
+                    },
+                    child: Obx(() => Text(
+                          'Resend',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: controller.secondsRemaining.value > 0
+                                ? Colors.grey
+                                : themeColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
                   ),
                 ],
               ),
@@ -207,13 +204,13 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
     );
   }
 
-  Widget _buildOTPBox(int index, Color themeColor) {
+  Widget _buildOTPBox(int index, Color themeColor, JummaOtpController controller) {
     return Container(
-      width: 65,
-      height: 75,
+      width: 45,
+      height: 60,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: themeColor.withOpacity(0.3),
           width: 1.5,
@@ -221,13 +218,13 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
       ),
       child: Center(
         child: TextField(
-          controller: _controllers[index],
-          focusNode: _focusNodes[index],
+          controller: controller.otpControllers[index],
+          focusNode: controller.focusNodes[index],
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
           maxLength: 1,
           style: GoogleFonts.playfairDisplay(
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: themeColor,
           ),
@@ -236,10 +233,10 @@ class _JummaSignUpOTPUIState extends State<JummaSignUpOTPUI> {
             border: InputBorder.none,
           ),
           onChanged: (value) {
-            if (value.isNotEmpty && index < 3) {
-              _focusNodes[index + 1].requestFocus();
+            if (value.isNotEmpty && index < 5) {
+              controller.focusNodes[index + 1].requestFocus();
             } else if (value.isEmpty && index > 0) {
-              _focusNodes[index - 1].requestFocus();
+              controller.focusNodes[index - 1].requestFocus();
             }
           },
         ),

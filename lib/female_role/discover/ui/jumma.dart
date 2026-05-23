@@ -6,14 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/approut.dart';
 import 'package:muslim_community/female_role/discover/controller/jummacontroller.dart';
-import 'package:muslim_community/female_role/discover/model/khutbah_model.dart';
+import 'package:muslim_community/shared/model/khutbah_model.dart';
 
 class JummaUI extends StatelessWidget {
   const JummaUI({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final JummaController controller = Get.put(JummaController());
+    final FemaleJummaController controller = Get.put(FemaleJummaController());
 
     return RefreshIndicator(
       onRefresh: () => controller.fetchKhutbahs(),

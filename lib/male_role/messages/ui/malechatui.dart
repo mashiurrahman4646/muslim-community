@@ -4,40 +4,41 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/messages/controller/chat_controller.dart';
-import 'package:muslim_community/female_role/messages/model/chat_message_model.dart'; // Reusing the same model
+import 'package:muslim_community/shared/model/chat_message_model.dart';
 
 class MaleChatUI extends StatelessWidget {
   final String chatId;
   final String userName;
   final String? userImage;
-  final bool isOnline;
 
   const MaleChatUI({
     super.key,
     required this.chatId,
     required this.userName,
     this.userImage,
-    this.isOnline = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Get the controller (creates if not exists, otherwise returns existing)
     final MaleChatController controller = Get.put(MaleChatController());
     
-    // Fetch messages when UI opens
+    // Fetch messages when UI opens or when chatId changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchMessages(chatId);
+      if (controller.currentChatId != chatId) {
+        controller.fetchMessages(chatId);
+      }
     });
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(controller),
       body: SafeArea(
         child: Column(
           children: [
             // --- DIVIDER ---
             Divider(
-              color: AppColors.goldColor.withValues(alpha: 0.15),
+              color: AppColors.goldColor.withOpacity(0.15),
               thickness: 1,
               height: 1,
             ),
@@ -59,12 +60,15 @@ class MaleChatUI extends StatelessWidget {
                   }
 
                   return ListView.builder(
+                    controller: controller.scrollController,
+                    reverse: true, // Newest messages at bottom (index 0)
                     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                     itemCount: controller.messages.length,
                     itemBuilder: (context, index) {
                       final msg = controller.messages[index];
-                      // Show date pill for the first message or if date changes (simplified for now)
-                      if (index == 0) {
+                      
+                      // With reverse: true, the last item in the list is the oldest (top of screen)
+                      if (index == controller.messages.length - 1) {
                         return Column(
                           children: [
                             _buildTodayPill(),
@@ -73,6 +77,7 @@ class MaleChatUI extends StatelessWidget {
                           ],
                         );
                       }
+                      
                       return _buildChatBubble(msg);
                     },
                   );
@@ -88,7 +93,7 @@ class MaleChatUI extends StatelessWidget {
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(MaleChatController controller) {
     return AppBar(
       backgroundColor: AppColors.backgroundColor,
       elevation: 0,
@@ -135,20 +140,19 @@ class MaleChatUI extends StatelessWidget {
                           ),
                   ),
                 ),
-                if (isOnline)
-                  Positioned(
-                    top: -2,
-                    right: -2,
-                    child: Container(
-                      width: 10.w,
-                      height: 10.w,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.backgroundColor, width: 2),
-                      ),
+                Obx(() => controller.isOtherUserOnline.value ? Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    width: 10.w,
+                    height: 10.w,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.backgroundColor, width: 2),
                     ),
                   ),
+                ) : const SizedBox.shrink()),
               ],
             ),
           ),
@@ -165,13 +169,13 @@ class MaleChatUI extends StatelessWidget {
                   color: AppColors.titleColor,
                 ),
               ),
-              Text(
-                isOnline ? 'Online' : 'Offline',
+              Obx(() => Text(
+                controller.isOtherUserOnline.value ? 'Online' : 'Offline',
                 style: GoogleFonts.inter(
                   fontSize: 11.sp,
-                  color: AppColors.maleColor, 
+                  color: controller.isOtherUserOnline.value ? Colors.green : AppColors.maleColor, 
                 ),
-              ),
+              )),
             ],
           ),
         ],
@@ -186,7 +190,7 @@ class MaleChatUI extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: AppColors.goldColor.withValues(alpha: 0.15)),
+          border: Border.all(color: AppColors.goldColor.withOpacity(0.15)),
         ),
         child: Text(
           'TODAY',
@@ -205,48 +209,91 @@ class MaleChatUI extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
-      child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            constraints: BoxConstraints(maxWidth: Get.width * 0.75),
-            decoration: BoxDecoration(
-              color: isMe ? AppColors.maleColor : Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              border: isMe ? null : Border.all(color: AppColors.goldColor.withValues(alpha: 0.15)),
-              boxShadow: [
-                if (!isMe)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  constraints: BoxConstraints(maxWidth: Get.width * 0.75),
+                  decoration: BoxDecoration(
+                    color: isMe ? AppColors.maleColor : Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20.r),
+                      topRight: Radius.circular(20.r),
+                      bottomLeft: isMe ? Radius.circular(20.r) : Radius.circular(0),
+                      bottomRight: isMe ? Radius.circular(0) : Radius.circular(20.r),
+                    ),
+                    border: isMe ? null : Border.all(color: AppColors.goldColor.withOpacity(0.15)),
+                    boxShadow: [
+                      if (!isMe)
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
                   ),
+                  child: Text(
+                    message.text,
+                    style: GoogleFonts.inter(
+                      fontSize: 14.sp,
+                      color: isMe ? Colors.white : AppColors.titleColor,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        message.time,
+                        style: GoogleFonts.inter(
+                          fontSize: 10.sp,
+                          color: AppColors.bodyColor.withOpacity(0.7),
+                        ),
+                      ),
+                      if (isMe) ...[
+                        SizedBox(width: 4.w),
+                        _buildStatusIndicator(message.status),
+                      ],
+                    ],
+                  ),
+                ),
               ],
-            ),
-            child: Text(
-              message.text,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: isMe ? Colors.white : AppColors.titleColor,
-                height: 1.4,
-              ),
-            ),
-          ),
-          SizedBox(height: 6.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
-            child: Text(
-              message.time,
-              style: GoogleFonts.inter(
-                fontSize: 10.sp,
-                color: AppColors.bodyColor.withValues(alpha: 0.7),
-              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildStatusIndicator(MessageStatus status) {
+    IconData icon;
+    Color color;
+
+    switch (status) {
+      case MessageStatus.sent:
+        icon = Icons.done;
+        color = AppColors.bodyColor.withOpacity(0.5);
+        break;
+      case MessageStatus.delivered:
+        icon = Icons.done_all;
+        color = AppColors.bodyColor.withOpacity(0.5);
+        break;
+      case MessageStatus.read:
+        icon = Icons.done_all;
+        color = AppColors.maleColor; // Or a specific "read" color like blue
+        break;
+    }
+
+    return Icon(icon, size: 14.sp, color: color);
   }
 
   Widget _buildMessageInput() {
@@ -256,7 +303,7 @@ class MaleChatUI extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.backgroundColor,
         border: Border(
-          top: BorderSide(color: AppColors.goldColor.withValues(alpha: 0.15)),
+          top: BorderSide(color: AppColors.goldColor.withOpacity(0.15)),
         ),
       ),
       child: Row(
@@ -269,14 +316,14 @@ class MaleChatUI extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25.r),
-                border: Border.all(color: AppColors.goldColor.withValues(alpha: 0.2)),
+                border: Border.all(color: AppColors.goldColor.withOpacity(0.2)),
               ),
               child: TextField(
                 controller: controller.messageController,
                 decoration: InputDecoration(
                   hintText: 'Type a message...',
                   hintStyle: GoogleFonts.inter(
-                    color: Colors.grey.withValues(alpha: 0.5),
+                    color: Colors.grey.withOpacity(0.5),
                     fontSize: 14.sp,
                   ),
                   border: InputBorder.none,

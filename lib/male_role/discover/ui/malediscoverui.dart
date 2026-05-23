@@ -138,12 +138,12 @@ class MaleDiscoverUI extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Search Brothers...',
           hintStyle: GoogleFonts.inter(
-            color: Colors.grey.withValues(alpha: 0.5),
+            color: Colors.grey.withOpacity(0.5),
             fontSize: 13.sp,
           ),
           prefixIcon: Icon(
             Icons.search,
-            color: _roleColor.withValues(alpha: 0.5),
+            color: _roleColor.withOpacity(0.5),
             size: 20.sp,
           ),
           border: InputBorder.none,
@@ -186,8 +186,8 @@ class MaleDiscoverUI extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.r),
           border: Border.all(
             color: isSelected
-                ? _roleColor.withValues(alpha: 0.4)
-                : const Color(0xFFA6864D).withValues(alpha: 0.3),
+                ? _roleColor.withOpacity(0.4)
+                : const Color(0xFFA6864D).withOpacity(0.3),
           ),
         ),
         child: Text(

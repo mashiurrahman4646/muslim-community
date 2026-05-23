@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:muslim_community/male_role/discover/model/khutbah_model.dart';
+import 'package:muslim_community/shared/model/khutbah_model.dart';
 import 'package:muslim_community/male_role/discover/service/jummanowplayingservice.dart';
 
 class JummaNowPlayingController extends GetxController {

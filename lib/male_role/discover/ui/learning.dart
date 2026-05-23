@@ -115,7 +115,7 @@ class LearningUI extends StatelessWidget {
           borderRadius: BorderRadius.circular(25.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: Colors.black.withOpacity(0.03),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -200,7 +200,7 @@ class LearningUI extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                      color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(

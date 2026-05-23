@@ -24,6 +24,9 @@ class AppConfig {
   static const String deleteLearningCommentEndpoint = "$baseUrl/learning-contents/comments/{id}";
   static const String askQuestionEndpoint = "$baseUrl/ask-question";
   static const String myQuestionsEndpoint = "$baseUrl/ask-question/my-questions";
+  static const String forgotPasswordEndpoint = "$baseUrl/auth/forgot-password";
+  static const String verifyForgotPasswordOtpEndpoint = "$baseUrl/auth/verify-forgot-password-otp";
+  static const String resetPasswordEndpoint = "$baseUrl/auth/reset-password";
   static const String legalEndpoint = "$baseUrl/legal";
   static const String duasEndpoint = "$baseUrl/duas";
   static const String changePasswordEndpoint = "$baseUrl/auth/change-password";
@@ -32,4 +35,6 @@ class AppConfig {
   static const String chatListEndpoint = "$baseUrl/chats";
   static const String messagesEndpoint = "$baseUrl/messages";
   static String getChatMessagesEndpoint(String chatId) => "$baseUrl/messages/chat/$chatId";
+  static String markChatAsReadEndpoint(String chatId) => "$baseUrl/messages/chat/$chatId/read";
+  static String getPublicProfileEndpoint(String userId) => "$baseUrl/users/$userId/public";
 }

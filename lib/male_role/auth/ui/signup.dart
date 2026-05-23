@@ -97,18 +97,17 @@ class MaleSignUpUI extends StatelessWidget {
                     ),
                     SizedBox(height: 16.h),
                     Obx(() => _buildInputField(
-                      label: 'PASSWORD',
-                      hint: 'Create a password',
-                      icon: Icons.lock_outline,
-                      themeColor: themeColor,
-                      isPassword: !controller.isPasswordVisible.value,
-                      controller: controller.passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      suffixIcon: controller.isPasswordVisible.value 
-                          ? Icons.visibility_outlined 
-                          : Icons.visibility_off_outlined,
-                      onSuffixIconTap: () => controller.togglePasswordVisibility(),
-                    )),
+                          label: 'PASSWORD',
+                          hint: 'Create a password',
+                          icon: Icons.lock_outline,
+                          themeColor: themeColor,
+                          isPassword: true,
+                          obscureText: !controller.isPasswordVisible.value,
+                          controller: controller.passwordController,
+                          keyboardType: TextInputType.visiblePassword,
+                          onToggleVisibility: () =>
+                              controller.togglePasswordVisibility(),
+                        )),
                     SizedBox(height: 16.h),
                     Obx(() => _buildInputField(
                       label: 'HOW LONG HAVE YOU BEEN A REVERT?',
@@ -260,12 +259,12 @@ class MaleSignUpUI extends StatelessWidget {
     IconData? icon,
     required Color themeColor,
     bool isPassword = false,
+    bool obscureText = false,
     TextEditingController? controller,
     bool readOnly = false,
     VoidCallback? onTap,
     TextInputType? keyboardType,
-    IconData? suffixIcon,
-    VoidCallback? onSuffixIconTap,
+    VoidCallback? onToggleVisibility,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,20 +291,29 @@ class MaleSignUpUI extends StatelessWidget {
         SizedBox(height: 8.h),
         TextField(
           controller: controller,
-          obscureText: isPassword,
+          obscureText: isPassword ? obscureText : false,
           readOnly: readOnly,
           onTap: onTap,
           keyboardType: keyboardType,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
-            prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20.sp) : null,
-            suffixIcon: suffixIcon != null 
-                ? IconButton(
-                    icon: Icon(suffixIcon, color: Colors.grey.shade400, size: 20.sp),
-                    onPressed: onSuffixIconTap,
-                  ) 
+            hintStyle:
+                GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
+            prefixIcon: icon != null
+                ? Icon(icon, color: Colors.grey.shade400, size: 20.sp)
+                : null,
+            suffixIcon: isPassword
+                ? GestureDetector(
+                    onTap: onToggleVisibility,
+                    child: Icon(
+                      obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.grey.shade400,
+                      size: 20.sp,
+                    ),
+                  )
                 : null,
             filled: true,
             fillColor: const Color(0xFFEDF4F1).withOpacity(0.5),
@@ -313,7 +321,8 @@ class MaleSignUpUI extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide.none,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           ),
         ),
       ],

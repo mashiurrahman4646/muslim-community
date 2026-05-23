@@ -23,7 +23,6 @@ class MessageTile extends StatelessWidget {
           chatId: message.id,
           userName: message.name,
           userImage: message.imageUrl,
-          isOnline: true, // Mock online status
         ));
       },
       child: Padding(
@@ -121,7 +120,7 @@ class MessageTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -160,7 +159,7 @@ class MessageTile extends StatelessWidget {
           border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),

@@ -3,13 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/shared/auth/controller/forget_password_controller.dart';
 
 class FemaleForgetPasswordEmailUI extends StatelessWidget {
   const FemaleForgetPasswordEmailUI({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color themeColor = Color(0xFFD18E8E);
+    const Color themeColor = Color(0xFF436E50);
+    final controller = Get.put(ForgetPasswordController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -79,6 +81,7 @@ class FemaleForgetPasswordEmailUI extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
               TextField(
+                controller: controller.emailController,
                 style: GoogleFonts.inter(fontSize: 14.sp),
                 decoration: InputDecoration(
                   hintText: 'Enter your email',
@@ -100,7 +103,7 @@ class FemaleForgetPasswordEmailUI extends StatelessWidget {
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      'We\'ll send a 4-digit verification code to this address',
+                      'We\'ll send a 6-digit verification code to this address',
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         color: Colors.grey.shade600,
@@ -116,8 +119,10 @@ class FemaleForgetPasswordEmailUI extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 56.h,
-                child: ElevatedButton(
-                  onPressed: () => Get.toNamed(AppRoutes.femaleForgetPasswordOTP),
+                child: Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value 
+                    ? null 
+                    : () => controller.sendOtp(AppRoutes.femaleForgetPasswordOTP),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shape: RoundedRectangleBorder(
@@ -125,22 +130,24 @@ class FemaleForgetPasswordEmailUI extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.send, color: Colors.white, size: 18.sp),
-                      SizedBox(width: 10.w),
-                      Text(
-                        'Send OTP',
-                        style: GoogleFonts.inter(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                  child: controller.isLoading.value
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.send, color: Colors.white, size: 18.sp),
+                          SizedBox(width: 10.w),
+                          Text(
+                            'Send OTP',
+                            style: GoogleFonts.inter(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                )),
               ),
 
               SizedBox(height: 40.h),

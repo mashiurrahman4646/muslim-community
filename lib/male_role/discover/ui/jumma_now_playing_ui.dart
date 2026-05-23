@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 import 'package:muslim_community/app_config.dart';
 import 'package:muslim_community/appcolore.dart';
-import 'package:muslim_community/male_role/discover/model/khutbah_model.dart';
+import 'package:muslim_community/shared/model/khutbah_model.dart';
 import 'package:muslim_community/male_role/discover/controller/jummanowplayingcontroller.dart';
 
 class MaleJummaNowPlayingUI extends StatefulWidget {

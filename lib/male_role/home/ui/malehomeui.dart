@@ -99,27 +99,30 @@ class MaleHomeUI extends StatelessWidget {
             ],
           ),
           SizedBox(width: 12.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "As-salamu alaykum",
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  color: AppColors.bodyColor,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "As-salamu alaykum",
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    color: AppColors.bodyColor,
+                  ),
                 ),
-              ),
-              Text(
-                "Welcome, ${controller.userName.value}",
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.titleColor,
+                Text(
+                  "Welcome, ${controller.userName.value}",
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titleColor,
+                  ),
+                  // Removed ellipsis to show full name, it will wrap to next line if needed
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          SizedBox(width: 12.w),
           GestureDetector(
             onTap: () => Get.to(() => const MaleNotificationsUI()),
             child: Container(

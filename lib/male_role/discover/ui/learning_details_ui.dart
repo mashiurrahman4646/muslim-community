@@ -194,7 +194,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                 top: 40.h,
                 left: 20.w,
                 child: CircleAvatar(
-                  backgroundColor: Colors.white.withValues(alpha: 0.8),
+                  backgroundColor: Colors.white.withOpacity(0.8),
                   child: IconButton(
                     icon: Icon(Icons.arrow_back_ios_new, color: AppColors.maleColor, size: 18.sp),
                     onPressed: () => Get.back(),
@@ -268,12 +268,12 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: _isLiked 
-                                      ? AppColors.maleColor.withValues(alpha: 0.3) 
-                                      : AppColors.bodyColor.withValues(alpha: 0.1),
+                                      ? AppColors.maleColor.withOpacity(0.3) 
+                                      : AppColors.bodyColor.withOpacity(0.1),
                                 ),
                                 boxShadow: _isLiked ? [
                                   BoxShadow(
-                                    color: AppColors.maleColor.withValues(alpha: 0.2),
+                                    color: AppColors.maleColor.withOpacity(0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   )
@@ -307,7 +307,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                     ],
                   ),
                   SizedBox(height: 25.h),
-                  Divider(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+                  Divider(color: AppColors.bodyColor.withOpacity(0.1)),
                   SizedBox(height: 25.h),
                   Text(
                     'Comments',
@@ -330,7 +330,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                           'No comments yet. Be the first to comment!',
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
-                            color: AppColors.bodyColor.withValues(alpha: 0.6),
+                            color: AppColors.bodyColor.withOpacity(0.6),
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -521,7 +521,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -580,7 +580,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                           decoration: BoxDecoration(
                             color: AppColors.backgroundColor,
                             borderRadius: BorderRadius.circular(25.r),
-                            border: Border.all(color: const Color(0xFFE57373).withValues(alpha: 0.2)),
+                            border: Border.all(color: const Color(0xFFE57373).withOpacity(0.2)),
                           ),
                           child: TextField(
                             controller: _commentController,
@@ -588,7 +588,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                               hintText: _replyToCommentId != null ? 'Reply to $_replyToUserName...' : 'Add a comment...',
                               hintStyle: GoogleFonts.inter(
                                 fontSize: 14.sp,
-                                color: AppColors.bodyColor.withValues(alpha: 0.6),
+                                color: AppColors.bodyColor.withOpacity(0.6),
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -624,7 +624,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                                   'Error',
                                   'Failed to post comment. Please try again.',
                                   snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
+                                  backgroundColor: Colors.redAccent.withOpacity(0.8),
                                   colorText: Colors.white,
                                 );
                               }
@@ -672,7 +672,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+            border: Border.all(color: AppColors.bodyColor.withOpacity(0.1)),
           ),
           child: Icon(icon, size: 20.sp, color: AppColors.bodyColor),
         ),
@@ -707,7 +707,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15.r),
-                  border: Border.all(color: AppColors.bodyColor.withValues(alpha: 0.1)),
+                  border: Border.all(color: AppColors.bodyColor.withOpacity(0.1)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -739,7 +739,7 @@ class _MaleLearningDetailsUIState extends State<MaleLearningDetailsUI> {
                   time,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
-                    color: AppColors.bodyColor.withValues(alpha: 0.5),
+                    color: AppColors.bodyColor.withOpacity(0.5),
                   ),
                 ),
               ),

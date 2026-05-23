@@ -84,11 +84,13 @@ class TokenService {
 
       if (rawRole == null) return null;
 
-      // Map roles like 'brother' or 'sister' to standard AppRoutes matching keys ('male', 'female')
+      // Map roles to standard AppRoutes matching keys ('male', 'female', 'jumma')
       if (rawRole == 'brother') {
         return 'male';
       } else if (rawRole == 'sister') {
         return 'female';
+      } else if (rawRole == 'jummah') {
+        return 'jumma';
       }
       return rawRole;
     } catch (e) {

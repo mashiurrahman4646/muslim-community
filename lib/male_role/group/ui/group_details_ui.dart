@@ -78,7 +78,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: Colors.black.withOpacity(0.03),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),
@@ -163,7 +163,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20.r),
-                                  border: Border.all(color: AppColors.maleColor.withValues(alpha: 0.15)),
+                                  border: Border.all(color: AppColors.maleColor.withOpacity(0.15)),
                                 ),
                                 child: TextField(
                                   controller: controller.postContentCtrl,
@@ -173,7 +173,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
                                     hintText: 'Share something with the group...',
                                     hintStyle: GoogleFonts.inter(
                                       fontSize: 13.sp,
-                                      color: AppColors.bodyColor.withValues(alpha: 0.6),
+                                      color: AppColors.bodyColor.withOpacity(0.6),
                                     ),
                                     border: InputBorder.none,
                                     isDense: true,
@@ -319,7 +319,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
           borderRadius: BorderRadius.circular(25.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
+              color: Colors.black.withOpacity(0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -408,7 +408,7 @@ class MaleGroupDetailsUI extends StatelessWidget {
               post.content,
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
-                color: AppColors.titleColor.withValues(alpha: 0.8),
+                color: AppColors.titleColor.withOpacity(0.8),
                 height: 1.5,
               ),
             ),

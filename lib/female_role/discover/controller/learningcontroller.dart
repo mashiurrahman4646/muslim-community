@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/discover/model/learning_content_model.dart';
 import 'package:muslim_community/female_role/discover/model/learning_comment_model.dart';
 import 'package:muslim_community/female_role/discover/service/learningservice.dart';
 import 'package:muslim_community/female_role/home/controller/userdatacontroller.dart';
+import 'package:muslim_community/services/socket_service.dart';
 
-class LearningController extends GetxController {
+class FemaleLearningController extends GetxController {
   final LearningService _service = LearningService();
+  final SocketService _socketService = SocketService();
   
   var isLoading = false.obs;
   var learningContents = <LearningContentModel>[].obs;
@@ -18,24 +21,61 @@ class LearningController extends GetxController {
   void onInit() {
     super.onInit();
     fetchLearningContents();
+    _setupSocketListeners();
   }
 
-  Future<void> fetchLearningContents() async {
-    isLoading.value = true;
+  @override
+  void onClose() {
+    _removeSocketListeners();
+    super.onClose();
+  }
+
+  void _setupSocketListeners() async {
+    try {
+      if (!_socketService.isConnected) {
+        await _socketService.connect();
+      }
+      _socketService.on('UPDATE_DISCOVERY', (data) {
+        print("SOCKET_DEBUG: Discovery update received for female learning");
+        fetchLearningContents(isSilent: true);
+      });
+      _socketService.on('NEW_LEARNING', (data) {
+        print("SOCKET_DEBUG: New female learning content added");
+        fetchLearningContents(isSilent: true);
+      });
+    } catch (e) {
+      print("Error setting up socket listeners for female learning: $e");
+    }
+  }
+
+  void _removeSocketListeners() {
+    _socketService.off('UPDATE_DISCOVERY');
+    _socketService.off('NEW_LEARNING');
+  }
+
+  Future<void> fetchLearningContents({bool isSilent = false}) async {
+    if (!isSilent) isLoading.value = true;
     try {
       final response = await _service.getLearningContents();
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> data = responseData['data'] ?? [];
         
-        learningContents.value = data.map((json) => LearningContentModel.fromJson(json)).toList();
+        final List<LearningContentModel> newContents = data.map((json) => LearningContentModel.fromJson(json)).toList();
+        
+        // Update only if there's a change
+        if (learningContents.length != newContents.length) {
+          learningContents.value = newContents;
+        } else {
+          learningContents.value = newContents;
+        }
       } else {
-        print("Failed to fetch learning contents: ${response.statusCode}");
+        print("Failed to fetch female learning contents: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error fetching learning contents: $e");
+      print("Error fetching female learning contents: $e");
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
     }
   }
 

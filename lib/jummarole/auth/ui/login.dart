@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
+import 'package:muslim_community/jummarole/auth/controller/jumma_login_controller.dart';
 
 class JummaLoginUI extends StatelessWidget {
   const JummaLoginUI({super.key});
@@ -9,6 +10,7 @@ class JummaLoginUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color themeColor = Color(0xFF436E50); // Jumma color
+    final controller = Get.put(JummaLoginController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF8F1),
@@ -68,15 +70,20 @@ class JummaLoginUI extends StatelessWidget {
                   _buildTextField(
                     hint: 'Enter your email',
                     icon: Icons.email_outlined,
+                    controller: controller.emailController,
                   ),
                   const SizedBox(height: 25),
                   _buildLabel('PASSWORD', themeColor),
                   const SizedBox(height: 8),
-                  _buildTextField(
-                    hint: 'Enter your password',
-                    icon: Icons.lock_outline,
-                    isPassword: true,
-                  ),
+                  Obx(() => _buildTextField(
+                        hint: 'Enter your password',
+                        icon: Icons.lock_outline,
+                        isPassword: true,
+                        obscureText: !controller.isPasswordVisible.value,
+                        controller: controller.passwordController,
+                        onToggleVisibility: () =>
+                            controller.togglePasswordVisibility(),
+                      )),
                   
                   // Forgot Password
                   Align(
@@ -99,8 +106,8 @@ class JummaLoginUI extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: ElevatedButton(
-                      onPressed: () => Get.toNamed(AppRoutes.jummaNavbar),
+                    child: Obx(() => ElevatedButton(
+                      onPressed: controller.isLoading.value ? null : () => controller.login(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeColor,
                         shape: RoundedRectangleBorder(
@@ -108,15 +115,17 @@ class JummaLoginUI extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: Text(
-                        'Login',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                      child: controller.isLoading.value 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            'Login',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                    )),
                   ),
                 ],
               ),
@@ -169,14 +178,29 @@ class JummaLoginUI extends StatelessWidget {
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    bool obscureText = false,
+    TextEditingController? controller,
+    VoidCallback? onToggleVisibility,
   }) {
     return TextField(
-      obscureText: isPassword,
+      controller: controller,
+      obscureText: isPassword ? obscureText : false,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 15),
         prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 22),
-        suffixIcon: isPassword ? Icon(Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 22) : null,
+        suffixIcon: isPassword
+            ? GestureDetector(
+                onTap: onToggleVisibility,
+                child: Icon(
+                  obscureText
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Colors.grey.shade400,
+                  size: 22,
+                ),
+              )
+            : null,
         filled: true,
         fillColor: const Color(0xFFEDF4F1).withOpacity(0.6),
         border: OutlineInputBorder(

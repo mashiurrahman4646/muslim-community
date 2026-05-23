@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/jummarole/askimam/ui/submissionsuccessui.dart';
 
+import 'package:muslim_community/jummarole/askimam/controller/ask_imam_controller.dart';
+import 'package:intl/intl.dart';
+
 class AskImamUI extends StatefulWidget {
   const AskImamUI({super.key});
 
@@ -14,14 +17,24 @@ class AskImamUI extends StatefulWidget {
 
 class _AskImamUIState extends State<AskImamUI> {
   bool isAskTab = true;
+  final AskImamController _controller = Get.put(AskImamController());
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+      body: RefreshIndicator(
+        onRefresh: () => _controller.fetchMyQuestions(),
+        color: AppColors.jummaColor,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
             // High-Fidelity Header
             Container(
               width: double.infinity,
@@ -132,6 +145,7 @@ class _AskImamUIState extends State<AskImamUI> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -151,20 +165,25 @@ class _AskImamUIState extends State<AskImamUI> {
           ),
           SizedBox(height: 15.h),
           TextField(
+            controller: _controller.questionController,
             maxLines: 8,
-            style: GoogleFonts.inter(fontSize: 16.sp, color: AppColors.titleColor),
+            style:
+                GoogleFonts.inter(fontSize: 16.sp, color: AppColors.titleColor),
             decoration: InputDecoration(
               hintText: 'Type your question here...',
-              hintStyle: GoogleFonts.inter(color: AppColors.greyColor, fontSize: 16.sp),
+              hintStyle:
+                  GoogleFonts.inter(color: AppColors.greyColor, fontSize: 16.sp),
               filled: true,
               fillColor: Colors.white,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.r),
-                borderSide: const BorderSide(color: AppColors.goldColor, width: 1.2),
+                borderSide:
+                    const BorderSide(color: AppColors.goldColor, width: 1.2),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.r),
-                borderSide: const BorderSide(color: AppColors.jummaColor, width: 2),
+                borderSide:
+                    const BorderSide(color: AppColors.jummaColor, width: 2),
               ),
               contentPadding: EdgeInsets.all(24.w),
             ),
@@ -173,30 +192,43 @@ class _AskImamUIState extends State<AskImamUI> {
           SizedBox(
             width: double.infinity,
             height: 70.h,
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const SubmissionSuccessUI(), transition: Transition.fadeIn),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.jummaColor,
-                shape: const StadiumBorder(),
-                elevation: 10,
-                shadowColor: AppColors.jummaColor.withOpacity(0.3),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.send_rounded, color: Colors.white, size: 22.sp),
-                  SizedBox(width: 14.w),
-                  Text(
-                    'Submit Question',
-                    style: GoogleFonts.inter(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
+            child: Obx(() => ElevatedButton(
+                  onPressed: _controller.isSubmitting.value
+                      ? null
+                      : () async {
+                          final success = await _controller
+                              .submitQuestion(_controller.questionController.text);
+                          if (success) {
+                            _controller.questionController.clear();
+                            Get.to(() => const SubmissionSuccessUI(),
+                                transition: Transition.fadeIn);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.jummaColor,
+                    shape: const StadiumBorder(),
+                    elevation: 10,
+                    shadowColor: AppColors.jummaColor.withOpacity(0.3),
                   ),
-                ],
-              ),
-            ),
+                  child: _controller.isSubmitting.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.send_rounded,
+                                color: Colors.white, size: 22.sp),
+                            SizedBox(width: 14.w),
+                            Text(
+                              'Submit Question',
+                              style: GoogleFonts.inter(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                )),
           ),
           SizedBox(height: 50.h),
           Center(
@@ -220,145 +252,195 @@ class _AskImamUIState extends State<AskImamUI> {
   }
 
   Widget _buildAnsweredList() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        children: [
-          // Question Card
-          Container(
-            padding: EdgeInsets.all(24.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+    return Obx(() {
+      if (_controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (_controller.myQuestions.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.question_answer_outlined,
+                  size: 64.sp, color: Colors.grey.shade300),
+              SizedBox(height: 20.h),
+              Text(
+                'No questions yet',
+                style: GoogleFonts.inter(
+                  fontSize: 18.sp,
+                  color: Colors.grey.shade400,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.access_time_rounded, size: 14, color: Colors.grey),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Submitted 5 days ago',
-                      style: GoogleFonts.inter(fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 18.h),
-                Text(
-                  'I\'m a new Muslim and I\'m struggling to wake up for Fajr prayer. What practical advice can you give me to be more consistent? I feel guilty when I miss it.',
-                  style: GoogleFonts.inter(
-                    fontSize: 16.sp,
-                    color: AppColors.titleColor,
-                    height: 1.7,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
+        );
+      }
 
-          SizedBox(height: 25.h),
-
-          // Answer Card
-          Container(
-            padding: EdgeInsets.all(1.2.w),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.jummaColor.withOpacity(0.4), AppColors.jummaColor.withOpacity(0.1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(30.r),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(24.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(29.r),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.jummaColor,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 18),
-                      ),
-                      SizedBox(width: 16.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Answer from Sister',
-                            style: GoogleFonts.inter(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.jummaColor,
-                            ),
-                          ),
-                          Text(
-                            'Answered 2 days ago',
-                            style: GoogleFonts.inter(fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w500),
-                          ),
-                        ],
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _controller.myQuestions.length,
+          itemBuilder: (context, index) {
+            final question = _controller.myQuestions[index];
+            return Column(
+              children: [
+                // Question Card
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(24.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20.h),
-                  const Divider(thickness: 0.5),
-                  SizedBox(height: 20.h),
-                  Text(
-                    'As-salamu alaykum dear brother,\n\nMay Allah bless you for your sincere effort to establish Fajr prayer. Your concern shows a beautiful connection with your faith, and Allah sees your struggle. First, understand that missing Fajr occasionally while you\'re building the habit doesn\'t make you a bad Muslim. Allah is Most Merciful and knows you\'re trying.\n\nHere are practical steps:\n1. Sleep early - The Prophet (saw) discouraged staying awake unnecessarily after Isha. Aim for 7-8 hours before Fajr.\n2. Set multiple alarms - Place your phone across the room so you must stand to turn it off.\n3. Make sincere dua before sleeping - Ask Allah to help you wake up. He responds to sincere hearts.\n4. Have an accountability partner - Ask a brother to call you or pray together.\n5. Remember the reward - The Prophet (saw) said whoever prays Fajr is under Allah\'s protection for the entire day.\n\nBe patient with yourself. Building habits takes time, and Allah values your effort and intention. Even if you wake up late, pray immediately - a late Fajr is better than no Fajr. May Allah make it easy for you and accept your prayers.',
-                    style: GoogleFonts.inter(
-                      fontSize: 15.sp,
-                      color: AppColors.bodyColor,
-                      height: 1.8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.access_time_rounded,
+                                  size: 14, color: Colors.grey),
+                              SizedBox(width: 8.w),
+                              Text(
+                                'Submitted ${DateFormat('MMM dd, yyyy').format(question.createdAt)}',
+                                style: GoogleFonts.inter(
+                                    fontSize: 12.sp,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: question.status == 'answered'
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Text(
+                              question.status.toUpperCase(),
+                              style: GoogleFonts.inter(
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.bold,
+                                color: question.status == 'answered'
+                                    ? Colors.green
+                                    : Colors.orange,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 18.h),
+                      Text(
+                        question.question,
+                        style: GoogleFonts.inter(
+                          fontSize: 16.sp,
+                          color: AppColors.titleColor,
+                          height: 1.7,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                if (question.answers.isNotEmpty) ...[
+                  SizedBox(height: 15.h),
+                  // Answer Card
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(1.2.w),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.jummaColor.withOpacity(0.4),
+                          AppColors.jummaColor.withOpacity(0.1)
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(24.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(29.r),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10.w),
+                                decoration: BoxDecoration(
+                                  color: AppColors.jummaColor,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: const Icon(Icons.auto_awesome_rounded,
+                                    color: Colors.white, size: 18),
+                              ),
+                              SizedBox(width: 16.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Answer from Imam',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.jummaColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Answered ${DateFormat('MMM dd').format(question.answers.first.createdAt)}',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 12.sp,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20.h),
+                          const Divider(thickness: 0.5),
+                          SizedBox(height: 20.h),
+                          Text(
+                            question.answers.first.answer,
+                            style: GoogleFonts.inter(
+                              fontSize: 15.sp,
+                              color: AppColors.bodyColor,
+                              height: 1.8,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-
-          SizedBox(height: 40.h),
-
-          // Ask Another Question Button
-          SizedBox(
-            width: double.infinity,
-            height: 65.h,
-            child: ElevatedButton(
-              onPressed: () => setState(() => isAskTab = true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.jummaColor,
-                shape: const StadiumBorder(),
-                elevation: 0,
-              ),
-              child: Text(
-                'Ask Another Question',
-                style: GoogleFonts.inter(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 50.h),
-        ],
-      ),
-    );
+                SizedBox(height: 25.h),
+              ],
+            );
+          },
+        ),
+      );
+    });
   }
 }

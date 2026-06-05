@@ -13,7 +13,7 @@ import 'package:muslim_community/male_role/discover/model/brother_model.dart';
 import 'package:muslim_community/male_role/discover/ui/male_profile_details_ui.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-import 'package:muslim_community/shared/ui/prayer_recitation_dialog.dart';
+import 'package:muslim_community/shared/ui/prayer_recitation_page.dart';
 
 class MaleHomeUI extends StatelessWidget {
   const MaleHomeUI({super.key});
@@ -293,7 +293,7 @@ class MaleHomeUI extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.dialog(PrayerRecitationDialog(waqt: name, themeColor: AppColors.maleColor));
+        Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.maleColor));
       },
       child: Container(
         decoration: BoxDecoration(

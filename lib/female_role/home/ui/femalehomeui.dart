@@ -13,7 +13,7 @@ import 'package:muslim_community/female_role/discover/model/sister_model.dart';
 import 'package:muslim_community/female_role/discover/ui/female_profile_details_ui.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-import 'package:muslim_community/shared/ui/prayer_recitation_dialog.dart';
+import 'package:muslim_community/shared/ui/prayer_recitation_page.dart';
 
 class FemaleHomeUI extends StatelessWidget {
   const FemaleHomeUI({super.key});
@@ -294,7 +294,7 @@ class FemaleHomeUI extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.dialog(PrayerRecitationDialog(waqt: name, themeColor: AppColors.femaleColor));
+        Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.femaleColor));
       },
       child: Container(
         decoration: BoxDecoration(

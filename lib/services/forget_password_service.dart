@@ -5,9 +5,13 @@ import 'package:muslim_community/app_config.dart';
 class ForgetPasswordService {
   Future<http.Response> forgotPassword(String email) async {
     final uri = Uri.parse(AppConfig.forgotPasswordEndpoint);
+    print("Sending OTP to: $uri with body: {'email': $email}");
     return await http.post(
       uri,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       body: jsonEncode({'email': email}),
     );
   }

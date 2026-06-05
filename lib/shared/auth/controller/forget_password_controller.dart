@@ -62,13 +62,17 @@ class ForgetPasswordController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         email.value = emailController.text.trim();
+        debugPrint("OTP Success: ${response.body}");
         Get.snackbar('Success', 'OTP sent to your email');
         startTimer();
         Get.toNamed(nextRoute, arguments: {'email': email.value});
       } else {
+        debugPrint("OTP Error Status: ${response.statusCode}");
+        debugPrint("OTP Error Body: ${response.body}");
         Get.snackbar('Error', data['message'] ?? 'Failed to send OTP');
       }
     } catch (e) {
+      debugPrint("OTP Exception: $e");
       Get.snackbar('Error', 'Something went wrong: $e');
     } finally {
       isLoading.value = false;

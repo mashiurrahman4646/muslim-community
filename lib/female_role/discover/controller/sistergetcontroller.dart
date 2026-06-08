@@ -17,7 +17,7 @@ class SisterGetController extends GetxController {
   var sisters = <SisterModel>[].obs;
   var searchTerm = "".obs;
   var filter = "nearby-me".obs;
-  var page = 1.obs;
+  var cursor = "".obs;
   var hasMore = true.obs;
   var isFetchingMore = false.obs;
 
@@ -40,7 +40,7 @@ class SisterGetController extends GetxController {
 
   Future<void> fetchSisters({bool isRefresh = false, bool isSilent = false}) async {
     if (isRefresh) {
-      page.value = 1;
+      cursor.value = "";
       hasMore.value = true;
       if (!isSilent) isLoading.value = true;
     } else {
@@ -70,15 +70,15 @@ class SisterGetController extends GetxController {
         }
       }
 
-      print("Calling getProfiles with: lat=$latitude, lon=$longitude, search=${searchTerm.value}, filter=${filter.value}, page=${page.value}");
+      print("Calling getProfiles with: lat=$latitude, lon=$longitude, search=${searchTerm.value}, filter=${filter.value}, cursor=${cursor.value}");
       
       final response = await _service.getProfiles(
         latitude: latitude,
         longitude: longitude,
         searchTerm: searchTerm.value,
-        filter: filter.value == 'nearby-me' ? '' : filter.value, // Empty filter for all users
-        page: page.value,
-        limit: 10,
+        filter: filter.value == 'nearby-me' ? '' : filter.value, // Reverted to empty for 'nearby-me'
+        cursor: cursor.value,
+        limit: 20, // Increased limit
       );
 
       print("API Response Status: ${response.statusCode}");
@@ -86,15 +86,33 @@ class SisterGetController extends GetxController {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> profilesData = responseData['data'] ?? [];
+        final Map<String, dynamic>? meta = responseData['meta'];
+        
+        if (meta != null) {
+          cursor.value = (meta['nextCursor'] ?? "").toString();
+          hasMore.value = meta['hasNext'] ?? false;
+        } else {
+          hasMore.value = false;
+        }
+
         print("Received ${profilesData.length} profiles from API");
         
+        final currentUserId = _userCtrl.userId.value;
+
         if (profilesData.isEmpty) {
           hasMore.value = false;
           if (isRefresh) {
             sisters.clear();
           }
         } else {
-          final fetchedSisters = profilesData.map((json) {
+          final List<SisterModel> fetchedSisters = [];
+          
+          for (var json in profilesData) {
+            final id = (json['id'] ?? json['_id'] ?? '').toString();
+            
+            // Exclude self from discovery
+            if (id == currentUserId) continue;
+
             final int age = json['age'] ?? 30;
             String joinedAgo = 'New Revert';
             if (json['revertDate'] != null) {
@@ -131,8 +149,6 @@ class SisterGetController extends GetxController {
                   (connection['requester'] is Map ? connection['requester']['_id'] ?? connection['requester']['id'] : connection['requester'])
                 : null;
                 
-            final currentUserId = _userCtrl.userId.value;
-
             if (rawStatus == 'received' || rawStatus == 'incoming') {
               mappedStatus = 'Received';
             } else if (rawStatus == 'pending' || rawStatus == 'requested' || rawStatus == 'sent') {
@@ -153,8 +169,8 @@ class SisterGetController extends GetxController {
               mappedStatus = 'Connect';
             }
 
-            return SisterModel(
-              id: (json['_id'] ?? json['id'] ?? '').toString(),
+            fetchedSisters.add(SisterModel(
+              id: id,
               connectionId: (connection != null ? (connection['_id'] ?? connection['id']) : json['connectionId'])?.toString(),
               name: json['name'] ?? 'Unknown',
               age: age,
@@ -170,15 +186,11 @@ class SisterGetController extends GetxController {
               about: json['about'] ?? 'No information provided yet.',
               revertHistory: json['revertHistory'] ?? 'No revert history provided yet.',
               interests: json['interests'] != null ? List<String>.from(json['interests']) : [],
-            );
-          }).toList();
+            ));
+          }
 
           if (isRefresh) {
-            if (sisters.length != fetchedSisters.length) {
-              sisters.assignAll(fetchedSisters);
-            } else {
-              sisters.assignAll(fetchedSisters);
-            }
+            sisters.assignAll(fetchedSisters);
           } else {
             // Prevent duplicates when loading more
             for (var newSister in fetchedSisters) {
@@ -187,7 +199,6 @@ class SisterGetController extends GetxController {
               }
             }
           }
-          page.value++;
         }
       } else {
         print("Failed to fetch sisters. Code: ${response.statusCode}");

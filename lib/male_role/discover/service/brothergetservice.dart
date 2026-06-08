@@ -11,7 +11,7 @@ class BrotherGetService {
     required double longitude,
     String? searchTerm,
     String? filter,
-    int page = 1,
+    String? cursor,
     int limit = 10,
   }) async {
     final token = await _tokenService.getToken();
@@ -19,9 +19,12 @@ class BrotherGetService {
     final queryParameters = {
       'latitude': latitude.toString(),
       'longitude': longitude.toString(),
-      'page': page.toString(),
       'limit': limit.toString(),
     };
+    
+    if (cursor != null && cursor.isNotEmpty) {
+      queryParameters['cursor'] = cursor;
+    }
     
     if (searchTerm != null && searchTerm.isNotEmpty) {
       queryParameters['searchTerm'] = searchTerm;

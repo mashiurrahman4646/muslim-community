@@ -17,7 +17,7 @@ class BrotherGetController extends GetxController {
   var brothers = <BrotherModel>[].obs;
   var searchTerm = "".obs;
   var filter = "nearby-me".obs;
-  var page = 1.obs;
+  var cursor = "".obs;
   var hasMore = true.obs;
   var isFetchingMore = false.obs;
 
@@ -40,7 +40,7 @@ class BrotherGetController extends GetxController {
 
   Future<void> fetchBrothers({bool isRefresh = false, bool isSilent = false}) async {
     if (isRefresh) {
-      page.value = 1;
+      cursor.value = "";
       hasMore.value = true;
       if (!isSilent) isLoading.value = true;
     } else {
@@ -74,22 +74,39 @@ class BrotherGetController extends GetxController {
         latitude: latitude,
         longitude: longitude,
         searchTerm: searchTerm.value,
-        filter: filter.value == 'nearby-me' ? '' : filter.value, // Empty filter for all users
-        page: page.value,
-        limit: 10,
+        filter: filter.value == 'nearby-me' ? '' : filter.value, // Reverted to empty for 'nearby-me'
+        cursor: cursor.value,
+        limit: 20,
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> profilesData = responseData['data'] ?? [];
+        final Map<String, dynamic>? meta = responseData['meta'];
         
+        if (meta != null) {
+          cursor.value = (meta['nextCursor'] ?? "").toString();
+          hasMore.value = meta['hasNext'] ?? false;
+        } else {
+          hasMore.value = false;
+        }
+
+        final currentUserId = _userCtrl.userId.value;
+
         if (profilesData.isEmpty) {
           hasMore.value = false;
           if (isRefresh) {
             brothers.clear();
           }
         } else {
-          final fetchedBrothers = profilesData.map((json) {
+          final List<BrotherModel> fetchedBrothers = [];
+          
+          for (var json in profilesData) {
+            final id = (json['id'] ?? json['_id'] ?? '').toString();
+            
+            // Exclude self from discovery
+            if (id == currentUserId) continue;
+
             final int age = json['age'] ?? 30;
             String joinedAgo = 'New Revert';
             if (json['revertDate'] != null) {
@@ -126,8 +143,6 @@ class BrotherGetController extends GetxController {
                   (connection['requester'] is Map ? connection['requester']['_id'] ?? connection['requester']['id'] : connection['requester'])
                 : null;
 
-            final currentUserId = _userCtrl.userId.value;
-
             if (rawStatus == 'received' || rawStatus == 'incoming') {
               mappedStatus = 'Received';
             } else if (rawStatus == 'pending' || rawStatus == 'requested' || rawStatus == 'sent') {
@@ -148,8 +163,8 @@ class BrotherGetController extends GetxController {
               mappedStatus = 'Connect';
             }
 
-            return BrotherModel(
-              id: (json['_id'] ?? json['id'] ?? '').toString(),
+            fetchedBrothers.add(BrotherModel(
+              id: id,
               connectionId: (connection != null ? (connection['_id'] ?? connection['id']) : json['connectionId'])?.toString(),
               name: json['name'] ?? 'Unknown',
               age: age,
@@ -165,16 +180,11 @@ class BrotherGetController extends GetxController {
               about: json['about'] ?? 'No information provided yet.',
               revertHistory: json['revertHistory'] ?? 'No revert history provided yet.',
               interests: json['interests'] != null ? List<String>.from(json['interests']) : [],
-            );
-          }).toList();
+            ));
+          }
 
           if (isRefresh) {
-            // Check for changes before assigning to avoid UI flicker
-            if (brothers.length != fetchedBrothers.length) {
-              brothers.assignAll(fetchedBrothers);
-            } else {
-               brothers.assignAll(fetchedBrothers);
-            }
+            brothers.assignAll(fetchedBrothers);
           } else {
             // Prevent duplicates when loading more
             for (var newBrother in fetchedBrothers) {
@@ -183,7 +193,6 @@ class BrotherGetController extends GetxController {
               }
             }
           }
-          page.value++;
         }
       } else {
         print("Failed to fetch brothers. Code: ${response.statusCode}");
@@ -200,8 +209,15 @@ class BrotherGetController extends GetxController {
   void onInit() {
     super.onInit();
     _preFetchLocation();
-    fetchBrothers(isRefresh: true);
+    
+    if (_userCtrl.userId.value.isEmpty) {
+      _userCtrl.getUserData().then((_) => fetchBrothers(isRefresh: true));
+    } else {
+      fetchBrothers(isRefresh: true);
+    }
+    
     _setupSocketListeners();
+    debounce(searchTerm, (_) => fetchBrothers(isRefresh: true), time: const Duration(milliseconds: 500));
   }
 
   @override

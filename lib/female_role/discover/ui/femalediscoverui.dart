@@ -94,34 +94,34 @@ class FemaleDiscoverUI extends StatelessWidget {
       child: Obx(() {
         final currentSelection = controller.selectedCategory.value;
         
-        return ListView.builder(
+        return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          itemCount: controller.mainCategories.length,
-          itemBuilder: (context, index) {
-            final category = controller.mainCategories[index];
-            final isSelected = currentSelection == category;
-            
-            return GestureDetector(
-              onTap: () => controller.selectedCategory.value = category,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.white : Colors.transparent,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: isSelected ? Border.all(color: AppColors.femaleColor, width: 1) : null,
-                ),
-                child: Text(
-                  category,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    color: isSelected ? AppColors.titleColor : const Color(0xFF5B7C99),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          child: Row(
+            children: controller.mainCategories.map((category) {
+              final isSelected = currentSelection == category;
+              
+              return GestureDetector(
+                onTap: () => controller.selectedCategory.value = category,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: isSelected ? Border.all(color: AppColors.femaleColor, width: 1) : null,
+                  ),
+                  child: Text(
+                    category,
+                    style: GoogleFonts.inter(
+                      fontSize: 12.sp,
+                      color: isSelected ? AppColors.titleColor : const Color(0xFFD18E8E),
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            }).toList(),
+          ),
         );
       }),
     );

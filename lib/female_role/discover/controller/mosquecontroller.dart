@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:muslim_community/female_role/discover/model/mosque_model.dart';
 import 'package:muslim_community/female_role/discover/service/mosqueservice.dart';
 import 'package:muslim_community/services/socket_service.dart';
@@ -48,20 +49,30 @@ class FemaleMosqueController extends GetxController {
     _socketService.off('NEW_MOSQUE');
   }
 
-  Future<void> fetchNearbyMosques({double latitude = 23.7298, double longitude = 90.4125, bool isSilent = false}) async {
+  Future<void> fetchNearbyMosques({bool isSilent = false}) async {
     if (!isSilent) isLoading.value = true;
     try {
+      double latitude = 23.7298; // Default fallback
+      double longitude = 90.4125;
+
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          timeLimit: const Duration(seconds: 3),
+        );
+        latitude = position.latitude;
+        longitude = position.longitude;
+      } catch (e) {
+        print("Geolocator failed for female mosques, using fallback: $e");
+      }
+
       final response = await _service.getNearbyMosques(latitude: latitude, longitude: longitude);
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> data = responseData['data'] ?? [];
         final List<MosqueModel> newMosques = data.map((item) => MosqueModel.fromJson(item)).toList();
         
-        if (mosques.length != newMosques.length) {
-          mosques.assignAll(newMosques);
-        } else {
-          mosques.assignAll(newMosques);
-        }
+        mosques.assignAll(newMosques);
       } else {
         print("Failed to load mosques: ${response.statusCode}");
       }

@@ -24,6 +24,7 @@ class MaleDiscoverController extends GetxController {
   }
 
   List<BrotherModel> get filteredBrothers => _brotherGetController.brothers;
+  RxBool get isLoading => _brotherGetController.isLoading;
 
   void changeTab(MaleDiscoverTab tab) {
     selectedTab.value = tab;

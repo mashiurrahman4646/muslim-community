@@ -213,43 +213,85 @@ class FemaleDiscoverUI extends StatelessWidget {
           return false;
         },
         child: Obx(
-          () => RefreshIndicator(
-            onRefresh: () => controller.fetchSisters(),
-            color: _roleColor,
-            child: GridView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(bottom: 20.h),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
-                crossAxisSpacing: 12.w,
-                mainAxisSpacing: 12.h,
+          () {
+            if (controller.isLoading.value && controller.filteredSisters.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: _roleColor,
+                ),
+              );
+            }
+
+            if (controller.filteredSisters.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person_off_outlined,
+                      size: 60.sp,
+                      color: Colors.grey.shade400,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'No Sisters Found',
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.titleColor,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Try adjusting your search or filters.',
+                      style: GoogleFonts.inter(
+                        fontSize: 12.sp,
+                        color: AppColors.bodyColor,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => controller.fetchSisters(),
+              color: _roleColor,
+              child: GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 20.h),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.65,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 12.h,
+                ),
+                itemCount: controller.filteredSisters.length,
+                itemBuilder: (context, index) {
+                  final sister = controller.filteredSisters[index];
+                  return SisterCard(
+                    sister: sister,
+                    index: index,
+                    onConnectPressed: () => Get.find<FemaleRequestSendController>().sendRequest(sister.id),
+                    onCancelPressed: () {
+                      if (sister.connectionId != null) {
+                        Get.find<FemaleRequestCancelController>().cancelRequest(sister.id, sister.connectionId!);
+                      } else {
+                        Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
+                      }
+                    },
+                    onConfirmPressed: () {
+                      if (sister.connectionId != null) {
+                        Get.find<FemaleRequestAcceptController>().acceptRequest(sister.id, sister.connectionId!);
+                      } else {
+                        Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
+                      }
+                    },
+                  );
+                },
               ),
-              itemCount: controller.filteredSisters.length,
-              itemBuilder: (context, index) {
-                final sister = controller.filteredSisters[index];
-                return SisterCard(
-                  sister: sister,
-                  index: index,
-                  onConnectPressed: () => Get.find<FemaleRequestSendController>().sendRequest(sister.id),
-                  onCancelPressed: () {
-                    if (sister.connectionId != null) {
-                      Get.find<FemaleRequestCancelController>().cancelRequest(sister.id, sister.connectionId!);
-                    } else {
-                      Get.snackbar("Error", "Connection ID is missing. Cannot cancel.");
-                    }
-                  },
-                  onConfirmPressed: () {
-                    if (sister.connectionId != null) {
-                      Get.find<FemaleRequestAcceptController>().acceptRequest(sister.id, sister.connectionId!);
-                    } else {
-                      Get.snackbar("Error", "Connection ID is missing. Cannot confirm.");
-                    }
-                  },
-                );
-              },
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

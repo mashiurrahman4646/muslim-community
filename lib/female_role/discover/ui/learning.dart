@@ -56,7 +56,7 @@ class LearningUI extends StatelessWidget {
     final FemaleLearningController controller = Get.put(FemaleLearningController());
 
     return Obx(() {
-      if (controller.isLoading.value) {
+      if (controller.isLoading.value && controller.learningContents.isEmpty) {
         return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
       }
 

@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/home/controller/prayer_settings_controller.dart';
 
+import 'package:muslim_community/services/azan_service.dart';
+
 class MalePrayerSettingsUI extends StatelessWidget {
   const MalePrayerSettingsUI({super.key});
 
@@ -194,23 +196,23 @@ class MalePrayerSettingsUI extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildNotificationItem("Fajr", controller.fajrNotification, controller),
+          _buildNotificationItem("Fajr", controller.fajrNotification, controller, AzanService.fajrKey),
           _buildDivider(),
-          _buildNotificationItem("Sunrise", controller.sunriseNotification, controller),
+          _buildNotificationItem("Sunrise", controller.sunriseNotification, controller, "sunrise_azan"),
           _buildDivider(),
-          _buildNotificationItem("Dhuhr", controller.dhuhrNotification, controller),
+          _buildNotificationItem("Dhuhr", controller.dhuhrNotification, controller, AzanService.dhuhrKey),
           _buildDivider(),
-          _buildNotificationItem("Asr", controller.asrNotification, controller),
+          _buildNotificationItem("Asr", controller.asrNotification, controller, AzanService.asrKey),
           _buildDivider(),
-          _buildNotificationItem("Maghrib", controller.maghribNotification, controller),
+          _buildNotificationItem("Maghrib", controller.maghribNotification, controller, AzanService.maghribKey),
           _buildDivider(),
-          _buildNotificationItem("Isha", controller.ishaNotification, controller, isLast: true),
+          _buildNotificationItem("Isha", controller.ishaNotification, controller, AzanService.ishaKey, isLast: true),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationItem(String name, RxString status, MalePrayerSettingsController controller, {bool isLast = false}) {
+  Widget _buildNotificationItem(String name, RxString status, MalePrayerSettingsController controller, String key, {bool isLast = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
       child: Row(
@@ -225,7 +227,7 @@ class MalePrayerSettingsUI extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => controller.toggleNotification(status),
+            onTap: () => controller.toggleNotification(status, key),
             child: Obx(() {
               bool isOff = status.value == "Off" || status.value == "Silent";
               return Container(

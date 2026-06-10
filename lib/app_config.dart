@@ -1,5 +1,5 @@
 class AppConfig {
-  static const String baseUrl = "http://10.10.7.47:5002/api/v1";
+  static const String baseUrl = "https://nayem5002.binarybards.online/api/v1";
   static const String createUserEndpoint = "$baseUrl/users";
   static const String verifyOtpEndpoint = "$baseUrl/auth/verify-otp";
   static const String loginEndpoint = "$baseUrl/auth/login";
@@ -37,4 +37,5 @@ class AppConfig {
   static String getChatMessagesEndpoint(String chatId) => "$baseUrl/messages/chat/$chatId";
   static String markChatAsReadEndpoint(String chatId) => "$baseUrl/messages/chat/$chatId/read";
   static String getPublicProfileEndpoint(String userId) => "$baseUrl/users/$userId/public";
+  static String getNamazGuideEndpoint(String salahType) => "$baseUrl/namaz/guide/$salahType";
 }

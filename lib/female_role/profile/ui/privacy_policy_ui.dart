@@ -54,29 +54,34 @@ class FemalePrivacyPolicyUI extends StatelessWidget {
           return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
         }
         
-        return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceColor,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              controller.privacyPolicyContent.value.isNotEmpty 
-                  ? controller.privacyPolicyContent.value 
-                  : """Sister Privacy Policy
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchAllLegalPages(),
+          color: AppColors.femaleColor,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceColor,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                controller.privacyPolicyContent.value.isNotEmpty 
+                    ? controller.privacyPolicyContent.value 
+                    : """Sister Privacy Policy
 
 Your privacy is our utmost priority. It is Muslim Community's policy to respect your privacy regarding any information we may collect from our sisters across the application.
 
 We ensure a safe and secure environment for sisters to connect, learn, and grow. Any data collected is strictly protected and we never share your personal details outside the secure sisterhood space.
 
 We don't share any personally identifying information publicly or with third-parties, except when required to by law.""",
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: AppColors.bodyColor,
-                height: 1.6,
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  color: AppColors.bodyColor,
+                  height: 1.6,
+                ),
               ),
             ),
           ),

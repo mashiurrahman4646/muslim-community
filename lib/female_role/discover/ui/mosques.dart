@@ -82,7 +82,7 @@ class MosquesUI extends StatelessWidget {
         // --- MOSQUE LIST ---
         Expanded(
           child: Obx(() {
-            if (controller.isLoading.value) {
+            if (controller.isLoading.value && controller.mosques.isEmpty) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.femaleColor),
               );

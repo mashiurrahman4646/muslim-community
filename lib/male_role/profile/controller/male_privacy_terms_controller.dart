@@ -21,20 +21,23 @@ class MalePrivacyAndTermsController extends GetxController {
     isLoading.value = true;
     try {
       final response = await _service.getLegalPages();
+      debugPrint("Male Legal Pages Response: ${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
-          final List pages = data['data'];
-          legalPages.assignAll(List<Map<String, dynamic>>.from(pages));
-          
-          for (var page in pages) {
-            String slug = page['slug'] ?? "";
-            String pageTitle = (page['title'] ?? "").toString().toLowerCase();
+          final pages = data['data'];
+          if (pages is List) {
+            legalPages.assignAll(List<Map<String, dynamic>>.from(pages));
             
-            if (pageTitle.contains('privacy') || slug.contains('privacy')) {
-              fetchLegalContent(slug, isPrivacy: true);
-            } else if (pageTitle.contains('terms') || slug.contains('terms') || pageTitle.contains('condition')) {
-              fetchLegalContent(slug, isTerms: true);
+            for (var page in pages) {
+              String slug = page['slug'] ?? "";
+              String pageTitle = (page['title'] ?? "").toString().toLowerCase();
+              
+              if (pageTitle.contains('privacy') || slug.contains('privacy')) {
+                fetchLegalContent(slug, isPrivacy: true);
+              } else if (pageTitle.contains('terms') || slug.contains('terms') || pageTitle.contains('condition')) {
+                fetchLegalContent(slug, isTerms: true);
+              }
             }
           }
         }
@@ -49,18 +52,26 @@ class MalePrivacyAndTermsController extends GetxController {
   Future<void> fetchLegalContent(String slug, {bool isPrivacy = false, bool isTerms = false}) async {
     try {
       final response = await _service.getLegalPageBySlug(slug);
+      debugPrint("Male Content Response for $slug: ${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
-          final pageData = data['data'];
-          final content = pageData['description'] ?? 
-                          pageData['content'] ?? 
-                          pageData['text'] ?? "";
+          var pageData = data['data'];
           
-          if (isPrivacy) {
-            privacyPolicyContent.value = _stripHtmlIfNeeded(content);
-          } else if (isTerms) {
-            termsContent.value = _stripHtmlIfNeeded(content);
+          if (pageData is List && pageData.isNotEmpty) {
+            pageData = pageData[0];
+          }
+          
+          if (pageData is Map) {
+            final content = pageData['description'] ?? 
+                            pageData['content'] ?? 
+                            pageData['text'] ?? "";
+            
+            if (isPrivacy) {
+              privacyPolicyContent.value = _stripHtmlIfNeeded(content.toString());
+            } else if (isTerms) {
+              termsContent.value = _stripHtmlIfNeeded(content.toString());
+            }
           }
         }
       }

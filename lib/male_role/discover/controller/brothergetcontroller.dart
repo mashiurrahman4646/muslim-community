@@ -7,6 +7,7 @@ import 'package:muslim_community/male_role/discover/model/brother_model.dart';
 import 'package:muslim_community/male_role/discover/service/brothergetservice.dart';
 import 'package:muslim_community/male_role/home/controller/userdatacontroller.dart';
 import 'package:muslim_community/services/socket_service.dart';
+import 'package:muslim_community/app_config.dart';
 
 class BrotherGetController extends GetxController {
   final BrotherGetService _service = BrotherGetService();
@@ -79,10 +80,14 @@ class BrotherGetController extends GetxController {
         limit: 20,
       );
 
+      print("DEBUG: Brother API Response Code: ${response.statusCode}");
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> profilesData = responseData['data'] ?? [];
         final Map<String, dynamic>? meta = responseData['meta'];
+        
+        print("DEBUG: Received ${profilesData.length} brother profiles from API");
         
         if (meta != null) {
           cursor.value = (meta['nextCursor'] ?? "").toString();
@@ -163,6 +168,17 @@ class BrotherGetController extends GetxController {
               mappedStatus = 'Connect';
             }
 
+            final rawImg = json['profileImage'] ?? '';
+            String resolvedImageUrl = '';
+            if (rawImg.isNotEmpty) {
+              if (rawImg.startsWith('http')) {
+                resolvedImageUrl = rawImg;
+              } else {
+                final baseDomain = AppConfig.baseUrl.replaceAll('/api/v1', '');
+                resolvedImageUrl = "$baseDomain$rawImg";
+              }
+            }
+
             fetchedBrothers.add(BrotherModel(
               id: id,
               connectionId: (connection != null ? (connection['_id'] ?? connection['id']) : json['connectionId'])?.toString(),
@@ -176,7 +192,7 @@ class BrotherGetController extends GetxController {
               isVerified: json['isVerified'] ?? false,
               isOnline: false,
               isNewRevert: filter.value == 'new-reverts',
-              imageUrl: json['profileImage'] ?? '',
+              imageUrl: resolvedImageUrl,
               about: json['about'] ?? 'No information provided yet.',
               revertHistory: json['revertHistory'] ?? 'No revert history provided yet.',
               interests: json['interests'] != null ? List<String>.from(json['interests']) : [],

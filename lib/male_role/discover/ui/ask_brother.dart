@@ -213,7 +213,7 @@ class _AskBrotherUIState extends State<AskBrotherUI> {
 
   Widget _buildAnsweredList() {
     return Obx(() {
-      if (controller.isLoading.value) {
+      if (controller.isLoading.value && controller.myQuestions.isEmpty) {
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(40.0),

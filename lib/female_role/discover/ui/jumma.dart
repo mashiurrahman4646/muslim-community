@@ -76,7 +76,7 @@ class JummaUI extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Obx(() {
-                if (controller.isLoading.value) {
+                if (controller.isLoading.value && controller.khutbahs.isEmpty) {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 80.h),
                     child: const Center(

@@ -54,29 +54,34 @@ class MaleTermsConditionsUI extends StatelessWidget {
           return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
         }
         
-        return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceColor,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              controller.termsContent.value.isNotEmpty 
-                  ? controller.termsContent.value 
-                  : """Brother Terms and Conditions
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchAllLegalPages(),
+          color: AppColors.maleColor,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceColor,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                controller.termsContent.value.isNotEmpty 
+                    ? controller.termsContent.value 
+                    : """Brother Terms and Conditions
 
 By downloading or using the app, these terms will automatically apply to you. Welcome to the brother's space!
 
 You agree to maintain a respectful and supportive environment for all brothers. You are not allowed to copy, or modify the app, or extract the source code.
 
 We are committed to ensuring that the app is as useful and efficient as possible for our male community members.""",
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: AppColors.bodyColor,
-                height: 1.6,
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  color: AppColors.bodyColor,
+                  height: 1.6,
+                ),
               ),
             ),
           ),

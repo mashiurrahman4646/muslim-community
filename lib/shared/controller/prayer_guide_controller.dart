@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:muslim_community/shared/model/prayer_guide_model.dart';
@@ -52,7 +53,7 @@ class PrayerGuideController extends GetxController {
       
       print('=== API REQUEST: ${AppConfig.getNamazGuideEndpoint(salahType)} ===');
       print('=== API RESPONSE STATUS CODE: ${response.statusCode} ===');
-      print('=== API RESPONSE BODY: ${response.body} ===');
+      log('=== API RESPONSE BODY: ${response.body} ===');
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

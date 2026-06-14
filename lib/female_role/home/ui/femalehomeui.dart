@@ -14,6 +14,7 @@ import 'package:muslim_community/female_role/discover/ui/female_profile_details_
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:muslim_community/shared/ui/prayer_recitation_page.dart';
+import 'package:muslim_community/shared/widgets/qibla_compass_widget.dart';
 
 class FemaleHomeUI extends StatelessWidget {
   const FemaleHomeUI({super.key});
@@ -415,50 +416,10 @@ class FemaleHomeUI extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              // 1. Dynamic Outer Compass Face
-              Obx(
-                () => AnimatedRotation(
-                  turns: controller.qiblaController.dialRotation.value,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutCubic,
-                  child: Image.asset(
-                    'assets/image/side.png',
-                    width: 230.w,
-                    height: 230.w,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-
-              // 2. The Dynamic Qibla Pointer
-              Obx(
-                () => AnimatedRotation(
-                  turns: controller.qiblaController.needleRotation.value,
-                  duration: const Duration(
-                    milliseconds: 500,
-                  ), // Slightly different duration for independence
-                  curve: Curves
-                      .easeOutBack, // Added a slight bounce for a more mechanical feel
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 170.w,
-                        height: 170.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.femaleColor.withOpacity(0.03),
-                        ),
-                      ),
-                      Image.asset(
-                        'assets/image/qiblacompas.png',
-                        width: 160.w,
-                        height: 160.w,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ),
-                ),
+              QiblaCompassWidget(
+                dialRotation: controller.qiblaController.dialRotation,
+                needleRotation: controller.qiblaController.needleRotation,
+                primaryColor: AppColors.femaleColor,
               ),
 
 

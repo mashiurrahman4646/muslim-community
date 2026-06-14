@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -50,6 +51,7 @@ class DuaController extends GetxController {
     isLoading.value = true;
     try {
       final response = await _service.getDuas();
+      log("Full Dua Response: ${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {

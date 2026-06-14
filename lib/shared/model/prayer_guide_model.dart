@@ -30,6 +30,7 @@ class PrayerGuideStep {
   final String? translation;
   final bool? isPlaceholder;
   final List<Rakat>? rakats;
+  final List<Verse>? verses;
 
   PrayerGuideStep({
     this.stepKey,
@@ -40,6 +41,7 @@ class PrayerGuideStep {
     this.translation,
     this.isPlaceholder,
     this.rakats,
+    this.verses,
   });
 
   factory PrayerGuideStep.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class PrayerGuideStep {
       translation: json['translation'],
       isPlaceholder: json['isPlaceholder'],
       rakats: json['rakats'] != null ? (json['rakats'] as List).map((i) => Rakat.fromJson(i)).toList() : null,
+      verses: json['verses'] != null ? (json['verses'] as List).map((i) => Verse.fromJson(i)).toList() : null,
     );
   }
 }

@@ -31,6 +31,12 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
   }
 
   @override
+  void dispose() {
+    Get.delete<PrayerGuideController>();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -38,7 +44,11 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: AppColors.titleColor, size: 20.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.titleColor,
+            size: 20.sp,
+          ),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -53,9 +63,11 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
       ),
       body: Obx(() {
         if (_controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF26A69A)));
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF26A69A)),
+          );
         }
-        
+
         if (_controller.errorMessage.isNotEmpty) {
           return Center(
             child: Column(
@@ -68,9 +80,14 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
                 SizedBox(height: 20.h),
                 ElevatedButton(
                   onPressed: () => _controller.fetchPrayerGuide(widget.waqt),
-                  style: ElevatedButton.styleFrom(backgroundColor: widget.themeColor),
-                  child: const Text("Retry", style: TextStyle(color: Colors.white)),
-                )
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.themeColor,
+                  ),
+                  child: const Text(
+                    "Retry",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             ),
           );
@@ -85,10 +102,12 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
             children: [
               _buildPrayerHeader(),
               SizedBox(height: 25.h),
-              ...steps.map((step) => Padding(
-                    padding: EdgeInsets.only(bottom: 20.h),
-                    child: _buildDynamicStepCard(step),
-                  )),
+              ...steps.map(
+                (step) => Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: _buildDynamicStepCard(step),
+                ),
+              ),
             ],
           ),
         );
@@ -181,9 +200,21 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
             ),
           ),
           const Divider(height: 1),
-          
-          if (step.isPlaceholder == true && step.rakats != null && step.rakats!.isNotEmpty)
+
+          if (step.isPlaceholder == true &&
+              step.rakats != null &&
+              step.rakats!.isNotEmpty)
             ...step.rakats!.map((rakat) => _buildRakatContent(rakat))
+          else if (step.verses != null && step.verses!.isNotEmpty)
+            ...step.verses!.map(
+              (verse) => _buildRecitationContent(
+                title: "Verse ${verse.verseNumber}",
+                arabic: verse.arabicText ?? "",
+                translation: verse.translation ?? "",
+                transliteration: verse.transliteration ?? "",
+                audioUrl: verse.audioUrl,
+              ),
+            )
           else
             _buildRecitationContent(
               title: step.stepName ?? "",
@@ -191,7 +222,7 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
               translation: step.translation ?? "",
               transliteration: step.transliteration ?? "",
             ),
-          
+
           SizedBox(height: 5.h),
         ],
       ),
@@ -208,7 +239,7 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
     if (arabic.isEmpty && translation.isEmpty && transliteration.isEmpty) {
       return SizedBox.shrink();
     }
-    
+
     return Padding(
       padding: EdgeInsets.all(15.w),
       child: Column(
@@ -230,7 +261,9 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFF0FDFB),
               borderRadius: BorderRadius.circular(15.r),
-              border: Border.all(color: const Color(0xFF26A69A).withOpacity(0.2)),
+              border: Border.all(
+                color: const Color(0xFF26A69A).withOpacity(0.2),
+              ),
             ),
             child: Column(
               children: [
@@ -283,9 +316,15 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
                   Padding(
                     padding: EdgeInsets.only(top: 15.h),
                     child: Obx(() {
-                      bool isPlaying = _controller.currentlyPlayingUrl.value == audioUrl;
+                      bool isPlaying =
+                          _controller.currentlyPlayingUrl.value == audioUrl &&
+                          _controller.isPlaying.value;
                       return IconButton(
-                        icon: Icon(isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill),
+                        icon: Icon(
+                          isPlaying
+                              ? Icons.pause_circle_filled
+                              : Icons.play_circle_fill,
+                        ),
                         iconSize: 40.sp,
                         color: const Color(0xFF26A69A),
                         onPressed: () => _controller.playAudio(audioUrl),
@@ -316,15 +355,17 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
             ),
           ),
           SizedBox(height: 10.h),
-          
+
           if (rakat.verses != null && rakat.verses!.isNotEmpty)
-            ...rakat.verses!.map((verse) => _buildRecitationContent(
-              title: "Verse ${verse.verseNumber}",
-              arabic: verse.arabicText ?? "",
-              translation: verse.translation ?? "",
-              transliteration: verse.transliteration ?? "",
-              audioUrl: verse.audioUrl,
-            ))
+            ...rakat.verses!.map(
+              (verse) => _buildRecitationContent(
+                title: "Verse ${verse.verseNumber}",
+                arabic: verse.arabicText ?? "",
+                translation: verse.translation ?? "",
+                transliteration: verse.transliteration ?? "",
+                audioUrl: verse.audioUrl,
+              ),
+            )
           else
             _buildRecitationContent(
               title: rakat.surahName ?? "",

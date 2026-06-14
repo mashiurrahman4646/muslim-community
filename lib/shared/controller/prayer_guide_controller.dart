@@ -15,6 +15,20 @@ class PrayerGuideController extends GetxController {
   var prayerGuideSteps = <PrayerGuideStep>[].obs;
   var errorMessage = ''.obs;
   var currentlyPlayingUrl = ''.obs;
+  var isPlaying = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Listen to player state once to update playing status
+    audioPlayer.playerStateStream.listen((state) {
+      isPlaying.value = state.playing;
+      if (state.processingState == ProcessingState.completed) {
+        audioPlayer.pause();
+        audioPlayer.seek(Duration.zero);
+      }
+    });
+  }
   
   @override
   void onClose() {
@@ -24,24 +38,37 @@ class PrayerGuideController extends GetxController {
 
   Future<void> playAudio(String url) async {
     try {
-      if (currentlyPlayingUrl.value == url && audioPlayer.playing) {
-        await audioPlayer.pause();
-        currentlyPlayingUrl.value = '';
+      if (currentlyPlayingUrl.value == url) {
+        if (audioPlayer.playing) {
+          await audioPlayer.pause();
+          isPlaying.value = false;
+        } else {
+          await audioPlayer.play();
+          isPlaying.value = true;
+        }
         return;
       }
       
       currentlyPlayingUrl.value = url;
-      await audioPlayer.setUrl(url);
-      await audioPlayer.play();
+      isPlaying.value = true;
       
-      audioPlayer.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          currentlyPlayingUrl.value = '';
-        }
-      });
+      // Stop and reset the player before setting a new URL to ensure clean transitions
+      if (audioPlayer.playing) {
+        await audioPlayer.stop();
+      }
+      
+      await audioPlayer.setUrl(
+        url,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+        },
+      );
+      await audioPlayer.play();
+      isPlaying.value = true;
     } catch (e) {
       print("Error playing audio: $e");
       currentlyPlayingUrl.value = '';
+      isPlaying.value = false;
     }
   }
 

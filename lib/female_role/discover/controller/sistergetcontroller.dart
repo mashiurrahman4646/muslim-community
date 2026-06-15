@@ -28,12 +28,19 @@ class SisterGetController extends GetxController {
 
   Future<void> _preFetchLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 3),
-      );
-      _cachedLat = position.latitude;
-      _cachedLng = position.longitude;
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          timeLimit: const Duration(seconds: 3),
+        );
+      } catch (e) {
+        position = await Geolocator.getLastKnownPosition();
+      }
+      if (position != null) {
+        _cachedLat = position.latitude;
+        _cachedLng = position.longitude;
+      }
     } catch (e) {
       print("Pre-fetch location failed: $e");
     }
@@ -57,15 +64,22 @@ class SisterGetController extends GetxController {
       if (_cachedLat == null || isRefresh) {
         try {
           print("Fetching current position...");
-          Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.low, // Lower accuracy for faster results
-            timeLimit: const Duration(seconds: 3), // Reduced timeout
-          );
-          latitude = position.latitude;
-          longitude = position.longitude;
-          _cachedLat = latitude;
-          _cachedLng = longitude;
-          print("Position fetched: $latitude, $longitude");
+          Position? position;
+          try {
+            position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.low,
+              timeLimit: const Duration(seconds: 3),
+            );
+          } catch (e) {
+            position = await Geolocator.getLastKnownPosition();
+          }
+          if (position != null) {
+            latitude = position.latitude;
+            longitude = position.longitude;
+            _cachedLat = latitude;
+            _cachedLng = longitude;
+            print("Position fetched: $latitude, $longitude");
+          }
         } catch (e) {
           print("Geolocator failed in discover, using fallback/cached coordinates: $e");
         }

@@ -6,6 +6,7 @@ import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/approut.dart';
 import 'package:muslim_community/male_role/discover/controller/mosquecontroller.dart';
 import 'package:muslim_community/male_role/discover/model/mosque_model.dart';
+import 'package:muslim_community/male_role/home/controller/home_controller.dart';
 
 class MosquesUI extends StatelessWidget {
   const MosquesUI({super.key});
@@ -31,14 +32,22 @@ class MosquesUI extends StatelessWidget {
                     size: 16.sp,
                   ),
                   SizedBox(width: 4.w),
-                  Text(
-                    'Dhaka, Bangladesh',
-                    style: GoogleFonts.inter(
-                      fontSize: 12.sp,
-                      color: AppColors.titleColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  Obx(() {
+                    String loc = 'Unknown';
+                    try {
+                      if (Get.isRegistered<MaleHomeController>()) {
+                        loc = Get.find<MaleHomeController>().currentLocation.value;
+                      }
+                    } catch (_) {}
+                    return Text(
+                      loc,
+                      style: GoogleFonts.inter(
+                        fontSize: 12.sp,
+                        color: AppColors.titleColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    );
+                  }),
                 ],
               ),
               SizedBox(height: 15.h),

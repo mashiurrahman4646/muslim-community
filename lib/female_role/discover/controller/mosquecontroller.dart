@@ -56,12 +56,23 @@ class FemaleMosqueController extends GetxController {
       double longitude = 90.4125;
 
       try {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low,
-          timeLimit: const Duration(seconds: 3),
-        );
-        latitude = position.latitude;
-        longitude = position.longitude;
+        Position? position;
+        try {
+          position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.low,
+            timeLimit: const Duration(seconds: 3),
+          );
+        } catch (e) {
+          print("getCurrentPosition failed for female mosques, trying getLastKnownPosition: $e");
+          position = await Geolocator.getLastKnownPosition();
+        }
+
+        if (position != null) {
+          latitude = position.latitude;
+          longitude = position.longitude;
+        } else {
+          print("Both getCurrentPosition and getLastKnownPosition returned null for female mosques, using default Dhaka coordinates.");
+        }
       } catch (e) {
         print("Geolocator failed for female mosques, using fallback: $e");
       }

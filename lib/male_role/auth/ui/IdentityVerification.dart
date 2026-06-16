@@ -21,7 +21,11 @@ class MaleIdentityVerificationUI extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: const Color(0xFF2D3436), size: 24.sp),
+          icon: Icon(
+            Icons.arrow_back,
+            color: const Color(0xFF2D3436),
+            size: 24.sp,
+          ),
           onPressed: () => Get.back(),
         ),
         title: Row(
@@ -61,54 +65,65 @@ class MaleIdentityVerificationUI extends StatelessWidget {
               SizedBox(height: 30.h),
 
               // Photo Verification Card
-              Obx(() => _buildVerificationCard(
-                icon: Icons.shield_outlined,
-                title: 'Photo Verification',
-                description: 'Please take a clear photo holding a piece of paper with today\'s date. This is for manual review only and will never be shared.',
-                buttonText: 'Take Verification Photo',
-                buttonIcon: Icons.camera_alt_outlined,
-                onTap: verifyController.takePhoto,
-                isCompleted: verifyController.verificationImage.value != null,
-                themeColor: themeColor,
-              )),
+              Obx(
+                () => _buildVerificationCard(
+                  icon: Icons.shield_outlined,
+                  title: 'Photo Verification',
+                  description:
+                      'Please take a clear photo holding a piece of paper with today\'s date. This is for manual review only and will never be shared.',
+                  buttonText: 'Take Verification Photo',
+                  buttonIcon: Icons.camera_alt_outlined,
+                  onTap: verifyController.takePhoto,
+                  isCompleted: verifyController.verificationImage.value != null,
+                  themeColor: themeColor,
+                ),
+              ),
               SizedBox(height: 24.h),
 
               // Video Verification Card
-              Obx(() => _buildVerificationCard(
-                icon: Icons.shield_outlined,
-                title: 'Record Video Verification',
-                description: '5-second video reading a random phrase',
-                buttonText: 'Start recording',
-                buttonIcon: Icons.videocam_outlined,
-                onTap: verifyController.recordVideo,
-                isCompleted: verifyController.verificationVideo.value != null,
-                themeColor: themeColor,
-              )),
+              Obx(
+                () => _buildVerificationCard(
+                  icon: Icons.shield_outlined,
+                  title: 'Record Video Verification',
+                  description: '5-second video reading your name',
+                  buttonText: 'Start recording',
+                  buttonIcon: Icons.videocam_outlined,
+                  onTap: verifyController.recordVideo,
+                  isCompleted: verifyController.verificationVideo.value != null,
+                  themeColor: themeColor,
+                ),
+              ),
               SizedBox(height: 40.h),
 
               // Continue Button
-              Obx(() => SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: accountController.isLoading.value ? null : () => accountController.createAccount(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
-                    elevation: 0,
-                  ),
-                  child: accountController.isLoading.value 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                    'Continue',
-                    style: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: ElevatedButton(
+                    onPressed: accountController.isLoading.value
+                        ? null
+                        : () => accountController.createAccount(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: themeColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      elevation: 0,
                     ),
+                    child: accountController.isLoading.value
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            'Continue',
+                            style: GoogleFonts.inter(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-              )),
+              ),
               SizedBox(height: 20.h),
             ],
           ),
@@ -144,11 +159,17 @@ class MaleIdentityVerificationUI extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF7F1E9).withOpacity(0.6),
         borderRadius: BorderRadius.circular(24.r),
-        border: isCompleted ? Border.all(color: Colors.green, width: 1.5) : null,
+        border: isCompleted
+            ? Border.all(color: Colors.green, width: 1.5)
+            : null,
       ),
       child: Column(
         children: [
-          Icon(isCompleted ? Icons.check_circle : icon, size: 40.sp, color: isCompleted ? Colors.green : themeColor.withOpacity(0.5)),
+          Icon(
+            isCompleted ? Icons.check_circle : icon,
+            size: 40.sp,
+            color: isCompleted ? Colors.green : themeColor.withOpacity(0.5),
+          ),
           SizedBox(height: 12.h),
           Text(
             title,

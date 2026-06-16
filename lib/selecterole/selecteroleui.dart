@@ -212,57 +212,122 @@ class SelecteRoleUI extends StatelessWidget {
 
                 // Jumma Card
                 GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.jummaLogin),
+                  onTap: () {
+                    Get.dialog(
+                      AlertDialog(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        contentPadding: EdgeInsets.all(24.w),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF436E50).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.access_time_filled_rounded,
+                                color: Color(0xFF436E50),
+                                size: 40,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            Text(
+                              'Coming Soon',
+                              style: GoogleFonts.playfairDisplay(
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF2D3436),
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              'This space is currently under construction. Stay tuned!',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 14.sp,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            SizedBox(height: 24.h),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () => Get.back(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF436E50),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Okay',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     width: double.infinity,
-                    height: 235.h, // Increased to prevent overflow
+                    height: 180.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFFF2F7F4),
                       borderRadius: BorderRadius.circular(30.r),
                       border: Border.all(
                         color: const Color(0xFF436E50).withOpacity(0.3),
                         width: 1.2,
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(20.w),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Image.asset(
-                                  'assets/icons/jummalogo.png',
-                                  width: 100.w, // Slightly reduced to fit gracefully
-                                  height: 100.w,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                'SYA Jumma',
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2D3436),
-                                ),
-                              ),
-                              Text(
-                                'Finding Peace in Prayer',
-                                style: GoogleFonts.inter(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF436E50),
-                                ),
-                              ),
-                            ],
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/jummalogo.png',
+                            width: 100.w,
+                            height: 100.w,
+                            fit: BoxFit.contain,
                           ),
-                        ),
-                        Positioned(
-                          right: 20.w,
-                          bottom: 20.h,
-                          child: Container(
+                          SizedBox(width: 15.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'SYA Jumma',
+                                  style: GoogleFonts.playfairDisplay(
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF436E50),
+                                  ),
+                                ),
+                                SizedBox(height: 5.h),
+                                Text(
+                                  'Finding Peace in Prayer',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12.sp,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
                             width: 44.w,
                             height: 44.w,
                             decoration: const BoxDecoration(
@@ -275,12 +340,12 @@ class SelecteRoleUI extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: 30.h),
+                SizedBox(height: 20.h),
               ],
             ),
           ),

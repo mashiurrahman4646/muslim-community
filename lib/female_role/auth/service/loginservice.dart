@@ -9,6 +9,10 @@ class FemaleLoginService {
   }) async {
     final uri = Uri.parse(AppConfig.loginEndpoint);
     
+    print('=== LOGIN API REQUEST ===');
+    print('URL: $uri');
+    print('Payload: {"email": "$email", "password": "****"}');
+    
     final response = await http.post(
       uri,
       headers: {
@@ -19,6 +23,11 @@ class FemaleLoginService {
         'password': password,
       }),
     );
+    
+    print('=== LOGIN API RESPONSE ===');
+    print('Status Code: ${response.statusCode}');
+    print('Body: ${response.body}');
+    print('==========================');
     
     return response;
   }

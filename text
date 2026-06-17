@@ -1,327 +1,181 @@
-{
-  "success": true,
-  "statusCode": 200,
-  "message": "Prayer guide fetched successfully",
-  "data": [
-    {
-      "id": "6a287f7adadb0748b8b305b3",
-      "stepKey": "niyyah",
-      "_v": 0,
-      "arabicText": "نَوَيْتُ أَنْ أُصَلِّيَ",
-      "createdAt": "2026-06-09T21:02:50.361Z",
-      "isPlaceholder": false,
-      "order": 1,
-      "stepName": "Niyyah (Intention)",
-      "translation": "I intend to pray. (The Niyyah is made silently in the heart, affirming the intention to perform the prayer for the sake of Allah.)",
-      "transliteration": "Nawaitu an usalliya",
-      "updatedAt": "2026-06-14T20:32:58.261Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b4",
-      "stepKey": "takbir",
-      "_v": 0,
-      "arabicText": "اللَّهُ أَكْبَرُ",
-      "createdAt": "2026-06-09T21:02:50.368Z",
-      "isPlaceholder": false,
-      "order": 2,
-      "stepName": "Takbir (Takbiratul Ihram)",
-      "translation": "Allah is the Greatest.",
-      "transliteration": "Allahu Akbar",
-      "updatedAt": "2026-06-14T20:32:58.287Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b5",
-      "stepKey": "sana",
-      "_v": 0,
-      "arabicText": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلَا إِلَهَ غَيْرُكَ",
-      "createdAt": "2026-06-09T21:02:50.370Z",
-      "isPlaceholder": false,
-      "order": 3,
-      "stepName": "Sana (Opening Supplication)",
-      "translation": "Glory be to You, O Allah, and praise be to You. Blessed is Your Name and Exalted is Your Majesty. There is no god besides You.",
-      "transliteration": "Subhanakallahumma wa bihamdika wa tabarakasmuka wa ta'ala jadduka wa la ilaha ghayruk",
-      "updatedAt": "2026-06-14T20:32:58.290Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b6",
-      "stepKey": "surah-al-fatihah",
-      "_v": 0,
-      "arabicText": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ\nٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ\nٱلرَّحْمَـٰنِ ٱلرَّحِيمِ\nمَـٰلِكِ يَوْمِ ٱلدِّينِ\nإِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ\nٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ\nصِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
-      "createdAt": "2026-06-09T21:02:50.373Z",
-      "isPlaceholder": false,
-      "order": 4,
-      "stepName": "Surah Al-Fatihah",
-      "translation": "In (the) name (of) Allah the Most Gracious the Most Merciful (1)\nAll praises and thanks (be) to Allah the Lord of the universe (2)\nThe Most Gracious the Most Merciful (3)\n(The) Master (of the) Day (of the) Judgment (4)\nYou Alone we worship and You Alone we ask for help (5)\nGuide us (to) the path the straight (6)\n(The) path (of) those You have bestowed (Your) Favors on them not (of) those who earned (Your) wrath on themselves and not (of) those who go astray (7)",
-      "transliteration": "bis'mi l-lahi l-raḥmāni l-raḥīmi\nal-ḥamdu lillahi rabbi l-ʿālamīna\nal-raḥmāni l-raḥīmi\nmāliki yawmi l-dīni\niyyāka naʿbudu wa-iyyāka nastaʿīnu\nih'dinā l-ṣirāṭa l-mus'taqīma\nṣirāṭa alladhīna anʿamta ʿalayhim ghayri l-maghḍūbi ʿalayhim walā l-ḍālīna",
-      "updatedAt": "2026-06-14T20:32:58.295Z",
-      "verses": [
-        {
-          "verseNumber": 1,
-          "verseKey": "1:1",
-          "arabicText": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
-          "transliteration": "bis'mi l-lahi l-raḥmāni l-raḥīmi",
-          "translation": "In (the) name (of) Allah the Most Gracious the Most Merciful (1)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001001.mp3"
-        },
-        {
-          "verseNumber": 2,
-          "verseKey": "1:2",
-          "arabicText": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
-          "transliteration": "al-ḥamdu lillahi rabbi l-ʿālamīna",
-          "translation": "All praises and thanks (be) to Allah the Lord of the universe (2)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001002.mp3"
-        },
-        {
-          "verseNumber": 3,
-          "verseKey": "1:3",
-          "arabicText": "ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
-          "transliteration": "al-raḥmāni l-raḥīmi",
-          "translation": "The Most Gracious the Most Merciful (3)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001003.mp3"
-        },
-        {
-          "verseNumber": 4,
-          "verseKey": "1:4",
-          "arabicText": "مَـٰلِكِ يَوْمِ ٱلدِّينِ",
-          "transliteration": "māliki yawmi l-dīni",
-          "translation": "(The) Master (of the) Day (of the) Judgment (4)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001004.mp3"
-        },
-        {
-          "verseNumber": 5,
-          "verseKey": "1:5",
-          "arabicText": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-          "transliteration": "iyyāka naʿbudu wa-iyyāka nastaʿīnu",
-          "translation": "You Alone we worship and You Alone we ask for help (5)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001005.mp3"
-        },
-        {
-          "verseNumber": 6,
-          "verseKey": "1:6",
-          "arabicText": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
-          "transliteration": "ih'dinā l-ṣirāṭa l-mus'taqīma",
-          "translation": "Guide us (to) the path the straight (6)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001006.mp3"
-        },
-        {
-          "verseNumber": 7,
-          "verseKey": "1:7",
-          "arabicText": "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
-          "transliteration": "ṣirāṭa alladhīna anʿamta ʿalayhim ghayri l-maghḍūbi ʿalayhim walā l-ḍālīna",
-          "translation": "(The) path (of) those You have bestowed (Your) Favors on them not (of) those who earned (Your) wrath on themselves and not (of) those who go astray (7)",
-          "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/001007.mp3"
-        }
-      ]
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b7",
-      "stepKey": "additional-surah",
-      "_v": 0,
-      "arabicText": "",
-      "createdAt": "2026-06-09T21:02:50.377Z",
-      "isPlaceholder": true,
-      "order": 5,
-      "stepName": "Additional Surah",
-      "translation": "",
-      "transliteration": "",
-      "updatedAt": "2026-06-14T20:32:58.302Z",
-      "rakats": [
-        {
-          "rakat": 1,
-          "surahNumber": 113,
-          "surahName": "Al-Falaq",
-          "verses": [
-            {
-              "verseNumber": 1,
-              "verseKey": "113:1",
-              "arabicText": "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ",
-              "transliteration": "qul aʿūdhu birabbi l-falaqi",
-              "translation": "Say I seek refuge in (the) Lord (of) the dawn (1)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/113001.mp3"
-            },
-            {
-              "verseNumber": 2,
-              "verseKey": "113:2",
-              "arabicText": "مِن شَرِّ مَا خَلَقَ",
-              "transliteration": "min sharri mā khalaqa",
-              "translation": "From (the) evil (of) what He created (2)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/113002.mp3"
-            },
-            {
-              "verseNumber": 3,
-              "verseKey": "113:3",
-              "arabicText": "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ",
-              "transliteration": "wamin sharri ghāsiqin idhā waqaba",
-              "translation": "And from (the) evil (of) darkness when it spreads (3)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/113003.mp3"
-            },
-            {
-              "verseNumber": 4,
-              "verseKey": "113:4",
-              "arabicText": "وَمِن شَرِّ ٱلنَّفَّـٰثَـٰتِ فِى ٱلْعُقَدِ",
-              "transliteration": "wamin sharri l-nafāthāti fī l-ʿuqadi",
-              "translation": "And from (the) evil (of) the blowers in the knots (4)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/113004.mp3"
-            },
-            {
-              "verseNumber": 5,
-              "verseKey": "113:5",
-              "arabicText": "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-              "transliteration": "wamin sharri ḥāsidin idhā ḥasada",
-              "translation": "And from (the) evil (of) an envier when he envies (5)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/113005.mp3"
-            }
-          ]
-        },
-        {
-          "rakat": 2,
-          "surahNumber": 108,
-          "surahName": "Al-Kawthar",
-          "verses": [
-            {
-              "verseNumber": 1,
-              "verseKey": "108:1",
-              "arabicText": "إِنَّآ أَعْطَيْنَـٰكَ ٱلْكَوْثَرَ",
-              "transliteration": "innā aʿṭaynāka l-kawthara",
-              "translation": "Indeed, We We have given you Al-Kauthar (1)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/108001.mp3"
-            },
-            {
-              "verseNumber": 2,
-              "verseKey": "108:2",
-              "arabicText": "فَصَلِّ لِرَبِّكَ وَٱنْحَرْ",
-              "transliteration": "faṣalli lirabbika wa-in'ḥar",
-              "translation": "So pray to your Lord and sacrifice (2)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/108002.mp3"
-            },
-            {
-              "verseNumber": 3,
-              "verseKey": "108:3",
-              "arabicText": "إِنَّ شَانِئَكَ هُوَ ٱلْأَبْتَرُ",
-              "transliteration": "inna shāni-aka huwa l-abtaru",
-              "translation": "Indeed your enemy  he (is) the one cut off (3)",
-              "audioUrl": "https://verses.quran.foundation/Alafasy/mp3/108003.mp3"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b8",
-      "stepKey": "ruku",
-      "_v": 0,
-      "arabicText": "سُبْحَانَ رَبِّيَ الْعَظِيمِ",
-      "createdAt": "2026-06-09T21:02:50.380Z",
-      "isPlaceholder": false,
-      "order": 6,
-      "stepName": "Ruku (Bowing)",
-      "translation": "Glory be to my Lord, the Most Great.",
-      "transliteration": "Subhana Rabbiyal Azeem",
-      "updatedAt": "2026-06-14T20:32:58.305Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305b9",
-      "stepKey": "qaumah",
-      "_v": 0,
-      "arabicText": "سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ، رَبَّنَا وَلَكَ الْحَمْدُ",
-      "createdAt": "2026-06-09T21:02:50.383Z",
-      "isPlaceholder": false,
-      "order": 7,
-      "stepName": "Qaumah (Rising from Ruku)",
-      "translation": "Allah hears those who praise Him. Our Lord, to You be all praise.",
-      "transliteration": "Sami Allahu liman hamidah, Rabbana wa lakal hamd",
-      "updatedAt": "2026-06-14T20:32:58.309Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305ba",
-      "stepKey": "first-sajdah",
-      "_v": 0,
-      "arabicText": "سُبْحَانَ رَبِّيَ الْأَعْلَى",
-      "createdAt": "2026-06-09T21:02:50.386Z",
-      "isPlaceholder": false,
-      "order": 8,
-      "stepName": "First Sajdah (Prostration)",
-      "translation": "Glory be to my Lord, the Most High.",
-      "transliteration": "Subhana Rabbiyal A'la",
-      "updatedAt": "2026-06-14T20:32:58.312Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305bb",
-      "stepKey": "jalsah",
-      "_v": 0,
-      "arabicText": "رَبِّ اغْفِرْ لِي",
-      "createdAt": "2026-06-09T21:02:50.389Z",
-      "isPlaceholder": false,
-      "order": 9,
-      "stepName": "Jalsah (Sitting between Sajdahs)",
-      "translation": "O my Lord, forgive me.",
-      "transliteration": "Rabbighfir li",
-      "updatedAt": "2026-06-14T20:32:58.315Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305bc",
-      "stepKey": "second-sajdah",
-      "_v": 0,
-      "arabicText": "سُبْحَانَ رَبِّيَ الْأَعْلَى",
-      "createdAt": "2026-06-09T21:02:50.392Z",
-      "isPlaceholder": false,
-      "order": 10,
-      "stepName": "Second Sajdah",
-      "translation": "Glory be to my Lord, the Most High.",
-      "transliteration": "Subhana Rabbiyal A'la",
-      "updatedAt": "2026-06-14T20:32:58.318Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305bd",
-      "stepKey": "tashahhud",
-      "_v": 0,
-      "arabicText": "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
-      "createdAt": "2026-06-09T21:02:50.396Z",
-      "isPlaceholder": false,
-      "order": 11,
-      "stepName": "Tashahhud",
-      "translation": "All greetings, prayers, and good deeds are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His servant and messenger.",
-      "transliteration": "At-tahiyyatu lillahi was-salawatu wat-tayyibat, as-salamu 'alayka ayyuhan-nabiyyu wa rahmatullahi wa barakatuh, as-salamu 'alayna wa 'ala 'ibadillahis-salihin, ashhadu an la ilaha illallah wa ashhadu anna Muhammadan 'abduhu wa rasuluh",
-      "updatedAt": "2026-06-14T20:32:58.322Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305be",
-      "stepKey": "durood-ibrahim",
-      "_v": 0,
-      "arabicText": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
-      "createdAt": "2026-06-09T21:02:50.399Z",
-      "isPlaceholder": false,
-      "order": 12,
-      "stepName": "Durood Ibrahim",
-      "translation": "O Allah, send Your blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and the family of Ibrahim. Verily, You are the Most Praiseworthy, the Most Glorious. O Allah, bless Muhammad and the family of Muhammad as You blessed Ibrahim and the family of Ibrahim. Verily, You are the Most Praiseworthy, the Most Glorious.",
-      "transliteration": "Allahumma salli 'ala Muhammadin wa 'ala ali Muhammadin kama sallayta 'ala Ibrahima wa 'ala ali Ibrahima innaka Hamidum Majid. Allahumma barik 'ala Muhammadin wa 'ala ali Muhammadin kama barakta 'ala Ibrahima wa 'ala ali Ibrahima innaka Hamidum Majid",
-      "updatedAt": "2026-06-14T20:32:58.326Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305bf",
-      "stepKey": "dua",
-      "_v": 0,
-      "arabicText": "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",
-      "createdAt": "2026-06-09T21:02:50.402Z",
-      "isPlaceholder": false,
-      "order": 13,
-      "stepName": "Dua (Supplication after Durood)",
-      "translation": "O Allah, I have greatly wronged myself, and none forgives sins except You. So grant me forgiveness from You and have mercy on me. Surely, You are the Oft-Forgiving, the Most Merciful.",
-      "transliteration": "Allahumma inni zalamtu nafsi zulman kathiran wa la yaghfirudh-dhunuba illa anta, faghfir li maghfiratan min 'indika warhamni innaka antal Ghafurur Rahim",
-      "updatedAt": "2026-06-14T20:32:58.331Z"
-    },
-    {
-      "id": "6a287f7adadb0748b8b305c0",
-      "stepKey": "salam",
-      "_v": 0,
-      "arabicText": "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ",
-      "createdAt": "2026-06-09T21:02:50.405Z",
-      "isPlaceholder": false,
-      "order": 14,
-      "stepName": "Salam (Closing Salutation)",
-      "translation": "Peace be upon you and the mercy of Allah.",
-      "transliteration": "Assalamu Alaikum wa Rahmatullah",
-      "updatedAt": "2026-06-14T20:32:58.336Z"
-    }
-  ]
-}
+okjt100
+ 
+17 Jun, 14:14
+Hi Abduallah that is looking great, I didnt see the namaaz section though with the 3 quls i sent have that been added like under one that says 3 quls? i also sent the translations
+ 
+O
+okjt100
+ 
+17 Jun, 14:14
+Surah Al-Falaq (سورة الفلق)
+ 
+1
+ 
+Arabic:
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ
+ 
+Transliteration:
+Qul a‘ūdhu birabbil-falaq
+ 
+English:
+Say, “I seek refuge in the Lord of daybreak,”
+ 
+⸻
+ 
+2
+ 
+Arabic:
+مِن شَرِّ مَا خَلَقَ
+ 
+Transliteration:
+Min sharri mā khalaq
+ 
+English:
+“From the evil of what He created,”
+ 
+⸻
+ 
+3
+ 
+Arabic:
+وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ
+ 
+Transliteration:
+Wa min sharri ghāsiqin idhā waqab
+ 
+English:
+“And from the evil of darkness when it spreads,”
+ 
+⸻
+ 
+4
+ 
+Arabic:
+وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ
+ 
+Transliteration:
+Wa min sharrin-naffāthāti fil-‘uqad
+ 
+English:
+“And from the evil of those who blow on knots (practicing witchcraft),”
+ 
+⸻
+ 
+5
+ 
+Arabic:
+وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ
+ 
+Transliteration:
+Wa min sharri ḥāsidin idhā ḥasad
+ 
+English:
+“And from the evil of an envier when he envies.”
+ 
+A
+Profile Image
+Abdullah Shah
+ 
+Jun 04, 7:27 PM
+Surah An-Nas (سورة الناس)
+ 
+1
+ 
+Arabic:
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ
+ 
+Transliteration:
+Qul a‘ūdhu birabbin-nās
+ 
+English:
+Say, “I seek refuge in the Lord of mankind,”
+ 
+⸻
+ 
+2
+ 
+Arabic:
+مَلِكِ النَّاسِ
+ 
+Transliteration:
+Malikin-nās
+ 
+English:
+“The King of mankind,”
+ 
+⸻
+ 
+3
+ 
+Arabic:
+إِلَٰهِ النَّاسِ
+ 
+Transliteration:
+Ilāhin-nās
+ 
+English:
+“The God of mankind,”
+ 
+⸻
+ 
+4
+ 
+Arabic:
+مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ
+ 
+Transliteration:
+Min sharril-waswāsil-khannās
+ 
+English:
+“From the evil of the whisperer who withdraws,”
+ 
+⸻
+ 
+5
+ 
+Arabic:
+الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ
+ 
+Transliteration:
+Alladhī yuwaswisu fī ṣudūrin-nās
+ 
+English:
+“Who whispers into the hearts of mankind,”
+ 
+⸻
+ 
+6
+ 
+Arabic:
+مِنَ الْجِنَّةِ وَالنَّاسِ
+ 
+Transliteration:
+Minal-jinnati wan-nās
+ 
+English:
+“From among jinn and mankind.”
+ 
+O
+okjt100
+ 
+17 Jun, 14:16
+Also remeber we talked about the app needs to be gdpr compliant UK and ternams and condtions 
+1. Please can you add two separate consent tick boxes on the signup screen that must both be ticked before a user can create an account:
+— 'I agree to the Terms of Service and Privacy Policy'
+ 
+— 'I specifically consent to SYA collecting and processing my religious data in accordance with the Privacy Policy'
+2. Both tick boxes need clickable links — one to the Privacy Policy and one to the Terms of Service. I will send you both of these links once they are ready — please leave these as placeholder links for now.
+3. Please can you also make the Privacy Policy and Terms of Service accessible in the app settings so users can read them anytime after signing up.
+This is a legal requirement under UK GDPR as religious belief is Special Category Data. JazakAllah Khair"
+ 
+O
+okjt100
+ 
+17 Jun, 14:17
+i will send  Privacy Policy and Terms of Service policy across shortly
+ 
+O
+okjt100
+ 
+17 Jun, 14:17
+its comming along nicely

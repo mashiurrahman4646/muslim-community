@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:muslim_community/female_role/auth/service/female_create_account_service.dart';
 import 'package:muslim_community/female_role/auth/controller/female_verify_controller.dart';
-import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import '../../../approut.dart';
@@ -126,10 +125,12 @@ class FemaleCreateAccountController extends GetxController {
     if (emailController.text.isEmpty) missingFields += "Email, ";
     if (passwordController.text.isEmpty) missingFields += "Password, ";
     if (dateOfBirth.value.isEmpty) missingFields += "Date of Birth, ";
-    if (verifyController.verificationImage.value == null)
-      missingFields += "Photo, ";
-    if (verifyController.verificationVideo.value == null)
-      missingFields += "Video, ";
+    
+    // Require at least one verification method (Photo OR Video)
+    if (verifyController.verificationImage.value == null &&
+        verifyController.verificationVideo.value == null) {
+      missingFields += "Photo or Video verification, ";
+    }
 
     if (missingFields.isNotEmpty) {
       String errorMsg =
@@ -153,8 +154,8 @@ class FemaleCreateAccountController extends GetxController {
         role: role.value,
         dateOfBirth: dateOfBirth.value,
         revertDate: revertDate.value.isNotEmpty ? revertDate.value : null,
-        verificationImage: verifyController.verificationImage.value!,
-        verificationVideo: verifyController.verificationVideo.value!,
+        verificationImage: verifyController.verificationImage.value,
+        verificationVideo: verifyController.verificationVideo.value,
       );
 
       print("Female API Response Code: ${response.statusCode}");

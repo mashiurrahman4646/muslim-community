@@ -85,16 +85,22 @@ class MaleCreateAccountController extends GetxController {
     bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
     bool hasLowercase = password.contains(RegExp(r'[a-z]'));
     bool hasDigits = password.contains(RegExp(r'[0-9]'));
-    bool hasSpecialCharacters = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    
-    if (password.length < 8 || !hasUppercase || !hasLowercase || !hasDigits || !hasSpecialCharacters) {
+    bool hasSpecialCharacters = password.contains(
+      RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
+    );
+
+    if (password.length < 8 ||
+        !hasUppercase ||
+        !hasLowercase ||
+        !hasDigits ||
+        !hasSpecialCharacters) {
       Get.snackbar(
-        'Weak Password', 
+        'Weak Password',
         'Password must be at least 8 characters long and include: \n'
-        '- Capital letter (A-Z)\n'
-        '- Small letter (a-z)\n'
-        '- Number (0-9)\n'
-        '- Special character (@#\$!%...)',
+            '- Capital letter (A-Z)\n'
+            '- Small letter (a-z)\n'
+            '- Number (0-9)\n'
+            '- Special character (@#\$!%...)',
         backgroundColor: Colors.redAccent.withOpacity(0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
@@ -124,10 +130,12 @@ class MaleCreateAccountController extends GetxController {
     if (emailController.text.isEmpty) missingFields += "Email, ";
     if (passwordController.text.isEmpty) missingFields += "Password, ";
     if (dateOfBirth.value.isEmpty) missingFields += "Date of Birth, ";
-    if (verifyController.verificationImage.value == null)
-      missingFields += "Photo, ";
-    if (verifyController.verificationVideo.value == null)
-      missingFields += "Video, ";
+
+    // Require at least one verification method (Photo OR Video)
+    if (verifyController.verificationImage.value == null &&
+        verifyController.verificationVideo.value == null) {
+      missingFields += "Photo or Video verification, ";
+    }
 
     if (missingFields.isNotEmpty) {
       String errorMsg =
@@ -151,8 +159,8 @@ class MaleCreateAccountController extends GetxController {
         role: role.value,
         dateOfBirth: dateOfBirth.value,
         revertDate: revertDate.value.isNotEmpty ? revertDate.value : null,
-        verificationImage: verifyController.verificationImage.value!,
-        verificationVideo: verifyController.verificationVideo.value!,
+        verificationImage: verifyController.verificationImage.value,
+        verificationVideo: verifyController.verificationVideo.value,
       );
 
       print("API Response Code: ${response.statusCode}");

@@ -11,8 +11,8 @@ class MaleCreateAccountService {
     required String role,
     required String dateOfBirth,
     String? revertDate,
-    required File verificationImage,
-    required File verificationVideo,
+    File? verificationImage,
+    File? verificationVideo,
   }) async {
     final uri = Uri.parse(AppConfig.createUserEndpoint);
     final request = http.MultipartRequest('POST', uri);
@@ -30,19 +30,23 @@ class MaleCreateAccountService {
       request.fields['revertDate'] = revertDate;
     }
 
-    // Add Image file
-    request.files.add(await http.MultipartFile.fromPath(
-      'verificationImage',
-      verificationImage.path,
-      contentType: MediaType('image', 'jpeg'),
-    ));
+    // Add Image file if provided
+    if (verificationImage != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'verificationImage',
+        verificationImage.path,
+        contentType: MediaType('image', 'jpeg'),
+      ));
+    }
 
-    // Add Video file
-    request.files.add(await http.MultipartFile.fromPath(
-      'verificationVideo',
-      verificationVideo.path,
-      contentType: MediaType('video', 'mp4'),
-    ));
+    // Add Video file if provided
+    if (verificationVideo != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'verificationVideo',
+        verificationVideo.path,
+        contentType: MediaType('video', 'mp4'),
+      ));
+    }
 
     // Send request and convert StreamedResponse to regular Response
     final streamedResponse = await request.send();

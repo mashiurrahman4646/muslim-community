@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/appcolore.dart';
 import 'package:muslim_community/male_role/discover/ui/wudu_ghusl_flashcard_ui.dart';
+import 'package:muslim_community/shared/ui/three_quls_ui.dart';
 
 class LearningUI extends StatelessWidget {
   const LearningUI({super.key});
@@ -38,6 +39,18 @@ class LearningUI extends StatelessWidget {
           icon: Icons.clean_hands_rounded,
           onTap: () {
             Get.to(() => const WuduGhuslFlashcardUI(title: "How to Make Wudu"));
+          },
+        ),
+
+        SizedBox(height: 16.h),
+
+        // Card 3: 3 Quls
+        _buildLearningSectionCard(
+          title: "3 Quls",
+          subtitle: "Listen, read and learn the three protective Surahs.",
+          icon: Icons.menu_book_rounded,
+          onTap: () {
+            Get.to(() => const ThreeQulsUI(themeColor: Color(0xFF3A5C78)));
           },
         ),
       ],

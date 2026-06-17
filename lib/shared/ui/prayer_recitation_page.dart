@@ -9,11 +9,13 @@ import 'package:muslim_community/shared/model/prayer_guide_model.dart';
 class PrayerRecitationPage extends StatefulWidget {
   final String waqt;
   final Color themeColor;
+  final bool isMale;
 
   const PrayerRecitationPage({
     super.key,
     required this.waqt,
     required this.themeColor,
+    required this.isMale,
   });
 
   @override
@@ -152,6 +154,8 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
   }
 
   Widget _buildDynamicStepCard(PrayerGuideStep step) {
+    final imagePath = _getSalatPositionImage(step.stepKey);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -200,6 +204,41 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
             ),
           ),
           const Divider(height: 1),
+
+          // Salat Position Image
+          if (imagePath != null) ...[
+            Center(
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 15.w),
+                height: 160.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9FBFB),
+                  borderRadius: BorderRadius.circular(15.r),
+                  border: Border.all(
+                    color: const Color(0xFF26A69A).withOpacity(0.08),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.r),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Colors.grey,
+                          size: 30.sp,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+          ],
 
           if (step.isPlaceholder == true &&
               step.rakats != null &&
@@ -377,5 +416,40 @@ class _PrayerRecitationPageState extends State<PrayerRecitationPage> {
         ],
       ),
     );
+  }
+
+  String? _getSalatPositionImage(String? stepKey) {
+    if (stepKey == null) return null;
+    final isMale = widget.isMale;
+
+    final genderPath = isMale ? 'male' : 'female';
+
+    switch (stepKey.toLowerCase()) {
+      case 'niyyah':
+        return 'assets/image/salat position/$genderPath/niyyah.png';
+      case 'takbir':
+        return 'assets/image/salat position/$genderPath/takbir.png';
+      case 'sana':
+      case 'surah-al-fatihah':
+      case 'additional-surah':
+        return 'assets/image/salat position/$genderPath/qiyam.png';
+      case 'ruku':
+        return 'assets/image/salat position/$genderPath/ruku.png';
+      case 'qaumah':
+        return 'assets/image/salat position/$genderPath/niyyah.png';
+      case 'first-sajdah':
+      case 'second-sajdah':
+        return 'assets/image/salat position/$genderPath/sajdah.png';
+      case 'jalsah':
+        return 'assets/image/salat position/$genderPath/jalsah.png';
+      case 'tashahhud':
+      case 'durood-ibrahim':
+      case 'dua':
+        return 'assets/image/salat position/$genderPath/jalsah.png';
+      case 'salam':
+        return 'assets/image/salat position/$genderPath/salam.png';
+      default:
+        return null;
+    }
   }
 }

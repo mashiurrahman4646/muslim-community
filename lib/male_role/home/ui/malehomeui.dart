@@ -294,7 +294,7 @@ class MaleHomeUI extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.maleColor));
+        Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.maleColor, isMale: true));
       },
       child: Container(
         decoration: BoxDecoration(

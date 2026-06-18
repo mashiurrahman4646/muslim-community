@@ -50,8 +50,8 @@ class JummaPrivacyPolicyUI extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.privacyPolicyContent.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.jummaColor));
         }
         
         return SingleChildScrollView(
@@ -64,15 +64,7 @@ class JummaPrivacyPolicyUI extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Text(
-              controller.privacyPolicyContent.value.isNotEmpty 
-                  ? controller.privacyPolicyContent.value 
-                  : """Imam Privacy Policy
-
-Your privacy and security are highly valued. It is Muslim Community's policy to respect your privacy regarding any information we may collect from our Imams and community leaders.
-
-We understand the sensitivity of your role and ensure all your data and community interactions are securely handled.
-
-We don't share any personally identifying information publicly or with third-parties, except when required to by law.""",
+              controller.privacyPolicyContent.value,
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 color: AppColors.bodyColor,

@@ -11,7 +11,7 @@ class JummaTermsConditionsUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(PrivacyAndTermsController());
-    
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -35,7 +35,11 @@ class JummaTermsConditionsUI extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(Icons.arrow_back_ios_new, color: AppColors.titleColor, size: 16.sp),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.titleColor,
+                size: 16.sp,
+              ),
             ),
           ),
         ),
@@ -50,10 +54,12 @@ class JummaTermsConditionsUI extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.termsContent.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.jummaColor),
+          );
         }
-        
+
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
           child: Container(
@@ -64,15 +70,7 @@ class JummaTermsConditionsUI extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Text(
-              controller.termsContent.value.isNotEmpty 
-                  ? controller.termsContent.value 
-                  : """Terms and Conditions
-
-By downloading or using the app, these terms will automatically apply to you. Welcome to the Imam's space!
-
-You agree to maintain a respectful and supportive environment for all users. You are not allowed to copy, or modify the app, or extract the source code.
-
-We are committed to ensuring that the app is as useful and efficient as possible for our community leaders.""",
+              controller.termsContent.value,
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 color: AppColors.bodyColor,

@@ -15,6 +15,8 @@ class JummaSignupController extends GetxController {
   var isLoading = false.obs;
   var dateOfBirth = "".obs;
   var role = "JUMMAH".obs;
+  var agreeToTerms = false.obs;
+  var consentToReligiousData = false.obs;
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -40,6 +42,16 @@ class JummaSignupController extends GetxController {
       Get.snackbar(
         'Required Fields',
         'Please fill all fields',
+        backgroundColor: Colors.orange.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (!agreeToTerms.value || !consentToReligiousData.value) {
+      Get.snackbar(
+        'Consent Required',
+        'You must agree to the Terms of Service & Privacy Policy and consent to religious data processing to create an account.',
         backgroundColor: Colors.orange.withOpacity(0.8),
         colorText: Colors.white,
       );

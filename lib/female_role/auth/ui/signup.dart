@@ -4,12 +4,18 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:muslim_community/approut.dart';
 import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:muslim_community/female_role/auth/controller/female_create_account_controller.dart';
-import 'package:muslim_community/female_role/profile/ui/privacy_policy_ui.dart';
-import 'package:muslim_community/female_role/profile/ui/terms_conditions_ui.dart';
 
 class FemaleSignUpUI extends StatelessWidget {
   const FemaleSignUpUI({super.key});
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      Get.snackbar('Error', 'Could not launch $urlString');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +136,113 @@ class FemaleSignUpUI extends StatelessWidget {
                       readOnly: true,
                       onTap: () => controller.pickDateOfBirth(context),
                     )),
+                    SizedBox(height: 16.h),
+
+                    // Consent Checkbox 1
+                    Obx(() => Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: Checkbox(
+                            value: controller.agreeToTerms.value,
+                            onChanged: (val) {
+                              controller.agreeToTerms.value = val ?? false;
+                            },
+                            activeColor: themeColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: GoogleFonts.inter(
+                                fontSize: 12.sp,
+                                color: const Color(0xFF2D3436),
+                                height: 1.4,
+                              ),
+                              children: [
+                                const TextSpan(text: 'I agree to the '),
+                                TextSpan(
+                                  text: 'Terms of Service',
+                                  style: TextStyle(
+                                    color: themeColor,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _launchURL('https://example.com/terms-placeholder'),
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: TextStyle(
+                                    color: themeColor,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _launchURL('https://example.com/privacy-placeholder'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )),
+                    SizedBox(height: 12.h),
+
+                    // Consent Checkbox 2
+                    Obx(() => Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: Checkbox(
+                            value: controller.consentToReligiousData.value,
+                            onChanged: (val) {
+                              controller.consentToReligiousData.value = val ?? false;
+                            },
+                            activeColor: themeColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: GoogleFonts.inter(
+                                fontSize: 12.sp,
+                                color: const Color(0xFF2D3436),
+                                height: 1.4,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: 'I specifically consent to SYA collecting and processing my religious data in accordance with the ',
+                                ),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: TextStyle(
+                                    color: themeColor,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _launchURL('https://example.com/privacy-placeholder'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )),
                     SizedBox(height: 24.h),
 
                     // Create Account Button
@@ -171,40 +284,6 @@ class FemaleSignUpUI extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 24.h),
-
-              // Footer Text - Colored theme
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: GoogleFonts.inter(
-                      fontSize: 11.sp,
-                      color: const Color(0xFF636E72),
-                    ),
-                    children: [
-                      const TextSpan(text: 'By signing up, you agree to our '),
-                      TextSpan(
-                        text: 'Terms of Service',
-                        style: TextStyle(color: themeColor, fontWeight: FontWeight.bold),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-                          Get.to(() => const FemaleTermsConditionsUI());
-                        },
-                      ),
-                      const TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(color: themeColor, fontWeight: FontWeight.bold),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-                          Get.to(() => const FemalePrivacyPolicyUI());
-                        },
-                      ),
-                      const TextSpan(text: '.'),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
 
               // Moon Divider
               Row(

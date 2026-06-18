@@ -25,6 +25,8 @@ class FemaleCreateAccountController extends GetxController {
   var role = "SISTER".obs;
   var dateOfBirth = "".obs;
   var revertDate = "".obs;
+  var agreeToTerms = false.obs;
+  var consentToReligiousData = false.obs;
 
   var isLoading = false.obs;
 
@@ -78,6 +80,16 @@ class FemaleCreateAccountController extends GetxController {
     // Email validation
     if (!GetUtils.isEmail(emailController.text)) {
       Get.snackbar('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (!agreeToTerms.value || !consentToReligiousData.value) {
+      Get.snackbar(
+        'Consent Required',
+        'You must agree to the Terms of Service & Privacy Policy and consent to religious data processing to create an account.',
+        backgroundColor: Colors.orange.withOpacity(0.8),
+        colorText: Colors.white,
+      );
       return;
     }
 

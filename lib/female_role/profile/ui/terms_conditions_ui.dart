@@ -50,7 +50,7 @@ class FemaleTermsConditionsUI extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.termsContent.isEmpty) {
+        if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator(color: AppColors.femaleColor));
         }
         
@@ -68,15 +68,7 @@ class FemaleTermsConditionsUI extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
-                controller.termsContent.value.isNotEmpty 
-                    ? controller.termsContent.value 
-                    : """Sister Terms and Conditions
-
-By downloading or using the app, these terms will automatically apply to you. Welcome to the sisterhood space!
-
-You agree to maintain a respectful and supportive environment for all sisters. You are not allowed to copy, or modify the app, or extract the source code.
-
-We are committed to ensuring that the app is as useful and efficient as possible for our female community members.""",
+                controller.termsContent.value,
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   color: AppColors.bodyColor,

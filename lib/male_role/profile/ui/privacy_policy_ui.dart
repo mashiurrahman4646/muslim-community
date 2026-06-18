@@ -11,7 +11,7 @@ class MalePrivacyPolicyUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(MalePrivacyAndTermsController());
-    
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -35,7 +35,11 @@ class MalePrivacyPolicyUI extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(Icons.arrow_back_ios_new, color: AppColors.titleColor, size: 16.sp),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.titleColor,
+                size: 16.sp,
+              ),
             ),
           ),
         ),
@@ -50,10 +54,12 @@ class MalePrivacyPolicyUI extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.privacyPolicyContent.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.maleColor));
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.maleColor),
+          );
         }
-        
+
         return RefreshIndicator(
           onRefresh: () => controller.fetchAllLegalPages(),
           color: AppColors.maleColor,
@@ -68,15 +74,7 @@ class MalePrivacyPolicyUI extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
-                controller.privacyPolicyContent.value.isNotEmpty 
-                    ? controller.privacyPolicyContent.value 
-                    : """Brother Privacy Policy
-
-Your privacy is important to us. It is Muslim Community's policy to respect your privacy regarding any information we may collect from our brothers across the application.
-
-We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent.
-
-We don't share any personally identifying information publicly or with third-parties, except when required to by law.""",
+                controller.privacyPolicyContent.value,
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   color: AppColors.bodyColor,

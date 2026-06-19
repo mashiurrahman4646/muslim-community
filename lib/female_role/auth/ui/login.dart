@@ -74,13 +74,14 @@ class FemaleLoginUI extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputField(
-                      label: 'EMAIL ADDRESS',
-                      hint: 'Enter your email',
-                      icon: Icons.email_outlined,
-                      themeColor: themeColor,
-                      controller: controller.emailController,
-                    ),
+                    Obx(() => _buildInputField(
+                          label: 'EMAIL ADDRESS',
+                          hint: 'Enter your email',
+                          icon: Icons.email_outlined,
+                          themeColor: themeColor,
+                          controller: controller.emailController,
+                          errorText: controller.emailError.value,
+                        )),
                     SizedBox(height: 20.h),
                     Obx(() => _buildInputField(
                           label: 'PASSWORD',
@@ -92,6 +93,7 @@ class FemaleLoginUI extends StatelessWidget {
                           controller: controller.passwordController,
                           onToggleVisibility: () =>
                               controller.togglePasswordVisibility(),
+                          errorText: controller.passwordError.value,
                         )),
                     SizedBox(height: 12.h),
                     Align(
@@ -183,6 +185,7 @@ class FemaleLoginUI extends StatelessWidget {
     bool obscureText = false,
     TextEditingController? controller,
     VoidCallback? onToggleVisibility,
+    String? errorText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,6 +205,7 @@ class FemaleLoginUI extends StatelessWidget {
           obscureText: isPassword ? obscureText : false,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
+            errorText: errorText != null && errorText.isNotEmpty ? errorText : null,
             hintText: hint,
             hintStyle:
                 GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),

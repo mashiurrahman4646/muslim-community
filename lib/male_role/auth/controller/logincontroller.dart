@@ -11,6 +11,9 @@ class MaleLoginController extends GetxController {
   final passwordController = TextEditingController();
   final isLoading = false.obs;
   final isPasswordVisible = false.obs;
+  
+  final emailError = "".obs;
+  final passwordError = "".obs;
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -20,9 +23,24 @@ class MaleLoginController extends GetxController {
   final TokenService _tokenService = TokenService();
 
   Future<void> login() async {
-    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter email and password',
-          backgroundColor: Colors.red, colorText: Colors.white);
+    emailError.value = "";
+    passwordError.value = "";
+    bool isValid = true;
+
+    if (emailController.text.trim().isEmpty) {
+      emailError.value = "Email is required";
+      isValid = false;
+    } else if (!GetUtils.isEmail(emailController.text.trim())) {
+      emailError.value = "Please enter a valid email address";
+      isValid = false;
+    }
+
+    if (passwordController.text.isEmpty) {
+      passwordError.value = "Password is required";
+      isValid = false;
+    }
+
+    if (!isValid) {
       return;
     }
 

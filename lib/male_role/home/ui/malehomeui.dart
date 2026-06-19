@@ -15,6 +15,8 @@ import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:muslim_community/shared/ui/prayer_recitation_page.dart';
 import 'package:muslim_community/shared/widgets/qibla_compass_widget.dart';
+import 'package:muslim_community/shared/widgets/coming_soon_dialog.dart';
+import 'package:muslim_community/shared/ui/sunrise_details_ui.dart';
 
 class MaleHomeUI extends StatelessWidget {
   const MaleHomeUI({super.key});
@@ -294,7 +296,11 @@ class MaleHomeUI extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.maleColor, isMale: true));
+        if (name == "Sunrise") {
+          Get.to(() => const SunriseDetailsUI(themeColor: AppColors.maleColor, isMale: true));
+        } else {
+          Get.to(() => PrayerRecitationPage(waqt: name, themeColor: AppColors.maleColor, isMale: true));
+        }
       },
       child: Container(
         decoration: BoxDecoration(
@@ -513,8 +519,12 @@ class MaleHomeUI extends StatelessWidget {
       children: resources.map((resource) {
         return GestureDetector(
           onTap: () {
-            discoverController.selectedCategory.value = resource['category'];
-            navbarController.changeIndex(1); // Go to Discover
+            if (resource['category'] == 'Jumma') {
+              showComingSoonDialog();
+            } else {
+              discoverController.selectedCategory.value = resource['category'];
+              navbarController.changeIndex(1); // Go to Discover
+            }
           },
           child: Container(
             width: double.infinity,

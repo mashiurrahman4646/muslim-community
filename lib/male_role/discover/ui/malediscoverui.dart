@@ -13,6 +13,7 @@ import 'package:muslim_community/male_role/discover/controller/requestcancelcont
 import 'package:muslim_community/male_role/discover/controller/requestacceptcontroller.dart';
 
 import 'package:muslim_community/appcolore.dart';
+import 'package:muslim_community/shared/widgets/coming_soon_dialog.dart';
 
 /// Male Discover page — mirrors female structure, uses maleColor (0xFF5B7C99)
 class MaleDiscoverUI extends StatelessWidget {
@@ -100,7 +101,13 @@ class MaleDiscoverUI extends StatelessWidget {
               final isSelected = currentSelection == category;
               
               return GestureDetector(
-                onTap: () => controller.selectedCategory.value = category,
+                onTap: () {
+                  if (category == 'Jumma') {
+                    showComingSoonDialog();
+                  } else {
+                    controller.selectedCategory.value = category;
+                  }
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   alignment: Alignment.center,

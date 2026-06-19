@@ -6,6 +6,7 @@ import 'package:muslim_community/approut.dart';
 import 'package:muslim_community/selecterole/selectedcontroller.dart';
 import 'package:muslim_community/male_role/auth/controller/male_create_account_controller.dart';
 import 'package:muslim_community/female_role/auth/controller/female_create_account_controller.dart';
+import 'package:muslim_community/shared/widgets/coming_soon_dialog.dart';
 
 class SelecteRoleUI extends StatelessWidget {
   const SelecteRoleUI({super.key});
@@ -52,7 +53,7 @@ class SelecteRoleUI extends StatelessWidget {
                   },
                   child: Container(
                     width: double.infinity,
-                    height: 180.h, // Made bigger as requested
+                    constraints: BoxConstraints(minHeight: 180.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF4F8F9),
                       borderRadius: BorderRadius.circular(30.r),
@@ -62,7 +63,10 @@ class SelecteRoleUI extends StatelessWidget {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 20.h,
+                      ),
                       child: Row(
                         children: [
                           // Just the Image as requested (no container border)
@@ -136,7 +140,7 @@ class SelecteRoleUI extends StatelessWidget {
                   },
                   child: Container(
                     width: double.infinity,
-                    height: 180.h, // Made bigger
+                    constraints: BoxConstraints(minHeight: 180.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFEF9F6),
                       borderRadius: BorderRadius.circular(30.r),
@@ -146,7 +150,10 @@ class SelecteRoleUI extends StatelessWidget {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 20.h,
+                      ),
                       child: Row(
                         children: [
                           Image.asset(
@@ -213,77 +220,11 @@ class SelecteRoleUI extends StatelessWidget {
                 // Jumma Card
                 GestureDetector(
                   onTap: () {
-                    Get.dialog(
-                      AlertDialog(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        contentPadding: EdgeInsets.all(24.w),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(16.w),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF436E50).withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.access_time_filled_rounded,
-                                color: Color(0xFF436E50),
-                                size: 40,
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
-                            Text(
-                              'Coming Soon',
-                              style: GoogleFonts.playfairDisplay(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF2D3436),
-                              ),
-                            ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              'This space is currently under construction. Stay tuned!',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 14.sp,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            SizedBox(height: 24.h),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () => Get.back(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF436E50),
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  padding: EdgeInsets.symmetric(vertical: 12.h),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.r),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Okay',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    showComingSoonDialog();
                   },
                   child: Container(
                     width: double.infinity,
-                    height: 180.h,
+                    constraints: BoxConstraints(minHeight: 180.h),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF2F7F4),
                       borderRadius: BorderRadius.circular(30.r),
@@ -293,7 +234,10 @@ class SelecteRoleUI extends StatelessWidget {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 20.h,
+                      ),
                       child: Row(
                         children: [
                           Image.asset(

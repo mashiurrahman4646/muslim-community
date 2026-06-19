@@ -12,6 +12,7 @@ import 'package:muslim_community/female_role/discover/ui/ask_sister.dart';
 import 'package:muslim_community/female_role/discover/controller/requestsendcontroller.dart';
 import 'package:muslim_community/female_role/discover/controller/requestcancelcontroller.dart';
 import 'package:muslim_community/female_role/discover/controller/requestacceptcontroller.dart';
+import 'package:muslim_community/shared/widgets/coming_soon_dialog.dart';
 
 /// Female Discover page — uses femaleColor (0xFFD18E8E)
 class FemaleDiscoverUI extends StatelessWidget {
@@ -101,7 +102,13 @@ class FemaleDiscoverUI extends StatelessWidget {
               final isSelected = currentSelection == category;
               
               return GestureDetector(
-                onTap: () => controller.selectedCategory.value = category,
+                onTap: () {
+                  if (category == 'Jumma') {
+                    showComingSoonDialog();
+                  } else {
+                    controller.selectedCategory.value = category;
+                  }
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   alignment: Alignment.center,

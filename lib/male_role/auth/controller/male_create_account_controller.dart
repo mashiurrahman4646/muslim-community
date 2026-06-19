@@ -26,6 +26,11 @@ class MaleCreateAccountController extends GetxController {
   var revertDate = "".obs;
   var agreeToTerms = false.obs;
   var consentToReligiousData = false.obs;
+  var nameError = "".obs;
+  var emailError = "".obs;
+  var passwordError = "".obs;
+  var dobError = "".obs;
+  var revertError = "".obs;
 
   var isLoading = false.obs;
 
@@ -42,6 +47,7 @@ class MaleCreateAccountController extends GetxController {
     );
     if (picked != null) {
       dateOfBirth.value = picked.toUtc().toIso8601String();
+      dobError.value = ""; // clear dob error if a date was picked
     }
   }
 
@@ -54,31 +60,78 @@ class MaleCreateAccountController extends GetxController {
     );
     if (picked != null) {
       revertDate.value = picked.toUtc().toIso8601String();
+      revertError.value = ""; // clear revert error if a date was picked
     }
   }
 
   void validateAndNext() {
-    String missingFields = "";
-    if (nameController.text.isEmpty) missingFields += "Name, ";
-    if (emailController.text.isEmpty) missingFields += "Email, ";
-    if (passwordController.text.isEmpty) missingFields += "Password, ";
-    if (dateOfBirth.value.isEmpty) missingFields += "Date of Birth, ";
+    nameError.value = "";
+    emailError.value = "";
+    passwordError.value = "";
+    dobError.value = "";
+    revertError.value = "";
 
-    if (missingFields.isNotEmpty) {
-      String errorMsg =
-          "Please fill: ${missingFields.substring(0, missingFields.length - 2)}";
-      Get.snackbar(
-        'Required Fields',
-        errorMsg,
-        backgroundColor: Colors.orange.withOpacity(0.8),
-        colorText: Colors.white,
-      );
-      return;
+    bool isValid = true;
+
+    if (nameController.text.trim().isEmpty) {
+      nameError.value = "Name is required";
+      isValid = false;
     }
 
-    // Email validation
-    if (!GetUtils.isEmail(emailController.text)) {
-      Get.snackbar('Invalid Email', 'Please enter a valid email address.');
+    if (emailController.text.trim().isEmpty) {
+      emailError.value = "Email is required";
+      isValid = false;
+    } else if (!GetUtils.isEmail(emailController.text.trim())) {
+      emailError.value = "Please enter a valid email address";
+      isValid = false;
+    }
+
+    if (passwordController.text.isEmpty) {
+      passwordError.value = "Password is required";
+      isValid = false;
+    } else {
+      String password = passwordController.text;
+      bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+      bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+      bool hasDigits = password.contains(RegExp(r'[0-9]'));
+      bool hasSpecialCharacters = password.contains(
+        RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
+      );
+
+      if (password.length < 8 ||
+          !hasUppercase ||
+          !hasLowercase ||
+          !hasDigits ||
+          !hasSpecialCharacters) {
+        passwordError.value =
+            "Must be 8+ chars with A-Z, a-z, 0-9 & special char";
+        isValid = false;
+      }
+    }
+
+    if (revertDate.value.isEmpty) {
+      revertError.value = "Revert date is required";
+      isValid = false;
+    }
+
+    if (dateOfBirth.value.isEmpty) {
+      dobError.value = "Birthday is required";
+      isValid = false;
+    } else {
+      DateTime dob = DateTime.parse(dateOfBirth.value);
+      DateTime now = DateTime.now();
+      int age = now.year - dob.year;
+      if (now.month < dob.month ||
+          (now.month == dob.month && now.day < dob.day)) {
+        age--;
+      }
+      if (age < 16) {
+        dobError.value = "You must be at least 16 years old";
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
       return;
     }
 
@@ -88,34 +141,6 @@ class MaleCreateAccountController extends GetxController {
         'You must agree to the Terms of Service & Privacy Policy and consent to religious data processing to create an account.',
         backgroundColor: Colors.orange.withOpacity(0.8),
         colorText: Colors.white,
-      );
-      return;
-    }
-
-    // Password validation (Strong password)
-    String password = passwordController.text;
-    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
-    bool hasDigits = password.contains(RegExp(r'[0-9]'));
-    bool hasSpecialCharacters = password.contains(
-      RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
-    );
-
-    if (password.length < 8 ||
-        !hasUppercase ||
-        !hasLowercase ||
-        !hasDigits ||
-        !hasSpecialCharacters) {
-      Get.snackbar(
-        'Weak Password',
-        'Password must be at least 8 characters long and include: \n'
-            '- Capital letter (A-Z)\n'
-            '- Small letter (a-z)\n'
-            '- Number (0-9)\n'
-            '- Special character (@#\$!%...)',
-        backgroundColor: Colors.redAccent.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
       );
       return;
     }

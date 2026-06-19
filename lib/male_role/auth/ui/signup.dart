@@ -84,165 +84,192 @@ class MaleSignUpUI extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputField(
-                      label: 'FULL NAME',
-                      hint: 'Enter your full name',
-                      icon: Icons.person_outline,
-                      themeColor: themeColor,
-                      controller: controller.nameController,
-                      keyboardType: TextInputType.name,
+                    Obx(
+                      () => _buildInputField(
+                        label: 'FULL NAME',
+                        hint: 'Enter your full name',
+                        icon: Icons.person_outline,
+                        themeColor: themeColor,
+                        controller: controller.nameController,
+                        keyboardType: TextInputType.name,
+                        errorText: controller.nameError.value,
+                      ),
                     ),
                     SizedBox(height: 16.h),
-                    _buildInputField(
-                      label: 'EMAIL ADDRESS',
-                      hint: 'Enter your email',
-                      icon: Icons.email_outlined,
-                      themeColor: themeColor,
-                      controller: controller.emailController,
-                      keyboardType: TextInputType.emailAddress,
+                    Obx(
+                      () => _buildInputField(
+                        label: 'EMAIL ADDRESS',
+                        hint: 'Enter your email',
+                        icon: Icons.email_outlined,
+                        themeColor: themeColor,
+                        controller: controller.emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        errorText: controller.emailError.value,
+                      ),
                     ),
                     SizedBox(height: 16.h),
-                    Obx(() => _buildInputField(
-                          label: 'PASSWORD',
-                          hint: 'Create a password',
-                          icon: Icons.lock_outline,
-                          themeColor: themeColor,
-                          isPassword: true,
-                          obscureText: !controller.isPasswordVisible.value,
-                          controller: controller.passwordController,
-                          keyboardType: TextInputType.visiblePassword,
-                          onToggleVisibility: () =>
-                              controller.togglePasswordVisibility(),
-                        )),
+                    Obx(
+                      () => _buildInputField(
+                        label: 'PASSWORD',
+                        hint: 'Create a password',
+                        icon: Icons.lock_outline,
+                        themeColor: themeColor,
+                        isPassword: true,
+                        obscureText: !controller.isPasswordVisible.value,
+                        controller: controller.passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        onToggleVisibility: () =>
+                            controller.togglePasswordVisibility(),
+                        errorText: controller.passwordError.value,
+                      ),
+                    ),
                     SizedBox(height: 16.h),
-                    Obx(() => _buildInputField(
-                      label: 'HOW LONG HAVE YOU BEEN A REVERT?',
-                      hint: controller.revertDate.value.isEmpty 
-                          ? 'Select date' 
-                          : controller.revertDate.value.split('T').first,
-                      themeColor: themeColor,
-                      icon: Icons.calendar_today_outlined,
-                      readOnly: true,
-                      onTap: () => controller.pickRevertDate(context),
-                    )),
+                    Obx(
+                      () => _buildInputField(
+                        label: 'HOW LONG HAVE YOU BEEN A REVERT?',
+                        hint: controller.revertDate.value.isEmpty
+                            ? 'Select date'
+                            : controller.revertDate.value.split('T').first,
+                        themeColor: themeColor,
+                        icon: Icons.calendar_today_outlined,
+                        readOnly: true,
+                        onTap: () => controller.pickRevertDate(context),
+                        errorText: controller.revertError.value,
+                      ),
+                    ),
                     SizedBox(height: 16.h),
-                    Obx(() => _buildInputField(
-                      label: 'BIRTHDAY',
-                      hint: controller.dateOfBirth.value.isEmpty 
-                          ? 'Select your birthday' 
-                          : controller.dateOfBirth.value.split('T').first,
-                      themeColor: themeColor,
-                      icon: Icons.calendar_today_outlined,
-                      readOnly: true,
-                      onTap: () => controller.pickDateOfBirth(context),
-                    )),
+                    Obx(
+                      () => _buildInputField(
+                        label: 'BIRTHDAY',
+                        hint: controller.dateOfBirth.value.isEmpty
+                            ? 'Select your birthday'
+                            : controller.dateOfBirth.value.split('T').first,
+                        themeColor: themeColor,
+                        icon: Icons.calendar_today_outlined,
+                        readOnly: true,
+                        onTap: () => controller.pickDateOfBirth(context),
+                        errorText: controller.dobError.value,
+                      ),
+                    ),
                     SizedBox(height: 16.h),
 
                     // Consent Checkbox 1
-                    Obx(() => Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 24.w,
-                          height: 24.w,
-                          child: Checkbox(
-                            value: controller.agreeToTerms.value,
-                            onChanged: (val) {
-                              controller.agreeToTerms.value = val ?? false;
-                            },
-                            activeColor: themeColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              style: GoogleFonts.inter(
-                                fontSize: 12.sp,
-                                color: const Color(0xFF2D3436),
-                                height: 1.4,
+                    Obx(
+                      () => Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 24.w,
+                            height: 24.w,
+                            child: Checkbox(
+                              value: controller.agreeToTerms.value,
+                              onChanged: (val) {
+                                controller.agreeToTerms.value = val ?? false;
+                              },
+                              activeColor: themeColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.r),
                               ),
-                              children: [
-                                const TextSpan(text: 'I agree to the '),
-                                TextSpan(
-                                  text: 'Terms of Service',
-                                  style: TextStyle(
-                                    color: themeColor,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () => _launchURL('https://example.com/terms-placeholder'),
-                                ),
-                                const TextSpan(text: ' and '),
-                                TextSpan(
-                                  text: 'Privacy Policy',
-                                  style: TextStyle(
-                                    color: themeColor,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () => _launchURL('https://example.com/privacy-placeholder'),
-                                ),
-                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    )),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.sp,
+                                  color: const Color(0xFF2D3436),
+                                  height: 1.4,
+                                ),
+                                children: [
+                                  const TextSpan(text: 'I agree to the '),
+                                  TextSpan(
+                                    text: 'Terms of Service',
+                                    style: TextStyle(
+                                      color: themeColor,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => _launchURL(
+                                        'https://example.com/terms-placeholder',
+                                      ),
+                                  ),
+                                  const TextSpan(text: ' and '),
+                                  TextSpan(
+                                    text: 'Privacy Policy',
+                                    style: TextStyle(
+                                      color: themeColor,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => _launchURL(
+                                        'https://example.com/privacy-placeholder',
+                                      ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 12.h),
 
                     // Consent Checkbox 2
-                    Obx(() => Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 24.w,
-                          height: 24.w,
-                          child: Checkbox(
-                            value: controller.consentToReligiousData.value,
-                            onChanged: (val) {
-                              controller.consentToReligiousData.value = val ?? false;
-                            },
-                            activeColor: themeColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              style: GoogleFonts.inter(
-                                fontSize: 12.sp,
-                                color: const Color(0xFF2D3436),
-                                height: 1.4,
+                    Obx(
+                      () => Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 24.w,
+                            height: 24.w,
+                            child: Checkbox(
+                              value: controller.consentToReligiousData.value,
+                              onChanged: (val) {
+                                controller.consentToReligiousData.value =
+                                    val ?? false;
+                              },
+                              activeColor: themeColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.r),
                               ),
-                              children: [
-                                const TextSpan(
-                                  text: 'I specifically consent to SYA collecting and processing my religious data in accordance with the ',
-                                ),
-                                TextSpan(
-                                  text: 'Privacy Policy',
-                                  style: TextStyle(
-                                    color: themeColor,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () => _launchURL('https://example.com/privacy-placeholder'),
-                                ),
-                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    )),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.sp,
+                                  color: const Color(0xFF2D3436),
+                                  height: 1.4,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text:
+                                        'I specifically consent to SYA collecting and processing my religious data in accordance with the ',
+                                  ),
+                                  TextSpan(
+                                    text: 'Privacy Policy',
+                                    style: TextStyle(
+                                      color: themeColor,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => _launchURL(
+                                        'https://example.com/privacy-placeholder',
+                                      ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 24.h),
 
                     // Create Account Button
@@ -344,6 +371,7 @@ class MaleSignUpUI extends StatelessWidget {
     VoidCallback? onTap,
     TextInputType? keyboardType,
     VoidCallback? onToggleVisibility,
+    String? errorText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,9 +404,14 @@ class MaleSignUpUI extends StatelessWidget {
           keyboardType: keyboardType,
           style: GoogleFonts.inter(fontSize: 14.sp),
           decoration: InputDecoration(
+            errorText: errorText != null && errorText.isNotEmpty
+                ? errorText
+                : null,
             hintText: hint,
-            hintStyle:
-                GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp),
+            hintStyle: GoogleFonts.inter(
+              color: Colors.grey.shade400,
+              fontSize: 14.sp,
+            ),
             prefixIcon: icon != null
                 ? Icon(icon, color: Colors.grey.shade400, size: 20.sp)
                 : null,
@@ -400,8 +433,10 @@ class MaleSignUpUI extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 14.h,
+            ),
           ),
         ),
       ],
@@ -461,13 +496,20 @@ class MaleSignUpUI extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
-                  hint, 
+                  hint,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 14.sp)
+                  style: GoogleFonts.inter(
+                    color: Colors.grey.shade400,
+                    fontSize: 14.sp,
+                  ),
                 ),
               ),
-              Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade400, size: 20.sp),
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.grey.shade400,
+                size: 20.sp,
+              ),
             ],
           ),
         ),

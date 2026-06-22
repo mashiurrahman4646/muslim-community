@@ -22,7 +22,7 @@ class MaleLoginService {
         'email': email,
         'password': password,
       }),
-    );
+    ).timeout(const Duration(seconds: 10));
     
     print('=== LOGIN API RESPONSE ===');
     print('Status Code: ${response.statusCode}');

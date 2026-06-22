@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:muslim_community/approut.dart';
@@ -93,7 +95,18 @@ class FemaleLoginController extends GetxController {
             backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Something went wrong: $e',
+      String errorMessage = 'Something went wrong. Please try again.';
+      if (e is SocketException || 
+          e is TimeoutException || 
+          e.toString().contains('SocketException') || 
+          e.toString().contains('TimeoutException') || 
+          e.toString().contains('ClientException') ||
+          e.toString().contains('HandshakeException')) {
+        errorMessage = 'Server is not responding. Please try again later.';
+      } else {
+        errorMessage = 'Something went wrong: $e';
+      }
+      Get.snackbar('Error', errorMessage,
           backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isLoading.value = false;

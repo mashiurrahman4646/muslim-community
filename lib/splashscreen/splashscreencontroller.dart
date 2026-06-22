@@ -4,63 +4,162 @@ import 'package:muslim_community/approut.dart';
 import 'package:muslim_community/services/tokenservice.dart';
 
 class SplashScreenController extends GetxController
-    with GetSingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late Animation<double> scaleAnimation;
-  late Animation<double> fadeAnimation;
+    with GetTickerProviderStateMixin {
+  
+  // Animation Controllers
+  late AnimationController introController;
+  late AnimationController rotationController;
+  late AnimationController pulseController;
+  late AnimationController progressController;
+
+  // Staggered Animations
+  late Animation<double> logoScale;
+  late Animation<double> logoFade;
+  late Animation<double> bgPatternFade;
+  late Animation<double> titleFade;
+  late Animation<double> titleSlide;
+  late Animation<double> dividerWidthPercent; // 0.0 to 1.0
+  late Animation<double> quoteFade;
+  late Animation<double> quoteSlide;
+  late Animation<double> loadingFade;
+
+  // Continuous loop animations
+  late Animation<double> logoGlow;
+  late Animation<double> rotationAngle;
 
   @override
   void onInit() {
     super.onInit();
 
-    // Slowed down for a calmer, more deliberate breathing rhythm
-    animationController = AnimationController(
+    // 1. Intro Controller (Entrance sequence of UI elements)
+    introController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4500), // 4.5 seconds per cycle for a very slow, calm effect
+      duration: const Duration(milliseconds: 3000),
+    );
+
+    // 2. Pulse Controller (Subtle breathing effect for aura)
+    pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat(reverse: true);
+
+    // 3. Rotation Controller (Very slow background pattern rotation)
+    rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 50),
     )..repeat();
 
-    // Symmetrical heartbeat for a smoother, more premium feel
-    scaleAnimation = TweenSequence<double>([
-      // Growing phase (Natural inhalation)
-      TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 1.22)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-      // Shrinking phase (Natural exhalation)
-      TweenSequenceItem(
-        tween: Tween(begin: 1.22, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-    ]).animate(animationController);
+    // 4. Progress Controller (Controls filling of the loading indicator)
+    progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4500),
+    );
 
-    // Smooth fade synchronized with breathing
-    fadeAnimation = TweenSequence<double>([
-      // Fading in smoothly
-      TweenSequenceItem(
-        tween: Tween(begin: 0.5, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-      // Fading out smoothly
-      TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.5)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-    ]).animate(animationController);
+    // --- Staggered Animation Definitions ---
 
-    // Navigate after 8 seconds
-    navigateToNext();
+    // Logo Scales from 0 to 1 with an elastic feel
+    logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.0, 0.45, curve: Curves.easeOutBack),
+      ),
+    );
+
+    // Logo Fades in
+    logoFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.0, 0.35, curve: Curves.easeIn),
+      ),
+    );
+
+    // Background Pattern Fades in
+    bgPatternFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.15, 0.55, curve: Curves.easeIn),
+      ),
+    );
+
+    // Title Fades in
+    titleFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.35, 0.65, curve: Curves.easeOut),
+      ),
+    );
+
+    // Title Slides up (represented by negative offset value)
+    titleSlide = Tween<double>(begin: 25.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.35, 0.65, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    // Divider Line expands from center
+    dividerWidthPercent = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.5, 0.8, curve: Curves.easeOut),
+      ),
+    );
+
+    // Quote Fades in
+    quoteFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.6, 0.9, curve: Curves.easeOut),
+      ),
+    );
+
+    // Quote Slides up
+    quoteSlide = Tween<double>(begin: 15.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.6, 0.9, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    // Loading Bar and Text Fades in at the end
+    loadingFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: introController,
+        curve: const Interval(0.75, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    // --- Loop Animation Definitions ---
+
+    // Logo shadow breathing effect
+    logoGlow = Tween<double>(begin: 0.3, end: 0.85).animate(
+      CurvedAnimation(
+        parent: pulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    // Background Rotation
+    rotationAngle = Tween<double>(begin: 0.0, end: 2 * 3.141592653589793).animate(
+      rotationController,
+    );
+
+    // Start Intro Sequence
+    introController.forward();
+
+    // Start Simulated Progress. Once it completes, transition to next screen.
+    progressController.forward().then((_) {
+      navigateToNext();
+    });
   }
 
   void navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 8));
-    
     final TokenService tokenService = TokenService();
     final String? token = await tokenService.getToken();
     final String? role = await tokenService.getRole();
+
+    // Small delay to let progress indicator feel finished before switching
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (token != null && token.isNotEmpty) {
       if (role == 'male') {
@@ -79,7 +178,10 @@ class SplashScreenController extends GetxController
 
   @override
   void onClose() {
-    animationController.dispose();
+    introController.dispose();
+    rotationController.dispose();
+    pulseController.dispose();
+    progressController.dispose();
     super.onClose();
   }
 }

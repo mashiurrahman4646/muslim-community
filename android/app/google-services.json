@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195875098290",
+    "project_id": "sya-revert-app-47b8b",
+    "storage_bucket": "sya-revert-app-47b8b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195875098290:android:ac04b02fe27ef7203743ab",
+        "android_client_info": {
+          "package_name": "com.syamuslim.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuqsRfzPP7atT6QxEqFNzeK9gsoszP9lM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

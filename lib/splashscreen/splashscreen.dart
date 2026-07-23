@@ -77,7 +77,7 @@ class SplashScreen extends StatelessWidget {
                                 width: 170.w * controller.logoGlow.value,
                                 height: 170.w * controller.logoGlow.value,
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
+                                  borderRadius: BorderRadius.circular(28.r),
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFFA6864D).withValues(
@@ -96,7 +96,7 @@ class SplashScreen extends StatelessWidget {
                             width: 150.w,
                             height: 150.w,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                              borderRadius: BorderRadius.circular(24.r),
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(0xFFA6864D).withValues(alpha: 0.15),
@@ -105,7 +105,8 @@ class SplashScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: ClipOval(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24.r),
                               child: Image.asset(
                                 'assets/image/splashscreenlogo.png',
                                 fit: BoxFit.contain,
